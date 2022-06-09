@@ -64,11 +64,18 @@ struct Configuration
 
     ////////////////////
     // Save Load configuration
-    void xmlSaveState(QDomDocument& doc, QDomElement& plugin_elem) const;
-    void xmlLoadState(const QDomElement& parent_element);
+    void xmlSaveState(
+            QDomDocument& doc,
+            QDomElement& plugin_elem) const;
+    void xmlLoadState(
+            const QDomElement& parent_element);
 
-    void saveToSettings(QSettings& setting, QString prefix) const;
-    void loadFromSettings(const QSettings& settings, QString prefix);
+    void saveToSettings(
+            QSettings& setting,
+            QString prefix) const;
+    void loadFromSettings(
+            const QSettings& settings,
+            QString prefix);
 
 };
 

@@ -60,7 +60,8 @@ public:
      */
     ~FastDdsDataStreamer();
 
-    bool start(QStringList*) override;
+    bool start(
+            QStringList*) override;
 
     void shutdown() override;
 
@@ -68,10 +69,8 @@ public:
 
     const char* name() const override;
 
-// TODO: add slots to receive discovery information and user data
-// protected slots:
-
-
+    // TODO: add slots to receive discovery information and user data
+    // protected slots:
 
 protected:
 

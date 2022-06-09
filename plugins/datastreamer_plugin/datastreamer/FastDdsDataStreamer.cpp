@@ -40,7 +40,8 @@ FastDdsDataStreamer::~FastDdsDataStreamer()
     shutdown();
 }
 
-bool FastDdsDataStreamer::start(QStringList*)
+bool FastDdsDataStreamer::start(
+        QStringList*)
 {
     std::cout << "DEBUG: Hello World" << std::endl;
 
