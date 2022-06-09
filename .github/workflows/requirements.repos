@@ -1,12 +1,17 @@
-{
-    "names":
-    {
-        "plotjuggler_fastdds_datastream_plugin":
-        {
-            "cmake-args":
-            [
-                "-DCMAKE_CXX_FLAGS='-Werror'"
-            ]
-        }
-    }
-}
+repositories:
+    foonathan_memory_vendor:
+        type: git
+        url: https://github.com/eProsima/foonathan_memory_vendor.git
+        version: master
+    fastcdr:
+        type: git
+        url: https://github.com/eProsima/Fast-CDR.git
+        version: master
+    fastrtps:
+        type: git
+        url: https://github.com/eProsima/Fast-DDS.git
+        version: master
+    plotjuggler:
+        type: git
+        url: https://github.com/facontidavide/PlotJuggler.git
+        version: master

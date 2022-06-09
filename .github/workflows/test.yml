@@ -40,8 +40,9 @@ jobs:
       - name: Install Python packages
         uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-python-packages
 
-      - name: Fetch Fast DDS repositories
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/fetch-fastdds-repos
+      - name: Fetch required repositories
+        run: |
+          vcs import src < src/plotjuggler-fastdds-plugins/.github/workflows/requirements.repos
 
       - name: Update colcon mixin
         run: |
@@ -60,7 +61,6 @@ jobs:
       - name: Build workspace
         run: |
           cat src/plotjuggler-fastdds-plugins/.github/workflows/test_colcon.meta
-          source /home/runner/work/fastdds/install/setup.bash
           colcon build \
             --event-handlers=console_direct+ \
             --metas src/plotjuggler-fastdds-plugins/.github/workflows/test_colcon.meta \
