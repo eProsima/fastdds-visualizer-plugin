@@ -83,15 +83,15 @@ add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 
-# TODO: add it when UI is implemented
-# SET(
-#     QT_UI_SOURCES
-#         "ui/topic_selection_dialog/dialogselecttopics.ui")
+# Get .ui files to autogenerate code
+SET(
+    QT_UI_SOURCES
+        "ui/topic_selection_dialog/dialogselecttopics.ui")
 
-# QT5_WRAP_UI (
-#         COMMON_UI_SRC
-#         "${UI_SOURCES}"
-#     )
+QT5_WRAP_UI (
+        COMMON_UI_SRC
+        "${UI_SOURCES}"
+    )
 
 
 ###############################################################################
@@ -103,6 +103,12 @@ set (ALL_LIBRARY_SOURCES
         # DataStreamer files
         "datastreamer/FastDdsDataStreamer.cpp"
         "datastreamer/FastDdsDataStreamer.hpp"
+
+        # UI files
+        "ui/topic_selection_dialog/dialogselecttopics.cpp"
+        "ui/topic_selection_dialog/dialogselecttopics.h"
+        "ui/topic_selection_dialog/Configuration.hpp"
+
    )
 
 

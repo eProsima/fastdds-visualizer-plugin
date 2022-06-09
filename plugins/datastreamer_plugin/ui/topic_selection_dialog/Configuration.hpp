@@ -23,6 +23,8 @@
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_UI_TOPICSELECTIONDIALOG_CONFIGURATION_HPP_
 
 #include <QStringList>
+#include <QSettings>
+#include <QDomDocument>
 
 namespace eprosima {
 namespace plotjuggler {
@@ -43,18 +45,18 @@ struct Configuration
 
     ////////////////////
     // Topics
-    QStringList topics;
+    QStringList topics;  // Empty in initialization
 
     ////////////////////
     // Max array size
-    unsigned max_array_size = 999;
+    unsigned max_array_size = 1000;
     bool use_header_stamp = true;
     bool discard_large_arrays = false;
 
     ////////////////////
     // DDS Configuration
-    fastdds::dds::DomainId_t domain_id = 0;
-    QStringList xml_files;
+    uint32_t domain_id = 0;
+    QStringList xml_datatypes_files;  // Empty in initialization
 
     ////////////////////
     // Advance options

@@ -20,31 +20,53 @@
  */
 
 #include "FastDdsDataStreamer.hpp"
+#include "ui/topic_selection_dialog/dialogselecttopics.h"
+
+namespace eprosima {
+namespace plotjuggler {
+namespace datastreamer {
 
 const char* FastDdsDataStreamer::PLUGIN_NAME_ = "Fast DDS DataStreamer PlotJuggler Plugin";
 
 FastDdsDataStreamer::FastDdsDataStreamer()
     : running_(false)
 {
-    std::cout << "Create FastDdsDataStreamer" << std::endl;
+    std::cout << "DEBUG: Create FastDdsDataStreamer" << std::endl;
 }
 
 FastDdsDataStreamer::~FastDdsDataStreamer()
 {
-    std::cout << "Destroy FastDdsDataStreamer" << std::endl;
+    std::cout << "DEBUG: Destroy FastDdsDataStreamer" << std::endl;
+    shutdown();
 }
 
 bool FastDdsDataStreamer::start(QStringList*)
 {
-    std::cout << "Hello World" << std::endl;
+    std::cout << "DEBUG: Hello World" << std::endl;
+
+    // Check if it is already running
+    if (running_.load())
+    {
+        return true;
+    }
+
+    // Create and execute Dialog
+    auto dialog = new DialogSelectTopics(nullptr);
+    int dialog_result = dialog->exec();
+
     running_.store(true);
     return true;
 }
 
 void FastDdsDataStreamer::shutdown()
 {
-    std::cout << "Bye World" << std::endl;
-    running_.store(false);
+    std::cout << "DEBUG: Bye World" << std::endl;
+
+    // If it is running, stop it
+    if (running_.load())
+    {
+        running_.store(false);
+    }
 }
 
 bool FastDdsDataStreamer::isRunning() const
@@ -56,3 +78,7 @@ const char* FastDdsDataStreamer::name() const
 {
     return PLUGIN_NAME_;
 }
+
+} /* namespace datastreamer */
+} /* namespace plotjuggler */
+} /* namespace eprosima */

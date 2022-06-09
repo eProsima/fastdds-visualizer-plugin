@@ -26,6 +26,13 @@
 
 #include <PlotJuggler/datastreamer_base.h>
 
+#include "ui/topic_selection_dialog/dialogselecttopics.h"
+#include "ui/topic_selection_dialog/Configuration.hpp"
+
+namespace eprosima {
+namespace plotjuggler {
+namespace datastreamer {
+
 /**
  * @brief TODO
  */
@@ -61,11 +68,22 @@ public:
 
     const char* name() const override;
 
+// TODO: add slots to receive discovery information and user data
+// protected slots:
+
+
+
 protected:
+
+    ui::topicselection::Configuration configuration_;
 
     std::atomic<bool> running_;
 
     static const char* PLUGIN_NAME_;
 };
+
+} /* namespace datastreamer */
+} /* namespace plotjuggler */
+} /* namespace eprosima */
 
 #endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_DATASTREAMER_DATASTREAMER_HPP_

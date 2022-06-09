@@ -1,0 +1,62 @@
+
+@startuml
+
+class Listener
+{
+    + on_numeric_data ([ <str> topic+type : <double> value ], timestamp )
+    + on_string_data ([ <str> topic+type : <str> text ], timestamp )
+    + on_topic_discovery (<str> topic, <str> type, <bool> valid_type )
+}
+
+' ---------------------------------------------------------
+
+class Participant
+{
+    + add_xml_datatype( <str> xml_file_path )
+}
+
+Participant  ---o  "1"  Listener
+
+' ---------------------------------------------------------
+
+class FastDdsHandler
+{
+    + connect_domain( <int> domain_id )
+    + add_xml_datatype( <str> xml_file_path )
+    + add_xml_datatype( <str> xml_file_path )
+}
+
+' There will be only one FastDdsHandler, but Listener is not forced to
+' belong to only one of them
+FastDdsHandler  ---o  "1"  Listener
+' This may change in the future if multiple domains want to be shown at the same time
+FastDdsHandler  ---*  "1"  Participant
+
+' ---------------------------------------------------------
+
+class DialogTopicSelect
+{
+    [ <str,str,bool> ] topics_discovered
+    [ <str> ] xml_datatypes_files
+
+    + SLOT add_topic (<str,str,bool>)
+}
+
+' ---------------------------------------------------------
+
+class DataStream
+{
+    + start ()
+    + shutdown ()
+
+    + SLOT topic_discovered ( <str,str,bool> )
+    + SLOT xml_datatype_added ( <str> )
+    + SLOT new_numeric_data ( [ <str> : <double> ], timestamp )
+    + SLOT new_string_data ( [ <str> : <str> ], timestamp )
+}
+
+DataStream  ---o  "1"  Listener : <<create>>
+DataStream  ---o  "1"  FastDdsHandler : <<create>>
+DataStream  ---*  "1"  DialogTopicSelect : <<create>> + <<exec>>
+
+@enduml
