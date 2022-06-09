@@ -24,6 +24,7 @@
 const char* FastDdsDataStreamer::PLUGIN_NAME_ = "Fast DDS DataStreamer PlotJuggler Plugin";
 
 FastDdsDataStreamer::FastDdsDataStreamer()
+    : running_(false)
 {
     std::cout << "Create FastDdsDataStreamer" << std::endl;
 }
@@ -33,22 +34,25 @@ FastDdsDataStreamer::~FastDdsDataStreamer()
     std::cout << "Destroy FastDdsDataStreamer" << std::endl;
 }
 
-bool FastDdsDataStreamer::start(QStringList*) override
+bool FastDdsDataStreamer::start(QStringList*)
 {
     std::cout << "Hello World" << std::endl;
-}
-
-void FastDdsDataStreamer::shutdown() override
-{
-    std::cout << "Bye World" << std::endl;
-}
-
-bool FastDdsDataStreamer::isRunning() const override
-{
+    running_.store(true);
     return true;
 }
 
-const char* FastDdsDataStreamer::name() const override
+void FastDdsDataStreamer::shutdown()
+{
+    std::cout << "Bye World" << std::endl;
+    running_.store(false);
+}
+
+bool FastDdsDataStreamer::isRunning() const
+{
+    return running_.load();
+}
+
+const char* FastDdsDataStreamer::name() const
 {
     return PLUGIN_NAME_;
 }

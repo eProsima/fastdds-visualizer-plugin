@@ -1,22 +1,22 @@
 # Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 #
-# This file is part of eProsima Fast DDS Monitor.
+# This file is part of eProsima PlotJuggler Fast DDS Plugins.
 #
-# eProsima Fast DDS Monitor is free software: you can redistribute it and/or modify
+# eProsima PlotJuggler Fast DDS Plugins is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# eProsima Fast DDS Monitor is distributed in the hope that it will be useful,
+# eProsima PlotJuggler Fast DDS Plugins is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
+# along with eProsima PlotJuggler Fast DDS Plugins. If not, see <https://www.gnu.org/licenses/>.
 
 ###############################################################################
-# CMake build rules for Fast DDS Monitor
+# CMake build rules for PlotJuggler Fast DDS Plugins
 ###############################################################################
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(VERSION 3.5...3.13)
@@ -63,6 +63,12 @@ set(PROJECT_DESCRIPTION
 
 message(STATUS "Configuring ${PROJECT_NAME_LARGE}")
 message(STATUS "Version: ${PROJECT_VERSION}")
+
+
+###############################################################################
+# Load CMake modules
+###############################################################################
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 
 ###############################################################################

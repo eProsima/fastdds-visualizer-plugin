@@ -31,19 +31,6 @@ project(plotjuggler_fastdds_datastream_plugin)
 
 
 ###############################################################################
-# Include libraries
-###############################################################################
-include_directories(
-    ${Qt5Core_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Concurrent_INCLUDE_DIRS}
-    ${Qt5Xml_INCLUDE_DIRS}
-    ${Qt5WebSockets_INCLUDE_DIRS}
-    ${Qt5Svg_INCLUDE_DIRS}
-)
-
-
-###############################################################################
 # Load external projects
 ###############################################################################
 # Load eProsima packages
@@ -58,6 +45,25 @@ find_package(Qt5 REQUIRED COMPONENTS
     Xml
     Svg
     WebSockets)
+
+
+###############################################################################
+# Include Qt
+###############################################################################
+# include_directories(
+#     ${Qt5Core_INCLUDE_DIRS}
+#     ${Qt5Widgets_INCLUDE_DIRS}
+#     ${Qt5Concurrent_INCLUDE_DIRS}
+#     ${Qt5Xml_INCLUDE_DIRS}
+#     ${Qt5WebSockets_INCLUDE_DIRS}
+#     ${Qt5Svg_INCLUDE_DIRS}
+# )
+
+include_directories(
+    ${Qt5Core_INCLUDE_DIRS}
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5Xml_INCLUDE_DIRS}
+    ${Qt5Svg_INCLUDE_DIRS} )
 
 set( QT_LINK_LIBRARIES
     Qt5::Core
@@ -77,14 +83,15 @@ add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 
-SET(
-    QT_UI_SOURCES
-        "ui/topic_selection_dialog/dialogselecttopics.ui")
+# TODO: add it when UI is implemented
+# SET(
+#     QT_UI_SOURCES
+#         "ui/topic_selection_dialog/dialogselecttopics.ui")
 
-QT5_WRAP_UI (
-        COMMON_UI_SRC
-        "${UI_SOURCES}"
-    )
+# QT5_WRAP_UI (
+#         COMMON_UI_SRC
+#         "${UI_SOURCES}"
+#     )
 
 
 ###############################################################################
@@ -92,11 +99,6 @@ QT5_WRAP_UI (
 ###############################################################################
 
 set (ALL_LIBRARY_SOURCES
-
-        # UI files
-        "ui/topic_selection_dialog/Configuration.hpp"
-        "ui/topic_selection_dialog/dialogselecttopics.cpp"
-        "ui/topic_selection_dialog/dialogselecttopics.h"
 
         # DataStreamer files
         "datastreamer/FastDdsDataStreamer.cpp"
@@ -109,21 +111,25 @@ set (ALL_LIBRARY_SOURCES
 ###############################################################################
 
 # Include PlogJuggler directories
-find_package(PlotJuggler REQUIRED)
-include_directories(${PlotJuggler_INCLUDE_DIRS})
+find_package(plotjuggler REQUIRED)
+message(STATUS "PlotJuggler FOUND")
+message(STATUS "plotjuggler_INCLUDE_DIR: ${plotjuggler_INCLUDE_DIR}")
+message(STATUS "plotjuggler_LIBRARIES: ${plotjuggler_LIBRARIES}")
+
+include_directories(${plotjuggler_INCLUDE_DIR})
 
 # Create library
 add_library(
     ${PROJECT_NAME}
     SHARED
         ${ALL_LIBRARY_SOURCES}
-        ${ALL_SOURCES}  )
+    )
 
 # Link required libraries
 target_link_libraries(
     ${PROJECT_NAME}
         ${QT_LINK_LIBRARIES}
-        ${PlotJuggler_LIBRARIES}
+        ${plotjuggler_LIBRARIES}
     )
 
 

@@ -38,8 +38,19 @@ class FastDdsDataStreamer : public PJ::DataStreamer
 
 public:
 
+    /**
+     * @brief Construct a new Fast Dds Data Streamer object
+     *
+     * @note This object is constructed at the beginning of the execution of the program,
+     * even before the plugin is selected and started.
+     */
     FastDdsDataStreamer();
 
+    /**
+     * @brief Construct a new Fast Dds Data Streamer object
+     *
+     * @note This occurs once at the end of the process when the UI closes
+     */
     ~FastDdsDataStreamer();
 
     bool start(QStringList*) override;
@@ -52,7 +63,9 @@ public:
 
 protected:
 
+    std::atomic<bool> running_;
+
     static const char* PLUGIN_NAME_;
-}
+};
 
 #endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_DATASTREAMER_DATASTREAMER_HPP_
