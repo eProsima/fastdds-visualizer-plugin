@@ -31,6 +31,9 @@ namespace utils {
 std::string get_timestamp_string(
         const fastrtps::rtps::Time_t& timestamp);
 
+double get_timestamp_seconds_numeric_value(
+        const fastrtps::rtps::Time_t& timestamp);
+
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

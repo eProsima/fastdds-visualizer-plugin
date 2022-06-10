@@ -52,8 +52,12 @@ public:
         eprosima::fastrtps::types::DynamicType_ptr type,
         std::shared_ptr<Listener> listener);
 
+
     virtual ~ReaderHandler();
 
+    ReaderHandler& operator=(ReaderHandler&& other);
+
+    ReaderHandler& operator=(const ReaderHandler& other);
 
     ////////////////////////////////////////////////////
     // INTERACTION METHODS
@@ -82,9 +86,9 @@ public:
 
     std::string type_name() const;
 
-    std::vector<std::pair<std::string, double>>& numeric_data_() const;
+    std::vector<std::pair<std::string, double>> numeric_data_() const;
 
-    std::vector<std::pair<std::string, std::string>>& string_data_() const;
+    std::vector<std::pair<std::string, std::string>> string_data_() const;
 
 
     ////////////////////////////////////////////////////
@@ -126,7 +130,8 @@ public:
     eprosima::fastrtps::types::DynamicData_ptr data_;
 
     std::atomic<bool> stop_;
-}
+
+};
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */

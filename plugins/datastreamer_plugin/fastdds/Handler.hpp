@@ -25,12 +25,13 @@
 #include <memory>
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
-#include <fastdds/dds/domain/qos/
+#include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 
 #include "Listener.hpp"
+#include "Participant.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -92,7 +93,7 @@ protected:
 
     std::shared_ptr<Listener> listener_;
 
-}
+};
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */

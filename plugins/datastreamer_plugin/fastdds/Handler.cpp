@@ -57,10 +57,10 @@ void Handler::connect_to_domain(
     participant_.reset();
 
     // Create participant
-    participant_ = std::make_shared<Handler>(domain, listener_);
+    participant_ = std::make_unique<Participant>(domain, listener_);
 
     // Register listener
-    participant_->register_listener(listener_.get());
+    participant_->listener(listener_);
 }
 
 void Handler::register_type_from_xml(
@@ -77,7 +77,10 @@ void Handler::create_subscriptions(
 {
     if(participant_)
     {
-        participant_->create_subscriptions(topic_names);
+        for (const auto& topic_name : topic_names)
+        {
+            participant_->create_subscription(topic_name);
+        }
     }
 }
 
@@ -93,12 +96,10 @@ void Handler::listener(const std::shared_ptr<Listener>& listener)
 
 std::shared_ptr<Listener> Handler::listener() const
 {
-    return listener;
+    return listener_;
 }
 
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
-
-#endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_HANDLER_HPP_

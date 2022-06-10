@@ -26,6 +26,7 @@
 
 #include "ReaderHandler.hpp"
 #include "utils/utils.hpp"
+#include "utils/dynamic_types_utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -49,6 +50,9 @@ ReaderHandler::ReaderHandler(
 {
     // Create data so it is not required to create it each time and avoid reallocation if possible
     data_ = eprosima::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type_);
+
+    // Set this object as this reader's listener
+    reader_->set_listener(this);
 }
 
 ReaderHandler::~ReaderHandler()
@@ -155,6 +159,16 @@ eprosima::fastdds::dds::StatusMask ReaderHandler::default_listener_mask_()
     mask << eprosima::fastdds::dds::StatusMask::data_available();
 
     return mask;
+}
+
+std::vector<std::pair<std::string, double>> ReaderHandler::numeric_data_() const
+{
+    return utils::get_numeric_data(topic_name(), data_);
+}
+
+std::vector<std::pair<std::string, std::string>> ReaderHandler::string_data_() const
+{
+    return utils::get_string_data(topic_name(), data_);
 }
 
 } /* namespace fastdds */

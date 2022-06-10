@@ -60,6 +60,6 @@ public:
         static_cast<void>(type_name);
         static_cast<void>(type_registered);
     }
-}
+};
 
 #endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_LISTENER_HPP_

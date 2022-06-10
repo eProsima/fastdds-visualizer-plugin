@@ -109,6 +109,15 @@ set (ALL_LIBRARY_SOURCES
         "ui/topic_selection_dialog/dialogselecttopics.h"
         "ui/topic_selection_dialog/Configuration.hpp"
 
+        # fastdds files
+        "fastdds/Handler.cpp"
+        "fastdds/Handler.hpp"
+        "fastdds/Listener.hpp"
+        "fastdds/Participant.cpp"
+        "fastdds/Participant.hpp"
+        "fastdds/ReaderHandler.cpp"
+        "fastdds/ReaderHandler.hpp"
+
    )
 
 
@@ -136,6 +145,7 @@ target_link_libraries(
     ${PROJECT_NAME}
         ${QT_LINK_LIBRARIES}
         ${plotjuggler_LIBRARIES}
+        fastrtps
     )
 
 

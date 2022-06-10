@@ -29,6 +29,28 @@ namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
 
+////////////////////////////////////////////////////
+// READERHANDLER DELETER
+////////////////////////////////////////////////////
+
+ReaderHandlerDeleter::ReaderHandlerDeleter(
+        eprosima::fastdds::dds::DomainParticipant* participant,
+        eprosima::fastdds::dds::Subscriber* subscriber)
+    : participant_(participant)
+    , subscriber_(subscriber)
+{
+}
+
+void ReaderHandlerDeleter::operator ()(ReaderHandler* reader) const
+{
+    // Stop data gathering
+    reader->stop();
+    // Delete reader
+    subscriber_->delete_datareader(reader->reader_);
+    // Delete topic
+    participant_->delete_topic(reader->topic_);
+}
+
 
 ////////////////////////////////////////////////////
 // CREATION & DESTRUCTION
@@ -40,6 +62,8 @@ Participant::Participant(
     : listener_(listener)
     , domain_id_(domain_id)
 {
+    // TODO check entities are created correctly
+
     // Create Domain Participant
     participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
             domain_id_,
@@ -50,6 +74,9 @@ Participant::Participant(
     // Create Subscriber without listener
     subscriber_ = participant_->create_subscriber(
             default_subscriber_qos_());
+
+    // Initialize reader deleter
+    reader_handler_deleter_ = std::make_unique<ReaderHandlerDeleter>(participant_, subscriber_);
 }
 
 Participant::~Participant()
@@ -99,6 +126,8 @@ bool Participant::register_type_from_xml(
 
     // Set these types as registered
     refresh_types_registered_();
+
+    return true;
 }
 
 void Participant::create_subscription(
@@ -144,13 +173,13 @@ void Participant::create_subscription(
 
     // Create Reader Handler with all this information and add it to readers
     // Create it with specific deleter for reader and topic
-    std::unique_ptr<ReaderHandler> new_reader(
+    ReaderHandlerReference new_reader(
         new ReaderHandler(
             topic,
             datareader,
             dyn_type,
             listener_),
-        reader_handler_deleter_()
+        (*reader_handler_deleter_)
     );
 
     // Insert this new Reader Handler indexed by topic name
@@ -353,21 +382,6 @@ eprosima::fastdds::dds::StatusMask Participant::default_listener_mask_()
     mask.none();
 
     return mask;
-}
-
-std::function<void(ReaderHandler* )> reader_handler_deleter_()
-{
-    return
-        [this]
-        (ReaderHandler* reader)
-        {
-            // Stop data gathering
-            reader->stop();
-            // Delete reader
-            subscriber_->delete_datareader(reader->reader_);
-            // Delete topic
-            participant_->delete_topic(reader->topic_);
-        };
 }
 
 } /* namespace fastdds */

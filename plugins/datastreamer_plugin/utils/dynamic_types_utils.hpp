@@ -16,31 +16,28 @@
 // along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * @file utils.cpp
+ * @file dynamic_types_utils.hpp
  */
 
-#include <sstream>
+#ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_DYNAMICTYPESUTILS_HPP_
+#define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_DYNAMICTYPESUTILS_HPP_
 
-#include "utils.hpp"
+#include <fastrtps/types/DynamicData.h>
 
 namespace eprosima {
 namespace plotjuggler {
 namespace utils {
 
-std::string get_timestamp_string(
-        const fastrtps::rtps::Time_t& timestamp)
-{
-    std::stringstream ss;
-    ss << timestamp;
-    return ss.str();
-}
+std::vector<std::pair<std::string, double>> get_numeric_data(
+        const std::string& member_name,
+        const eprosima::fastrtps::types::DynamicData_ptr& data);
 
-double get_timestamp_seconds_numeric_value(
-        const fastrtps::rtps::Time_t& timestamp)
-{
-    return timestamp.seconds() + timestamp.fraction();
-}
+std::vector<std::pair<std::string, std::string>> get_string_data(
+        const std::string& member_name,
+        const eprosima::fastrtps::types::DynamicData_ptr& data);
 
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
+
+#endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_DYNAMICTYPESUTILS_HPP_

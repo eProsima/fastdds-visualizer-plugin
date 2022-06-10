@@ -22,7 +22,7 @@
 #ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_PARTICIPANTS_HPP_
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_PARTICIPANTS_HPP_
 
-#include <function>
+#include <functional>
 #include <memory>
 #include <unordered_map>
 
@@ -40,6 +40,22 @@
 namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
+
+class ReaderHandlerDeleter
+{
+public:
+    ReaderHandlerDeleter(
+        eprosima::fastdds::dds::DomainParticipant* participant,
+        eprosima::fastdds::dds::Subscriber* subscriber);
+
+    void operator ()(ReaderHandler* ptr) const;
+
+protected:
+    eprosima::fastdds::dds::DomainParticipant* participant_;
+    eprosima::fastdds::dds::Subscriber* subscriber_;
+};
+
+using ReaderHandlerReference = std::unique_ptr<ReaderHandler, ReaderHandlerDeleter>;
 
 /**
  * @brief This class handles every Fast DDS entity required.
@@ -155,8 +171,6 @@ protected:
      */
     static eprosima::fastdds::dds::StatusMask default_listener_mask_();
 
-    static std::function<void(ReaderHandler* )> reader_handler_deleter_();
-
 
     ////////////////////////////////////////////////////
     // INTERNAL VARIABLES
@@ -170,6 +184,8 @@ protected:
 
     // NOTE: this may not be needed
     eprosima::fastdds::dds::DomainId_t domain_id_;
+
+    std::unique_ptr<ReaderHandlerDeleter> reader_handler_deleter_;
 
 
     ////////////////////////////////////////////////////
@@ -185,8 +201,9 @@ protected:
      * Collection created in Participant indexed by topic name that contains
      * Reader, Topic and DataType so messages read is disengaged from this object
      */
-    std::unordered_map<std::string, std::unique_ptr<ReaderHandler>> readers_;
-}
+    std::unordered_map<std::string, ReaderHandlerReference> readers_;
+
+};
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */

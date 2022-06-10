@@ -1,6 +1,11 @@
 
 @startuml
 
+' ---------------------------------------------------------
+
+package Backend
+{
+
 class Listener
 {
     + on_numeric_data ([ <str> topic+type : <double> value ], timestamp )
@@ -13,17 +18,18 @@ class Listener
 class Participant
 {
     + add_xml_datatype( <str> xml_file_path )
+    + topics_to_subscribe( [ <str> ] topics )
 }
 
 Participant  ---o  "1"  Listener
 
 ' ---------------------------------------------------------
 
-class FastDdsHandler
+class FastDdsHandler  #f9d346
 {
     + connect_domain( <int> domain_id )
     + add_xml_datatype( <str> xml_file_path )
-    + add_xml_datatype( <str> xml_file_path )
+    + topics_to_connect( [ <str> ] topics )
 }
 
 ' There will be only one FastDdsHandler, but Listener is not forced to
@@ -32,31 +38,52 @@ FastDdsHandler  ---o  "1"  Listener
 ' This may change in the future if multiple domains want to be shown at the same time
 FastDdsHandler  ---*  "1"  Participant
 
+}
+' package Backend
+
+' ---------------------------------------------------------
 ' ---------------------------------------------------------
 
-class DialogTopicSelect
+package View
+{
+
+' ---------------------------------------------------------
+
+class Configuration
 {
     [ <str,str,bool> ] topics_discovered
     [ <str> ] xml_datatypes_files
-
-    + SLOT add_topic (<str,str,bool>)
 }
 
 ' ---------------------------------------------------------
 
-class DataStream
+class DialogTopicSelect  #f9d346
+{
+    + SLOT add_topic (<str,str,bool>)
+}
+
+DialogTopicSelect  ---*  "1"  Configuration
+
+}
+' package Backend
+
+' ---------------------------------------------------------
+
+class DataStream  #f9d346
 {
     + start ()
     + shutdown ()
 
+    + SLOT connect_domain ( <int> )
     + SLOT topic_discovered ( <str,str,bool> )
     + SLOT xml_datatype_added ( <str> )
     + SLOT new_numeric_data ( [ <str> : <double> ], timestamp )
     + SLOT new_string_data ( [ <str> : <str> ], timestamp )
 }
 
-DataStream  ---o  "1"  Listener : <<create>>
+DataStream  ---o  "1"  Listener : <<implement>>
 DataStream  ---o  "1"  FastDdsHandler : <<create>>
+DataStream  --->  Configuration : get info
 DataStream  ---*  "1"  DialogTopicSelect : <<create>> + <<exec>>
 
 @enduml
