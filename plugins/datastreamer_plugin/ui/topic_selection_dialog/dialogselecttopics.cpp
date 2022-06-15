@@ -132,9 +132,12 @@ void DialogSelectTopics::on_buttonBox_accepted()
     configuration_->boolean_strings_to_number = ui->convert_booleans_check->isChecked();
 
     // Get Topics
-    for (auto index : ui->listRosTopics->selectionModel()->selectedIndexes())
+    configuration_->topics_selected.clear();
+    for (QModelIndex index : ui->listRosTopics->selectionModel()->selectedIndexes())
     {
-        // TODO
+        // Add every selected topic to configuration
+        configuration_->topics_selected.push_back(
+            index.data(Qt::DisplayRole).toString());
     }
 
     // Get XML files
@@ -188,11 +191,12 @@ void DialogSelectTopics::on_topic_discovery_slot(
         ui->listRosTopics->setItem(new_row, 1, new QTableWidgetItem(type_name));
 
         // In case it is not registered, make it unselectable
-        if (!type_registered)
-        {
-            auto item = ui->listRosTopics->item(new_row, 0);
-            item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-        }
+        // TODO uncomment when types work
+        // if (!type_registered)
+        // {
+        //     auto item = ui->listRosTopics->item(new_row, 0);
+        //     item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+        // }
 
         // Always make type unselectable
         auto item = ui->listRosTopics->item(new_row, 1);

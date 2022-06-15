@@ -44,7 +44,7 @@ struct Configuration
 
     ////////////////////
     // Topics
-    QStringList topics;  // Empty in initialization
+    QStringList topics_selected;  // Empty in initialization
 
     ////////////////////
     // Max array size

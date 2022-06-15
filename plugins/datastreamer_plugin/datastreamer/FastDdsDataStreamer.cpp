@@ -21,6 +21,7 @@
 
 #include "FastDdsDataStreamer.hpp"
 #include "ui/topic_selection_dialog/dialogselecttopics.h"
+#include "utils/utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -69,10 +70,12 @@ bool FastDdsDataStreamer::start(
         DEBUG("Dialog closed cancelled, exiting");
         return false;
     }
-    else
+
+    // TODO add check that any topic is added
+    DEBUG("Dialog closed accepted, creating subscriptions: ");
+    for (auto topic : configuration_->topics_selected)
     {
-        // TODO add check that any topic is added
-        DEBUG("Dialog closed accepted, creating subscriptions");
+        DEBUG(" - " << utils::QString_to_string(topic));
     }
 
     running_.store(true);
