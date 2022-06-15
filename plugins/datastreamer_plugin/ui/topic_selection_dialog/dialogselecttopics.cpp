@@ -48,7 +48,7 @@ DialogSelectTopics::DialogSelectTopics(
     // FastDDS configuration
     // Set current domain
     ui->domainid_spin->setValue(configuration_->domain_id_selected);
-    ui->lineEdit->setText(
+    ui->current_domain_label->setText(
         QString::number(configuration_->domain_id_connected));
     check_domain_button_must_be_enable_();
 
@@ -88,6 +88,8 @@ void DialogSelectTopics::on_change_domain_button_clicked()
     // Change domain connected
     configuration_->domain_id_connected =
         static_cast<unsigned int>(ui->domainid_spin->value());
+    ui->current_domain_label->setText(
+        QString::number(configuration_->domain_id_connected));
     check_domain_button_must_be_enable_();
 
     // Call listener to connect to domain

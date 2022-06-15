@@ -341,27 +341,9 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
+            <widget class="QLabel" name="current_domain_label">
              <property name="text">
               <string>0</string>
-             </property>
-             <property name="maxLength">
-              <number>3</number>
-             </property>
-             <property name="frame">
-              <bool>false</bool>
-             </property>
-             <property name="dragEnabled">
-              <bool>false</bool>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-             <property name="clearButtonEnabled">
-              <bool>false</bool>
              </property>
             </widget>
            </item>
