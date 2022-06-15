@@ -57,9 +57,14 @@ bool FastDdsDataStreamer::start(
         return true;
     }
 
-    running_.store(true);
+    // Reset FastDDS and UI
+    fastdds_handler_->reset();
+    select_topics_dialog_->reset();
 
-    // Create and execute Dialog
+    // Creating a default DomainParticipant in domain by default (configuration_)
+    fastdds_handler_->connect_to_domain(configuration_->domain_id);
+
+    // Execute Dialog
     int dialog_result = select_topics_dialog_->exec();
 
     // Check if Accept has been pressed
@@ -74,6 +79,7 @@ bool FastDdsDataStreamer::start(
         DEBUG("Dialog closed accepted, creating subscriptions");
     }
 
+    running_.store(true);
     return true;
 }
 
@@ -85,6 +91,10 @@ void FastDdsDataStreamer::shutdown()
     if (running_.load())
     {
         running_.store(false);
+
+        // Reset FastDDS so DDS entities are destroyed
+        fastdds_handler_->reset();
+        select_topics_dialog_->reset();
     }
 }
 

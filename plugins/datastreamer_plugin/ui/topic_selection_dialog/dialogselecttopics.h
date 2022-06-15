@@ -33,7 +33,11 @@ public:
 
     ~DialogSelectTopics();
 
+    void reset();
+
 signals:
+
+    void reset_view_signal();
 
     void topic_discovery_signal(
         const QString& topic_name,
@@ -62,6 +66,8 @@ private slots:
         const QString& topic_name,
         const QString& type_name,
         bool type_registered);
+
+    void on_reset_view_slot();
 
 protected:
 

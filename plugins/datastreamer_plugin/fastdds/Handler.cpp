@@ -40,7 +40,7 @@ Handler::Handler(
 Handler::~Handler()
 {
     // Destroy internal participant explicitly before this object is destroyed
-    reset_();
+    reset();
 }
 
 
@@ -52,7 +52,7 @@ void Handler::connect_to_domain(
         const uint32_t domain)
 {
     // Reset in case a Handler exist
-    reset_();
+    reset();
 
     // Create participant
     participant_ = std::make_unique<Participant>(domain, discovery_database_, listener_);
@@ -84,7 +84,7 @@ std::shared_ptr<TopicDataBase> Handler::get_topic_data_base() const
     return discovery_database_;
 }
 
-void Handler::reset_()
+void Handler::reset()
 {
     participant_.reset();
 

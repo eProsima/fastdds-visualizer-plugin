@@ -75,6 +75,7 @@ public:
 
     std::shared_ptr<TopicDataBase> get_topic_data_base() const;
 
+    void reset();
 
 protected:
 
@@ -84,7 +85,6 @@ protected:
 
     void clean_discovery_database_();
 
-    void reset_();
 
 
     ////////////////////////////////////////////////////

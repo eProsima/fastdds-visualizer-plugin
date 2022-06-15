@@ -24,16 +24,32 @@ DialogSelectTopics::DialogSelectTopics(
     , listener_(listener)
 {
     ui->setupUi(this);
+
+    // NOTE: This is needed as the connection by name is not working properly. It shows message:
+    // QMetaObject::connectSlotsByName: No matching signal for on_reset_view()
+    // when on_reset_view slot exists
     connect(
         this,
         &DialogSelectTopics::topic_discovery_signal,
         this,
         &DialogSelectTopics::on_topic_discovery_slot);
+
+    connect(
+        this,
+        &DialogSelectTopics::reset_view_signal,
+        this,
+        &DialogSelectTopics::on_reset_view_slot);
 }
 
 DialogSelectTopics::~DialogSelectTopics()
 {
     delete ui;
+}
+
+void DialogSelectTopics::reset()
+{
+    // Emit signal to reset in view thread
+    emit reset_view_signal();
 }
 
 void DialogSelectTopics::on_lineEditFilter_editingFinished()
@@ -135,6 +151,12 @@ void DialogSelectTopics::on_topic_discovery_slot(
         ui->listRosTopics->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
         ui->listRosTopics->sortByColumn(0, Qt::AscendingOrder);
     }
+}
+
+void DialogSelectTopics::on_reset_view_slot()
+{
+    DEBUG("Calling on_reset_view");
+    // TODO
 }
 
 } /* namespace ui */
