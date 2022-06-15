@@ -62,7 +62,17 @@ bool FastDdsDataStreamer::start(
     // Create and execute Dialog
     int dialog_result = select_topics_dialog_->exec();
 
-    DEBUG("Dialog closed, creating subscriptions");
+    // Check if Accept has been pressed
+    if (dialog_result != QDialog::Accepted)
+    {
+        DEBUG("Dialog closed cancelled, exiting");
+        return false;
+    }
+    else
+    {
+        // TODO add check that any topic is added
+        DEBUG("Dialog closed accepted, creating subscriptions");
+    }
 
     return true;
 }
