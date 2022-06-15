@@ -100,24 +100,31 @@ QT5_WRAP_UI (
 
 set (ALL_LIBRARY_SOURCES
 
+        # utils files
+        "utils/utils.cpp"
+        "utils/utils.hpp"
+        "utils/dynamic_types_utils.cpp"
+        "utils/dynamic_types_utils.hpp"
+
         # DataStreamer files
         "datastreamer/FastDdsDataStreamer.cpp"
         "datastreamer/FastDdsDataStreamer.hpp"
 
-        # UI files
-        "ui/topic_selection_dialog/dialogselecttopics.cpp"
-        "ui/topic_selection_dialog/dialogselecttopics.h"
-        "ui/topic_selection_dialog/Configuration.hpp"
-
         # fastdds files
         "fastdds/Handler.cpp"
         "fastdds/Handler.hpp"
-        "fastdds/Listener.hpp"
+        "fastdds/FastDdsListener.hpp"
         "fastdds/Participant.cpp"
         "fastdds/Participant.hpp"
         "fastdds/ReaderHandler.cpp"
         "fastdds/ReaderHandler.hpp"
 
+        # UI files
+        "ui/topic_selection_dialog/dialogselecttopics.cpp"
+        "ui/topic_selection_dialog/dialogselecttopics.h"
+        "ui/topic_selection_dialog/Configuration.hpp"
+        "ui/topic_selection_dialog/UiListener.hpp"
+        ${COMMON_UI_SRC}
    )
 
 

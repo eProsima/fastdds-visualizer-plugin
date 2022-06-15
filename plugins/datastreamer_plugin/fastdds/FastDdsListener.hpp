@@ -16,7 +16,7 @@
 // along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * @file Listener.hpp
+ * @file UiListener.hpp
  */
 
 #ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_LISTENER_HPP_
@@ -24,13 +24,19 @@
 
 #include <string>
 
+#include "utils/utils.hpp"
+
+namespace eprosima {
+namespace plotjuggler {
+namespace fastdds {
+
 /**
  * @brief This class transmit callbacks that arrive from Fast DDS entities to the GUI.
  *
  * Every new discovery and every new data received from Fast DDS entities is transmitted by calling
  * one of the methods, that must be implemented by the user of the class.
  */
-class Listener
+class FastDdsListener
 {
 public:
 
@@ -39,6 +45,7 @@ public:
         const std::vector<std::pair<std::string, double>>& data_per_topic_value,
         const std::string& timestamp)
     {
+        DEBUG("Calling on_double_data_read");
         static_cast<void>(data_per_topic_value);
         static_cast<void>(timestamp);
     }
@@ -47,6 +54,7 @@ public:
         const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
         const std::string& timestamp)
     {
+        DEBUG("Calling on_string_data_read");
         static_cast<void>(data_per_topic_value);
         static_cast<void>(timestamp);
     }
@@ -56,10 +64,20 @@ public:
         const std::string& type_name,
         bool type_registered)
     {
+        DEBUG("Calling on_topic_discovery");
         static_cast<void>(topic_name);
         static_cast<void>(type_name);
         static_cast<void>(type_registered);
     }
+
+    virtual void on_shutdown()
+    {
+        DEBUG("Calling on_shutdown");
+    }
 };
+
+} /* namespace fastdds */
+} /* namespace plotjuggler */
+} /* namespace eprosima */
 
 #endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_LISTENER_HPP_

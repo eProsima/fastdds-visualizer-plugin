@@ -30,20 +30,26 @@ const char* FastDdsDataStreamer::PLUGIN_NAME_ = "Fast DDS DataStreamer PlotJuggl
 
 FastDdsDataStreamer::FastDdsDataStreamer()
     : running_(false)
+    , fastdds_handler_(std::make_unique<fastdds::Handler>(this))
+    , configuration_(std::make_shared<ui::Configuration>())
+    , select_topics_dialog_(std::make_unique<ui::DialogSelectTopics>(
+        configuration_,
+        fastdds_handler_->get_topic_data_base(),
+        this))
 {
-    std::cout << "DEBUG: Create FastDdsDataStreamer" << std::endl;
+    DEBUG("Create FastDdsDataStreamer");
 }
 
 FastDdsDataStreamer::~FastDdsDataStreamer()
 {
-    std::cout << "DEBUG: Destroy FastDdsDataStreamer" << std::endl;
+    DEBUG("Destroy FastDdsDataStreamer");
     shutdown();
 }
 
 bool FastDdsDataStreamer::start(
         QStringList*)
 {
-    std::cout << "DEBUG: Hello World" << std::endl;
+    DEBUG("FastDdsDataStreamer::start");
 
     // Check if it is already running
     if (running_.load())
@@ -51,17 +57,19 @@ bool FastDdsDataStreamer::start(
         return true;
     }
 
-    // Create and execute Dialog
-    auto dialog = new DialogSelectTopics(nullptr);
-    int dialog_result = dialog->exec();
-
     running_.store(true);
+
+    // Create and execute Dialog
+    int dialog_result = select_topics_dialog_->exec();
+
+    DEBUG("Dialog closed, creating subscriptions");
+
     return true;
 }
 
 void FastDdsDataStreamer::shutdown()
 {
-    std::cout << "DEBUG: Bye World" << std::endl;
+    DEBUG("Bye World");
 
     // If it is running, stop it
     if (running_.load())
@@ -78,6 +86,47 @@ bool FastDdsDataStreamer::isRunning() const
 const char* FastDdsDataStreamer::name() const
 {
     return PLUGIN_NAME_;
+}
+
+
+////////////////////////////////////////////////////
+// FASTDDS LISTENER METHODS
+////////////////////////////////////////////////////
+
+void FastDdsDataStreamer::on_topic_discovery(
+        const std::string& topic_name,
+        const std::string& type_name,
+        bool type_registered)
+{
+    DEBUG("FastDdsDataStreamer topic_discovery_signal " << topic_name);
+    emit select_topics_dialog_->topic_discovery_signal(
+        utils::string_to_QString(topic_name),
+        utils::string_to_QString(type_name),
+        type_registered);
+}
+
+
+////////////////////////////////////////////////////
+// UI LISTENER METHODS
+////////////////////////////////////////////////////
+
+void FastDdsDataStreamer::on_domain_connection(
+        unsigned int domain_id)
+{
+    DEBUG("FastDdsDataStreamer on_domain_connection " << domain_id);
+    fastdds_handler_->connect_to_domain(configuration_->domain_id);
+}
+
+
+////////////////////////////////////////////////////
+// AUXILIAR METHODS
+////////////////////////////////////////////////////
+
+void FastDdsDataStreamer::connect_to_domain_(
+        unsigned int domain_id)
+{
+    DEBUG("FastDdsDataStreamer connect_to_domain_ " << domain_id);
+    fastdds_handler_->connect_to_domain(domain_id);
 }
 
 } /* namespace datastreamer */

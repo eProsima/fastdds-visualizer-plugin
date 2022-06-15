@@ -29,13 +29,12 @@
 namespace eprosima {
 namespace plotjuggler {
 namespace ui {
-namespace topicselection {
 
 /**
  * @brief This class handles every Fast DDS entity required.
  *
  * It create, manage and destroy every Fast DDS entity that the process requires to instantiate.
- * The discovery and user data received is transmitted through a Listener object.
+ * The discovery and user data received is transmitted through a UiListener object.
  *
  * FUTURE WORK:
  * Use a specific thread to call callbacks instead of using Fast DDS thread
@@ -79,7 +78,6 @@ struct Configuration
 
 };
 
-} /* namespace topicselection */
 } /* namespace ui */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

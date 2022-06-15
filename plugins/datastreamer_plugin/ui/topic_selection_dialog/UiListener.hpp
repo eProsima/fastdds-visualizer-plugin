@@ -16,44 +16,45 @@
 // along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * @file utils.cpp
+ * @file UiListener.hpp
  */
 
-#include <sstream>
+#ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_UI_TOPICSELECTIONDIALOG_LISTENER_HPP_
+#define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_UI_TOPICSELECTIONDIALOG_LISTENER_HPP_
 
-#include "utils.hpp"
+#include <QObject>
+
+#include "utils/utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
-namespace utils {
+namespace ui {
 
-std::string get_timestamp_string(
-        const fastrtps::rtps::Time_t& timestamp)
+/**
+ * @brief TODO
+ */
+struct UiListener
 {
-    std::stringstream ss;
-    ss << timestamp;
-    return ss.str();
-}
+public:
 
-double get_timestamp_seconds_numeric_value(
-        const fastrtps::rtps::Time_t& timestamp)
-{
-    return timestamp.seconds() + timestamp.fraction();
-}
+    virtual void on_xml_datatype_file_added(
+        const QString& file_path)
+    {
+        DEBUG("Calling on_xml_datatype_file_added " << file_path.toStdString());
+        static_cast<void>(file_path);
+    }
 
-std::string QString_to_string(
-        const QString& str)
-{
-    return str.toStdString();
-}
+    virtual void on_domain_connection(
+        unsigned int domain_id)
+    {
+        DEBUG("Calling on_domain_connection " << domain_id);
+        static_cast<void>(domain_id);
+    }
 
-QString string_to_QString(
-        const std::string& str)
-{
-    // return QString::fromStdString(str);
-    return QString::fromUtf8( str.data(), str.size() );
-}
+};
 
-} /* namespace utils */
+} /* namespace ui */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
+
+#endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_UI_TOPICSELECTIONDIALOG_LISTENER_HPP_

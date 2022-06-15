@@ -25,17 +25,19 @@
 #include <functional>
 #include <memory>
 #include <unordered_map>
+#include <QObject>
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
-#include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
-#include <fastdds/dds/subscriber/Subscriber.hpp>
-#include <fastdds/dds/subscriber/qos/SubscriberQos.hpp>
+#include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
+#include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
+#include <fastdds/dds/subscriber/qos/SubscriberQos.hpp>
 
-#include "Listener.hpp"
+#include "FastDdsListener.hpp"
 #include "ReaderHandler.hpp"
+#include "TopicDataBase.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -61,7 +63,7 @@ using ReaderHandlerReference = std::unique_ptr<ReaderHandler, ReaderHandlerDelet
  * @brief This class handles every Fast DDS entity required.
  *
  * It create, manage and destroy every Fast DDS entity that the process requires to instantiate.
- * The discovery and user data received is transmitted through a Listener object.
+ * The discovery and user data received is transmitted through a FastDdsListener object.
  *
  * FUTURE WORK:
  * Use a specific thread to call callbacks instead of using Fast DDS thread
@@ -76,7 +78,8 @@ public:
 
     Participant(
         eprosima::fastdds::dds::DomainId_t domain_id,
-        std::shared_ptr<Listener> listener);
+        std::shared_ptr<TopicDataBase> discovery_database,
+        FastDdsListener* listener);
 
     virtual ~Participant();
 
@@ -93,7 +96,7 @@ public:
 
 
     ////////////////////////////////////////////////////
-    // LISTENER METHODS [ PARTICIPANT ]
+    // LISTENER [ DOMAIN PARTICIPANT ] METHODS
     ////////////////////////////////////////////////////
 
     void on_publisher_discovery(
@@ -115,14 +118,6 @@ public:
             fastrtps::types::DynamicType_ptr dyn_type) override;
 
 
-    ////////////////////////////////////////////////////
-    // RETRIEVE VALUES METHODS
-    ////////////////////////////////////////////////////
-
-    void listener(const std::shared_ptr<Listener>& listener);
-
-    std::shared_ptr<Listener> listener() const;
-
 protected:
 
     ////////////////////////////////////////////////////
@@ -131,9 +126,6 @@ protected:
 
     void on_topic_discovery_(
         const std::string& topic_name,
-        const std::string& type_name);
-
-    void on_type_registration_(
         const std::string& type_name);
 
 
@@ -145,6 +137,7 @@ protected:
 
     bool is_type_registered_(const std::string& type_name);
 
+    eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(const std::string& type_name);
 
 
     ////////////////////////////////////////////////////
@@ -176,16 +169,17 @@ protected:
     // INTERNAL VARIABLES
     ////////////////////////////////////////////////////
 
-    std::unordered_map<std::string, std::string> topics_discovered_;
+    std::shared_ptr<TopicDataBase> discovery_database_;
 
-    std::unordered_map<std::string, eprosima::fastrtps::types::DynamicType_ptr> types_registered_;
-
-    std::shared_ptr<Listener> listener_;
-
-    // NOTE: this may not be needed
-    eprosima::fastdds::dds::DomainId_t domain_id_;
-
+    /**
+     * @brief TODO
+     *
+     * @note this required to be a pointer as it cannot be created without initialize its internal values.
+     * Thus, it will be created once the participant and subscriber are created.
+     */
     std::unique_ptr<ReaderHandlerDeleter> reader_handler_deleter_;
+
+    FastDdsListener* listener_;
 
 
     ////////////////////////////////////////////////////

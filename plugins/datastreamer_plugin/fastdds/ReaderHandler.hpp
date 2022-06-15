@@ -28,7 +28,7 @@
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 
-#include "Listener.hpp"
+#include "FastDdsListener.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -50,7 +50,7 @@ public:
         eprosima::fastdds::dds::Topic* topic,
         eprosima::fastdds::dds::DataReader* datareader,
         eprosima::fastrtps::types::DynamicType_ptr type,
-        std::shared_ptr<Listener> listener);
+        FastDdsListener* listener);
 
 
     virtual ~ReaderHandler();
@@ -67,7 +67,7 @@ public:
 
 
     ////////////////////////////////////////////////////
-    // LISTENER METHODS [ DATAREADER ]
+    // LISTENER [ DATAREADER ] METHODS
     ////////////////////////////////////////////////////
 
     void on_data_available(
@@ -77,10 +77,6 @@ public:
     ////////////////////////////////////////////////////
     // VALUES METHODS
     ////////////////////////////////////////////////////
-
-    void listener(const std::shared_ptr<Listener>& listener);
-
-    std::shared_ptr<Listener> listener() const;
 
     std::string topic_name() const;
 
@@ -110,7 +106,7 @@ public:
     // INTERNAL VARIABLES
     ////////////////////////////////////////////////////
 
-    std::shared_ptr<Listener> listener_;
+    FastDdsListener* listener_;
 
 
     ////////////////////////////////////////////////////

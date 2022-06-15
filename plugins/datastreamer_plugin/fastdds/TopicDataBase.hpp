@@ -16,44 +16,27 @@
 // along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * @file utils.cpp
+ * @file TopicDataBase.hpp
  */
 
-#include <sstream>
+#ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_TOPICDATABASE_HPP_
+#define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_TOPICDATABASE_HPP_
 
-#include "utils.hpp"
+#include <unordered_map>
+#include <tuple>
 
 namespace eprosima {
 namespace plotjuggler {
-namespace utils {
+namespace fastdds {
 
-std::string get_timestamp_string(
-        const fastrtps::rtps::Time_t& timestamp)
-{
-    std::stringstream ss;
-    ss << timestamp;
-    return ss.str();
-}
+/**
+ * @brief TODO
+ *
+ */
+using TopicDataBase = std::unordered_map<std::string, std::pair<std::string, bool>>;
 
-double get_timestamp_seconds_numeric_value(
-        const fastrtps::rtps::Time_t& timestamp)
-{
-    return timestamp.seconds() + timestamp.fraction();
-}
-
-std::string QString_to_string(
-        const QString& str)
-{
-    return str.toStdString();
-}
-
-QString string_to_QString(
-        const std::string& str)
-{
-    // return QString::fromStdString(str);
-    return QString::fromUtf8( str.data(), str.size() );
-}
-
-} /* namespace utils */
+} /* namespace fastdds */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
+
+#endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_TOPICDATABASE_HPP_

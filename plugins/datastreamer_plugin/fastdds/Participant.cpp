@@ -22,8 +22,11 @@
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastrtps/xmlparser/XMLProfileManager.h>
 #include <fastrtps/types/DynamicDataHelper.hpp>
+#include <fastrtps/types/DynamicDataFactory.h>
+#include <fastrtps/types/TypeObjectFactory.h>
 
 #include "Participant.hpp"
+#include "utils/utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -58,18 +61,21 @@ void ReaderHandlerDeleter::operator ()(ReaderHandler* reader) const
 
 Participant::Participant(
         eprosima::fastdds::dds::DomainId_t domain_id,
-        std::shared_ptr<Listener> listener)
+        std::shared_ptr<TopicDataBase> discovery_database,
+        FastDdsListener* listener)
     : listener_(listener)
-    , domain_id_(domain_id)
+    , discovery_database_(discovery_database)
 {
     // TODO check entities are created correctly
 
     // Create Domain Participant
     participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-            domain_id_,
+            domain_id,
             default_participant_qos_(),
             this,
             default_listener_mask_());
+
+    DEBUG("Participant created in domain " << domain_id << " with guid: " << participant_->guid());
 
     // Create Subscriber without listener
     subscriber_ = participant_->create_subscriber(
@@ -81,11 +87,7 @@ Participant::Participant(
 
 Participant::~Participant()
 {
-    // Eliminate references to any Dynamic Data Type that may have been created
-    types_registered_.clear();
-
-    // Eliminate reader handlers (smart ptr deleter will handle it)
-    readers_.clear();
+    DEBUG("Destroying Participant");
 
     // If participant exist, destroy it and its subentities
     if (participant_)
@@ -93,6 +95,9 @@ Participant::~Participant()
         // If subscriber exist, destroy it and its subentities
         if (subscriber_)
         {
+            // Eliminate reader handlers (smart ptr deleter will handle it)
+            readers_.clear();
+
             // Reader and Topic are destroyed by smart ptr
             // TODO: check if stop is required before
 
@@ -124,7 +129,8 @@ bool Participant::register_type_from_xml(
         return false;
     }
 
-    // Set these types as registered
+    // Loading an xml does not retrieve the types loaded.
+    // Thus, it is necessary to loop over all types discovered and check if they are registered already
     refresh_types_registered_();
 
     return true;
@@ -143,8 +149,8 @@ void Participant::create_subscription(
     }
 
     // Check the Topic exist, so the type name is known
-    auto topic_type = topics_discovered_.find(topic_name);
-    if (topic_type == topics_discovered_.end())
+    auto topic_type = discovery_database_->find(topic_name);
+    if (topic_type == discovery_database_->end())
     {
         logWarning(
             PLOTJUGGLER_FASTDDS,
@@ -153,12 +159,12 @@ void Participant::create_subscription(
     }
 
     // Get TypeName associated with topic name
-    std::string type_name = topics_discovered_[topic_name];
+    std::string type_name = discovery_database_->operator[](topic_name).first;
 
     // Create topic
     eprosima::fastdds::dds::Topic* topic = participant_->create_topic(
             topic_name,
-            topic_type->second,
+            type_name,
             default_topic_qos_());
 
     // Create datareader
@@ -169,7 +175,16 @@ void Participant::create_subscription(
 
     // Get Dyn Type for type
     // This could not fail, as we know type is registered
-    eprosima::fastrtps::types::DynamicType_ptr dyn_type = types_registered_[type_name];
+    eprosima::fastrtps::types::DynamicType_ptr dyn_type = get_type_registered_(type_name);
+
+    // In case type is not registered, do not create subscription and show error
+    if (!dyn_type)
+    {
+        logError(
+            PLOTJUGGLER_FASTDDS,
+            "Type " << type_name << " is not registered, so datareader cannot be created.");
+        return;
+    }
 
     // Create Reader Handler with all this information and add it to readers
     // Create it with specific deleter for reader and topic
@@ -229,29 +244,29 @@ void Participant::on_type_discovery(
         fastrtps::types::DynamicType_ptr dyn_type)
 {
     // In case this callback is sent, it means that the type is already registered, so notify
-    on_type_registration_(dyn_type->get_name());
+    // TODO
 }
-
 
 ////////////////////////////////////////////////////
 // RETRIEVE VALUES METHODS
 ////////////////////////////////////////////////////
 
-void Participant::listener(const std::shared_ptr<Listener>& listener)
-{
-    listener_ = listener;
+// TODO erase
+// void Participant::listener(const std::shared_ptr<FastDdsListener>& listener)
+// {
+//     listener_ = listener;
 
-    // Change listener in every reader handler
-    for (auto& reader : readers_)
-    {
-        reader.second->listener(listener_);
-    }
-}
+//     // Change listener in every reader handler
+//     for (auto& reader : readers_)
+//     {
+//         reader.second->listener(listener_);
+//     }
+// }
 
-std::shared_ptr<Listener> Participant::listener() const
-{
-    return listener_;
-}
+// std::shared_ptr<FastDdsListener> Participant::listener() const
+// {
+//     return listener_;
+// }
 
 ////////////////////////////////////////////////////
 // EXTERNAL EVENT METHODS
@@ -264,7 +279,7 @@ void Participant::on_topic_discovery_(
     // TODO: check if mutex required
 
     // Check if this topic has already been discovered
-    if (topics_discovered_.find(topic_name) != topics_discovered_.end())
+    if (discovery_database_->find(topic_name) != discovery_database_->end())
     {
         logInfo(
             PLOTJUGGLER_FASTDDS,
@@ -272,11 +287,11 @@ void Participant::on_topic_discovery_(
         return;
     }
 
-    // Add topic as discovered
-    topics_discovered_[topic_name] = type_name;
-
     // Check if type is registered in Participant
     bool is_registered = is_type_registered_(type_name);
+
+    // Add topic as discovered
+    discovery_database_->operator[](topic_name) = {type_name, is_registered};
 
     // Call listener callback to notify new topic
     if (listener_)
@@ -285,49 +300,35 @@ void Participant::on_topic_discovery_(
     }
 }
 
-void Participant::on_type_registration_(
-        const std::string& type_name)
-{
-    // TODO: check if mutex required
 
-    // Check type does not exist yet
-    if (types_registered_.find(type_name) != types_registered_.end())
-    {
-        logInfo(PLOTJUGGLER_FASTDDS, "Type already registered: " << type_name);
-        return;
-    }
-
-    eprosima::fastrtps::types::DynamicType_ptr dyn_type =
-            eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name)->build();
-
-    // Register type inside this object
-    types_registered_[type_name] = dyn_type;
-
-    // If there is a topic with this type, callback must be called
-    for (auto& topic : topics_discovered_)
-    {
-        if (topic.second == type_name)
-        {
-            // Call listener callback to notify new topic
-            if (listener_)
-            {
-                listener_->on_topic_discovery(topic.first, type_name, true);
-            }
-        }
-    }
-}
+////////////////////////////////////////////////////
+// AUXILIAR METHODS
+////////////////////////////////////////////////////
 
 void Participant::refresh_types_registered_()
 {
-    // TODO: check if mutex required
+    // TODO
+}
 
-    // Loop over every topic discovered
-    for (auto& topic : topics_discovered_)
+bool Participant::is_type_registered_(const std::string& type_name)
+{
+    // Use method get_type_registered_
+    return get_type_registered_(type_name) != nullptr;
+}
+
+eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(const std::string& type_name)
+{
+    // Get DynamicType builder
+    auto builder = eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name);
+
+    // If not builder associated, the type does not exist
+    if (!builder)
     {
-        // Call on_type_registration for each type
-        // In case it has already been registered, nothing will happen.
-        // Otherwise it will be registered locally and send callback if needed
-        on_type_registration_(topic.second);
+        return eprosima::fastrtps::types::DynamicType_ptr(nullptr);
+    }
+    else
+    {
+        return builder->build();
     }
 }
 

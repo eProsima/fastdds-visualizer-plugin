@@ -30,7 +30,7 @@
 #include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 
-#include "Listener.hpp"
+#include "FastDdsListener.hpp"
 #include "Participant.hpp"
 
 namespace eprosima {
@@ -41,7 +41,7 @@ namespace fastdds {
  * @brief This class handles every Fast DDS entity required.
  *
  * It create, manage and destroy every Fast DDS entity that the process requires to instantiate.
- * The discovery and user data received is transmitted through a Listener object.
+ * The discovery and user data received is transmitted through a FastDdsListener object.
  *
  * FUTURE WORK:
  * Use a specific thread to call callbacks instead of using Fast DDS thread
@@ -55,7 +55,7 @@ public:
     ////////////////////////////////////////////////////
 
     Handler(
-        std::shared_ptr<Listener> listener);
+        FastDdsListener* listener);
 
     virtual ~Handler();
 
@@ -73,25 +73,29 @@ public:
     void create_subscriptions(
         const std::vector<std::string>& topic_names);
 
+    std::shared_ptr<TopicDataBase> get_topic_data_base() const;
 
-    ////////////////////////////////////////////////////
-    // RETRIEVE VALUES METHODS
-    ////////////////////////////////////////////////////
-
-    void listener(const std::shared_ptr<Listener>& listener);
-
-    std::shared_ptr<Listener> listener() const;
 
 protected:
+
+    ////////////////////////////////////////////////////
+    // AUXILIAR INTERNAL METHODS
+    ////////////////////////////////////////////////////
+
+    void clean_discovery_database_();
+
+    void reset_();
 
 
     ////////////////////////////////////////////////////
     // INTERNAL VARIABLES
     ////////////////////////////////////////////////////
 
+    std::shared_ptr<TopicDataBase> discovery_database_;
+
     std::unique_ptr<Participant> participant_;
 
-    std::shared_ptr<Listener> listener_;
+    FastDdsListener* listener_;
 
 };
 

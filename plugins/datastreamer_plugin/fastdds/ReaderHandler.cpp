@@ -41,7 +41,7 @@ ReaderHandler::ReaderHandler(
         eprosima::fastdds::dds::Topic* topic,
         eprosima::fastdds::dds::DataReader* datareader,
         eprosima::fastrtps::types::DynamicType_ptr type,
-        std::shared_ptr<Listener> listener)
+        FastDdsListener* listener)
     : topic_(topic)
     , reader_(datareader)
     , type_(type)
@@ -124,15 +124,16 @@ void ReaderHandler::on_data_available(
 // VALUES METHODS
 ////////////////////////////////////////////////////
 
-void ReaderHandler::listener(const std::shared_ptr<Listener>& listener)
-{
-    listener_ = listener;
-}
+// TODO erase
+// void ReaderHandler::listener(const std::shared_ptr<FastDdsListener>& listener)
+// {
+//     listener_ = listener;
+// }
 
-std::shared_ptr<Listener> ReaderHandler::listener() const
-{
-    return listener_;
-}
+// std::shared_ptr<FastDdsListener> ReaderHandler::listener() const
+// {
+//     return listener_;
+// }
 
 std::string ReaderHandler::topic_name() const
 {

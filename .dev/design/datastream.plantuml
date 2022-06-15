@@ -6,22 +6,31 @@
 package Backend
 {
 
-class Listener
+class BackendListener
 {
-    + on_numeric_data ([ <str> topic+type : <double> value ], timestamp )
-    + on_string_data ([ <str> topic+type : <str> text ], timestamp )
-    + on_topic_discovery (<str> topic, <str> type, <bool> valid_type )
+    + SLOT on_numeric_data ([ <str> topic+type : <double> value ], timestamp )
+    + SLOT on_string_data ([ <str> topic+type : <str> text ], timestamp )
+    + SLOT on_topic_discovery (<str> topic, <str> type, <bool> valid_type )
 }
+
+' ---------------------------------------------------------
+
+class ReaderHandler
+{
+}
+
+ReaderHandler  ---o  "1"  BackendListener
 
 ' ---------------------------------------------------------
 
 class Participant
 {
     + add_xml_datatype( <str> xml_file_path )
-    + topics_to_subscribe( [ <str> ] topics )
+    + create_subscription( <str> topics )
 }
 
-Participant  ---o  "1"  Listener
+Participant  ---o  "1"  BackendListener
+Participant  ---*  "N"  ReaderHandler
 
 ' ---------------------------------------------------------
 
@@ -29,12 +38,12 @@ class FastDdsHandler  #f9d346
 {
     + connect_domain( <int> domain_id )
     + add_xml_datatype( <str> xml_file_path )
-    + topics_to_connect( [ <str> ] topics )
+    + create_subscriptions( [ <str> ] topics )
 }
 
-' There will be only one FastDdsHandler, but Listener is not forced to
+' There will be only one FastDdsHandler, but BackendListener is not forced to
 ' belong to only one of them
-FastDdsHandler  ---o  "1"  Listener
+FastDdsHandler  ---o  "1"  BackendListener
 ' This may change in the future if multiple domains want to be shown at the same time
 FastDdsHandler  ---*  "1"  Participant
 
@@ -57,12 +66,23 @@ class Configuration
 
 ' ---------------------------------------------------------
 
+class ViewListener
+{
+    + SLOT connect_domain ( <int> )
+    + SLOT xml_datatype_added ( <str> )
+}
+
+ViewListener  ---*  "1"  Configuration
+
+' ---------------------------------------------------------
+
 class DialogTopicSelect  #f9d346
 {
     + SLOT add_topic (<str,str,bool>)
 }
 
-DialogTopicSelect  ---*  "1"  Configuration
+DialogTopicSelect  ---o  "1"  ViewListener
+DialogTopicSelect  ---o  "1"  Configuration
 
 }
 ' package Backend
@@ -73,17 +93,11 @@ class DataStream  #f9d346
 {
     + start ()
     + shutdown ()
-
-    + SLOT connect_domain ( <int> )
-    + SLOT topic_discovered ( <str,str,bool> )
-    + SLOT xml_datatype_added ( <str> )
-    + SLOT new_numeric_data ( [ <str> : <double> ], timestamp )
-    + SLOT new_string_data ( [ <str> : <str> ], timestamp )
 }
 
-DataStream  ---o  "1"  Listener : <<implement>>
-DataStream  ---o  "1"  FastDdsHandler : <<create>>
-DataStream  --->  Configuration : get info
+DataStream  --|>  BackendListener
+DataStream  --|>  ViewListener
+DataStream  ---*  "1"  FastDdsHandler : <<create>>
 DataStream  ---*  "1"  DialogTopicSelect : <<create>> + <<exec>>
 
 @enduml

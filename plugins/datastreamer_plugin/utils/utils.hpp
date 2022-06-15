@@ -22,17 +22,28 @@
 #ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_UTILS_HPP_
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_UTILS_HPP_
 
+#include <iostream>
+#include <QString>
+
 #include <fastdds/rtps/common/Time_t.h>
 
 namespace eprosima {
 namespace plotjuggler {
 namespace utils {
 
+#define DEBUG(x) std::cout << " --- " << x << std::endl
+
 std::string get_timestamp_string(
         const fastrtps::rtps::Time_t& timestamp);
 
 double get_timestamp_seconds_numeric_value(
         const fastrtps::rtps::Time_t& timestamp);
+
+std::string QString_to_string(
+        const QString& str);
+
+QString string_to_QString(
+        const std::string& str);
 
 } /* namespace utils */
 } /* namespace plotjuggler */

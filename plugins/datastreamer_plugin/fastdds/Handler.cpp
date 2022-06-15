@@ -30,8 +30,9 @@ namespace fastdds {
 ////////////////////////////////////////////////////
 
 Handler::Handler(
-        std::shared_ptr<Listener> listener)
+        FastDdsListener* listener)
     : listener_(listener)
+    , discovery_database_(std::make_shared<TopicDataBase>())
 {
     // Do nothing
 }
@@ -39,10 +40,7 @@ Handler::Handler(
 Handler::~Handler()
 {
     // Destroy internal participant explicitly before this object is destroyed
-    // In case it is not constructed, nothing happens
-    participant_.reset();
-
-    // Listener does not matter if it is destroyed before or after (and it may survive after this object)
+    reset_();
 }
 
 
@@ -54,13 +52,10 @@ void Handler::connect_to_domain(
         const uint32_t domain)
 {
     // Reset in case a Handler exist
-    participant_.reset();
+    reset_();
 
     // Create participant
-    participant_ = std::make_unique<Participant>(domain, listener_);
-
-    // Register listener
-    participant_->listener(listener_);
+    participant_ = std::make_unique<Participant>(domain, discovery_database_, listener_);
 }
 
 void Handler::register_type_from_xml(
@@ -84,19 +79,26 @@ void Handler::create_subscriptions(
     }
 }
 
-
-////////////////////////////////////////////////////
-// RETRIEVE VALUES METHODS
-////////////////////////////////////////////////////
-
-void Handler::listener(const std::shared_ptr<Listener>& listener)
+std::shared_ptr<TopicDataBase> Handler::get_topic_data_base() const
 {
-    listener_ = listener;
+    return discovery_database_;
 }
 
-std::shared_ptr<Listener> Handler::listener() const
+void Handler::reset_()
 {
-    return listener_;
+    participant_.reset();
+
+    clean_discovery_database_();
+}
+
+
+////////////////////////////////////////////////////
+// AUXILIAR INTERNAL METHODS
+////////////////////////////////////////////////////
+
+void Handler::clean_discovery_database_()
+{
+    discovery_database_->clear();
 }
 
 
