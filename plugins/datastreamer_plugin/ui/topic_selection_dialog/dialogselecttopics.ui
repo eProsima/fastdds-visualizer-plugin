@@ -439,7 +439,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QListView" name="listView"/>
+          <widget class="QListView" name="xml_files_list"/>
          </item>
          <item>
           <spacer name="verticalSpacer_2">

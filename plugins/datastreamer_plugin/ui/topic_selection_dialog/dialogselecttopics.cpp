@@ -39,6 +39,30 @@ DialogSelectTopics::DialogSelectTopics(
         &DialogSelectTopics::reset_view_signal,
         this,
         &DialogSelectTopics::on_reset_view_slot);
+
+    ////////////
+    // Reset data with the current configuration
+    // Remove every topic
+    clean_topics_list_();
+
+    // FastDDS configuration
+    // Set current domain
+    ui->domainid_spin->setValue(configuration_->domain_id_selected);
+    ui->lineEdit->setText(
+        QString::number(configuration_->domain_id_connected));
+    check_domain_button_must_be_enable_();
+
+    // Add XML files
+    for (auto& file : configuration_->xml_datatypes_files)
+    {
+        // TODO
+    }
+
+    // Array config
+    ui->discard_radiobutton->setChecked(configuration_->discard_large_arrays);
+    ui->clamp_radiobutton->setChecked(configuration_->use_header_stamp);
+    ui->maximum_array_spin->setValue(configuration_->max_array_size);
+    ui->convert_booleans_check->setChecked(configuration_->boolean_strings_to_number);
 }
 
 DialogSelectTopics::~DialogSelectTopics()
@@ -56,17 +80,19 @@ void DialogSelectTopics::on_lineEditFilter_editingFinished()
 {
     DEBUG("Calling on_lineEditFilter_editingFinished");
 }
-void DialogSelectTopics::on_convert_booleans_check_stateChanged(int arg1)
-{
-    DEBUG("Calling on_convert_booleans_check_stateChanged");
-}
 
 void DialogSelectTopics::on_change_domain_button_clicked()
 {
     DEBUG("Calling on_change_domain_button_clicked");
+
+    // Change domain connected
+    configuration_->domain_id_connected =
+        static_cast<unsigned int>(ui->domainid_spin->value());
+    check_domain_button_must_be_enable_();
+
     // Call listener to connect to domain
     listener_->on_domain_connection(
-        static_cast<unsigned int>(ui->domainid_spin->value()));
+        static_cast<unsigned int>(configuration_->domain_id_connected));
 }
 
 void DialogSelectTopics::on_include_files_button_clicked()
@@ -87,11 +113,38 @@ void DialogSelectTopics::on_buttonBox_rejected()
 void DialogSelectTopics::on_buttonBox_accepted()
 {
     DEBUG("Calling on_buttonBox_accepted");
+
+    /////
+    // Store every value in configuration
+
+    // Domain id
+    configuration_->domain_id_selected =
+        static_cast<unsigned int>(ui->domainid_spin->value());
+
+    // Array
+    configuration_->max_array_size =
+        static_cast<unsigned int>(ui->maximum_array_spin->value());
+    configuration_->use_header_stamp = ui->clamp_radiobutton->isChecked();
+    configuration_->discard_large_arrays = ui->discard_radiobutton->isChecked();
+
+    configuration_->boolean_strings_to_number = ui->convert_booleans_check->isChecked();
+
+    // Get Topics
+    for (auto index : ui->listRosTopics->selectionModel()->selectedIndexes())
+    {
+        // TODO
+    }
+
+    // Get XML files
+    // TODO
 }
 
 void DialogSelectTopics::on_domainid_spin_valueChanged(int arg1)
 {
     DEBUG("Calling on_domainid_spin_valueChanged");
+
+    // Check if button of connection must be enabled
+    check_domain_button_must_be_enable_();
 }
 
 void DialogSelectTopics::on_topic_discovery_slot(
@@ -156,7 +209,22 @@ void DialogSelectTopics::on_topic_discovery_slot(
 void DialogSelectTopics::on_reset_view_slot()
 {
     DEBUG("Calling on_reset_view");
-    // TODO
+    clean_topics_list_();
+}
+
+void DialogSelectTopics::check_domain_button_must_be_enable_()
+{
+    DEBUG("Calling check_domain_button_must_be_enable_");
+
+    // Set enable disable of the button
+    ui->change_domain_button->setEnabled(
+        configuration_->domain_id_connected != ui->domainid_spin->value());
+}
+
+void DialogSelectTopics::clean_topics_list_()
+{
+    DEBUG("Calling clean_topics_list_");
+    ui->listRosTopics->setRowCount(0);
 }
 
 } /* namespace ui */

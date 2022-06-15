@@ -57,12 +57,8 @@ bool FastDdsDataStreamer::start(
         return true;
     }
 
-    // Reset FastDDS and UI
-    fastdds_handler_->reset();
-    select_topics_dialog_->reset();
-
     // Creating a default DomainParticipant in domain by default (configuration_)
-    fastdds_handler_->connect_to_domain(configuration_->domain_id);
+    this->connect_to_domain_(configuration_->domain_id_connected);
 
     // Execute Dialog
     int dialog_result = select_topics_dialog_->exec();
@@ -134,7 +130,7 @@ void FastDdsDataStreamer::on_domain_connection(
         unsigned int domain_id)
 {
     DEBUG("FastDdsDataStreamer on_domain_connection " << domain_id);
-    fastdds_handler_->connect_to_domain(configuration_->domain_id);
+    connect_to_domain_(domain_id);
 }
 
 
@@ -146,6 +142,12 @@ void FastDdsDataStreamer::connect_to_domain_(
         unsigned int domain_id)
 {
     DEBUG("FastDdsDataStreamer connect_to_domain_ " << domain_id);
+
+    // Reset view and handler
+    select_topics_dialog_->reset();
+    fastdds_handler_->reset();
+
+    // Connect to domain
     fastdds_handler_->connect_to_domain(domain_id);
 }
 

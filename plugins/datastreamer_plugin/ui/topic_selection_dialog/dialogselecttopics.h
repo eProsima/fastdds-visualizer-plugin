@@ -71,8 +71,9 @@ private slots:
 
 protected:
 
-    void on_topic_update_();
+    void check_domain_button_must_be_enable_();
 
+    void clean_topics_list_();
 
     std::shared_ptr<fastdds::TopicDataBase> discovery_database_;
 

@@ -54,7 +54,8 @@ struct Configuration
 
     ////////////////////
     // DDS Configuration
-    uint32_t domain_id = 0;
+    unsigned int domain_id_connected = 0;
+    unsigned int domain_id_selected = 0;
     QStringList xml_datatypes_files;  // Empty in initialization
 
     ////////////////////
