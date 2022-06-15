@@ -217,6 +217,8 @@ void Participant::on_publisher_discovery(
     std::string topic_name = info.info.topicName().to_string();
     std::string type_name = info.info.typeName().to_string();
 
+    DEBUG("Publisher discovered: " << topic_name << " with type: " << type_name);
+
     logInfo(
         PLOTJUGGLER_FASTDDS,
         "DataWriter with guid " << info.info.guid() << " discovered in topic : " <<
@@ -243,8 +245,15 @@ void Participant::on_type_discovery(
         const fastrtps::types::TypeObject* object,
         fastrtps::types::DynamicType_ptr dyn_type)
 {
+    DEBUG("Type discovered: " << dyn_type->get_name() << " in topic: " << topic.to_string());
+
+    // Create TypeSupport and register it
+    eprosima::fastdds::dds::TypeSupport(
+        new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
+
     // In case this callback is sent, it means that the type is already registered, so notify
-    // TODO
+    // TODO in future it would be better to update every topic in this type name, and not just the one calling here
+    on_topic_discovery_(topic.to_string(), dyn_type->get_name());
 }
 
 ////////////////////////////////////////////////////
@@ -278,20 +287,32 @@ void Participant::on_topic_discovery_(
 {
     // TODO: check if mutex required
 
-    // Check if this topic has already been discovered
-    if (discovery_database_->find(topic_name) != discovery_database_->end())
-    {
-        logInfo(
-            PLOTJUGGLER_FASTDDS,
-            "Topic " << topic_name << " has already been discovered");
-        return;
-    }
-
     // Check if type is registered in Participant
     bool is_registered = is_type_registered_(type_name);
+    bool is_already_discovered = false;
 
-    // Add topic as discovered
-    discovery_database_->operator[](topic_name) = {type_name, is_registered};
+    // Check if this topic has already been discovered
+    auto it = discovery_database_->find(topic_name);
+    if (it != discovery_database_->end())
+    {
+        is_already_discovered = true;
+
+        // If the topic is already discovered, check the registered type
+        if (it->second.second)
+        {
+            // The topic had already been discovered and registered, so not sending callback twice
+            logInfo(
+                PLOTJUGGLER_FASTDDS,
+                "Topic " << topic_name << " has already been discovered");
+            return;
+        }
+    }
+
+    if (!is_already_discovered)
+    {
+        // Add topic as discovered
+        discovery_database_->operator[](topic_name) = {type_name, is_registered};
+    }
 
     // Call listener callback to notify new topic
     if (listener_)
@@ -312,8 +333,10 @@ void Participant::refresh_types_registered_()
 
 bool Participant::is_type_registered_(const std::string& type_name)
 {
+    return participant_->find_type(type_name) != nullptr;
+
     // Use method get_type_registered_
-    return get_type_registered_(type_name) != nullptr;
+    // return get_type_registered_(type_name) != nullptr;
 }
 
 eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(const std::string& type_name)

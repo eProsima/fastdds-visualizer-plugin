@@ -133,11 +133,14 @@ void DialogSelectTopics::on_buttonBox_accepted()
 
     // Get Topics
     configuration_->topics_selected.clear();
-    for (QModelIndex index : ui->listRosTopics->selectionModel()->selectedIndexes())
+        for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
     {
-        // Add every selected topic to configuration
-        configuration_->topics_selected.push_back(
-            index.data(Qt::DisplayRole).toString());
+        QTableWidgetItem* item = ui->listRosTopics->item(r, 0);
+        // Check if this is the topic name
+        if (item->isSelected())
+        {
+            configuration_->topics_selected.push_back(item->text());
+        }
     }
 
     // Get XML files
@@ -171,11 +174,20 @@ void DialogSelectTopics::on_topic_discovery_slot(
         // Check if this is the topic name
         if (item->text() == topic_name)
         {
+            // Get also type item to make it selectable
+            QTableWidgetItem* type_item = ui->listRosTopics->item(r, 1);
+
             // If already_in_list already in list, update registered
             already_in_list = true;
             if (!type_registered)
             {
                 item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+                type_item->setFlags(type_item->flags() & ~Qt::ItemIsSelectable);
+            }
+            else
+            {
+                item->setFlags(item->flags() | Qt::ItemIsSelectable);
+                type_item->setFlags(type_item->flags() | Qt::ItemIsSelectable);
             }
             break;
         }
@@ -191,16 +203,13 @@ void DialogSelectTopics::on_topic_discovery_slot(
         ui->listRosTopics->setItem(new_row, 1, new QTableWidgetItem(type_name));
 
         // In case it is not registered, make it unselectable
-        // TODO uncomment when types work
-        // if (!type_registered)
-        // {
-        //     auto item = ui->listRosTopics->item(new_row, 0);
-        //     item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-        // }
-
-        // Always make type unselectable
-        auto item = ui->listRosTopics->item(new_row, 1);
-        item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+        if (!type_registered)
+        {
+            auto item = ui->listRosTopics->item(new_row, 0);
+            item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+            auto item_type = ui->listRosTopics->item(new_row, 1);
+            item_type->setFlags(item_type->flags() & ~Qt::ItemIsSelectable);
+        }
     }
 
     // If topic want in list yet, order it alphabetically
