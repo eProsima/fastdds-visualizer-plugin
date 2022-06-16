@@ -83,15 +83,15 @@ add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 
-# TODO: add it when UI is implemented
-# SET(
-#     QT_UI_SOURCES
-#         "ui/topic_selection_dialog/dialogselecttopics.ui")
+# Get .ui files to autogenerate code
+SET(
+    QT_UI_SOURCES
+        "ui/topic_selection_dialog/dialogselecttopics.ui")
 
-# QT5_WRAP_UI (
-#         COMMON_UI_SRC
-#         "${UI_SOURCES}"
-#     )
+QT5_WRAP_UI (
+        COMMON_UI_SRC
+        "${UI_SOURCES}"
+    )
 
 
 ###############################################################################
@@ -100,9 +100,31 @@ add_definitions(-DQT_SHARED)
 
 set (ALL_LIBRARY_SOURCES
 
+        # utils files
+        "utils/utils.cpp"
+        "utils/utils.hpp"
+        "utils/dynamic_types_utils.cpp"
+        "utils/dynamic_types_utils.hpp"
+
         # DataStreamer files
         "datastreamer/FastDdsDataStreamer.cpp"
         "datastreamer/FastDdsDataStreamer.hpp"
+
+        # fastdds files
+        "fastdds/Handler.cpp"
+        "fastdds/Handler.hpp"
+        "fastdds/FastDdsListener.hpp"
+        "fastdds/Participant.cpp"
+        "fastdds/Participant.hpp"
+        "fastdds/ReaderHandler.cpp"
+        "fastdds/ReaderHandler.hpp"
+
+        # UI files
+        "ui/topic_selection_dialog/dialogselecttopics.cpp"
+        "ui/topic_selection_dialog/dialogselecttopics.h"
+        "ui/topic_selection_dialog/Configuration.hpp"
+        "ui/topic_selection_dialog/UiListener.hpp"
+        ${COMMON_UI_SRC}
    )
 
 
@@ -130,6 +152,7 @@ target_link_libraries(
     ${PROJECT_NAME}
         ${QT_LINK_LIBRARIES}
         ${plotjuggler_LIBRARIES}
+        fastrtps
     )
 
 

@@ -1,0 +1,103 @@
+
+@startuml
+
+' ---------------------------------------------------------
+
+package Backend
+{
+
+class BackendListener
+{
+    + SLOT on_numeric_data ([ <str> topic+type : <double> value ], timestamp )
+    + SLOT on_string_data ([ <str> topic+type : <str> text ], timestamp )
+    + SLOT on_topic_discovery (<str> topic, <str> type, <bool> valid_type )
+}
+
+' ---------------------------------------------------------
+
+class ReaderHandler
+{
+}
+
+ReaderHandler  ---o  "1"  BackendListener
+
+' ---------------------------------------------------------
+
+class Participant
+{
+    + add_xml_datatype( <str> xml_file_path )
+    + create_subscription( <str> topics )
+}
+
+Participant  ---o  "1"  BackendListener
+Participant  ---*  "N"  ReaderHandler
+
+' ---------------------------------------------------------
+
+class FastDdsHandler  #f9d346
+{
+    + connect_domain( <int> domain_id )
+    + add_xml_datatype( <str> xml_file_path )
+    + create_subscriptions( [ <str> ] topics )
+}
+
+' There will be only one FastDdsHandler, but BackendListener is not forced to
+' belong to only one of them
+FastDdsHandler  ---o  "1"  BackendListener
+' This may change in the future if multiple domains want to be shown at the same time
+FastDdsHandler  ---*  "1"  Participant
+
+}
+' package Backend
+
+' ---------------------------------------------------------
+' ---------------------------------------------------------
+
+package View
+{
+
+' ---------------------------------------------------------
+
+class Configuration
+{
+    [ <str,str,bool> ] topics_discovered
+    [ <str> ] xml_datatypes_files
+}
+
+' ---------------------------------------------------------
+
+class ViewListener
+{
+    + SLOT connect_domain ( <int> )
+    + SLOT xml_datatype_added ( <str> )
+}
+
+ViewListener  ---*  "1"  Configuration
+
+' ---------------------------------------------------------
+
+class DialogTopicSelect  #f9d346
+{
+    + SLOT add_topic (<str,str,bool>)
+}
+
+DialogTopicSelect  ---o  "1"  ViewListener
+DialogTopicSelect  ---o  "1"  Configuration
+
+}
+' package Backend
+
+' ---------------------------------------------------------
+
+class DataStream  #f9d346
+{
+    + start ()
+    + shutdown ()
+}
+
+DataStream  --|>  BackendListener
+DataStream  --|>  ViewListener
+DataStream  ---*  "1"  FastDdsHandler : <<create>>
+DataStream  ---*  "1"  DialogTopicSelect : <<create>> + <<exec>>
+
+@enduml

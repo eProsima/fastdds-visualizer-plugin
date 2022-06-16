@@ -26,10 +26,23 @@
 
 #include <PlotJuggler/datastreamer_base.h>
 
+#include "ui/topic_selection_dialog/dialogselecttopics.h"
+#include "ui/topic_selection_dialog/Configuration.hpp"
+#include "ui/topic_selection_dialog/UiListener.hpp"
+#include "fastdds/Handler.hpp"
+#include "fastdds/FastDdsListener.hpp"
+
+namespace eprosima {
+namespace plotjuggler {
+namespace datastreamer {
+
 /**
  * @brief TODO
  */
-class FastDdsDataStreamer : public PJ::DataStreamer
+class FastDdsDataStreamer :
+    public PJ::DataStreamer,
+    public fastdds::FastDdsListener,
+    public ui::UiListener
 {
     //! Macros for Qt Plugin and Object
     Q_OBJECT
@@ -53,7 +66,13 @@ public:
      */
     ~FastDdsDataStreamer();
 
-    bool start(QStringList*) override;
+
+    ////////////////////////////////////////////////////
+    // DATASTREAMER PLUGIN METHODS
+    ////////////////////////////////////////////////////
+
+    bool start(
+            QStringList*) override;
 
     void shutdown() override;
 
@@ -61,11 +80,61 @@ public:
 
     const char* name() const override;
 
+    // TODO: add slots to receive discovery information and user data
+
+    ////////////////////////////////////////////////////
+    // FASTDDS LISTENER METHODS
+    ////////////////////////////////////////////////////
+
+    virtual void on_double_data_read(
+        const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+        double timestamp) override;
+
+    virtual void on_string_data_read(
+        const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+        double timestamp) override;
+
+    virtual void on_topic_discovery(
+            const std::string& topic_name,
+            const std::string& type_name,
+            bool type_registered) override;
+
+
+    ////////////////////////////////////////////////////
+    // UI LISTENER METHODS
+    ////////////////////////////////////////////////////
+
+    virtual void on_domain_connection(
+        unsigned int domain_id) override;
+
+
 protected:
+
+    ////////////////////////////////////////////////////
+    // AUXILIAR METHODS
+    ////////////////////////////////////////////////////
+
+    void connect_to_domain_(
+        unsigned int domain_id);
+
+
+    ////////////////////////////////////////////////////
+    // INTERNAL VALUES
+    ////////////////////////////////////////////////////
+
+    std::shared_ptr<ui::Configuration> configuration_;
+
+    std::unique_ptr<fastdds::Handler> fastdds_handler_;
+
+    std::unique_ptr<ui::DialogSelectTopics> select_topics_dialog_;
 
     std::atomic<bool> running_;
 
     static const char* PLUGIN_NAME_;
 };
+
+} /* namespace datastreamer */
+} /* namespace plotjuggler */
+} /* namespace eprosima */
 
 #endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_DATASTREAMER_DATASTREAMER_HPP_
