@@ -23,9 +23,11 @@
 #include <random>
 #include <limits>
 
-#include "dynamic_types_utils.hpp"
 #include <fastrtps/types/DynamicDataFactory.h>
 #include <fastrtps/types/DynamicTypeMember.h>
+
+#include "dynamic_types_utils.hpp"
+#include "utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -47,7 +49,7 @@ void get_introspection_type_names(
         eprosima::fastrtps::types::DynamicType_ptr type,
         TypeIntrospectionStruct& numeric_type_names,
         TypeIntrospectionStruct& string_type_names,
-        const std::string& separator /* = ";" */)
+        const std::string& separator /* = "/" */)
 {
     // TODO add return code checks
 
@@ -123,7 +125,12 @@ void get_introspection_data(
             std::get<2>(numeric_type_names[i]));
     }
 
-    // TODO strings
+    for (int i=0; i<string_type_names.size(); ++i)
+    {
+        string_data[i].second = get_string_type_from_data(
+            data, std::get<1>(string_type_names[i]),
+            std::get<2>(string_type_names[i]));
+    }
 }
 
 double get_numeric_type_from_data(
@@ -172,6 +179,36 @@ double get_numeric_type_from_data(
     }
 
     return std::numeric_limits<double>::min();
+}
+
+std::string get_string_type_from_data(
+        eprosima::fastrtps::types::DynamicData_ptr data,
+        eprosima::fastrtps::types::MemberId member,
+        eprosima::fastrtps::types::TypeKind kind)
+{
+    switch(kind)
+    {
+        case eprosima::fastrtps::types::TK_CHAR8:
+            return to_string(data->get_char8_value(member));
+
+        case eprosima::fastrtps::types::TK_CHAR16:
+            return to_string(data->get_char16_value(member));
+
+        case eprosima::fastrtps::types::TK_STRING8:
+            return data->get_string_value(member);
+
+        case eprosima::fastrtps::types::TK_STRING16:
+            return to_string(data->get_wstring_value(member));
+
+        case eprosima::fastrtps::types::TK_ENUM:
+            return data->get_enum_value(member);
+
+        default:
+            // The rest of values should not arrive here (are cut before when creating type names)
+            break;
+    }
+
+    return "TYPE ERROR! Ask for help.";
 }
 
 } /* namespace utils */

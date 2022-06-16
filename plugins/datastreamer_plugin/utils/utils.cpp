@@ -54,6 +54,24 @@ QString string_to_QString(
     return QString::fromUtf8( str.data(), str.size() );
 }
 
+std::string to_string(
+        const std::wstring& str)
+{
+    return std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>().to_bytes(str);
+}
+
+std::string to_string(
+        char c)
+{
+    return std::string(1, c);
+}
+
+std::string to_string(
+        wchar_t c)
+{
+    return to_string(std::wstring(1, c));
+}
+
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

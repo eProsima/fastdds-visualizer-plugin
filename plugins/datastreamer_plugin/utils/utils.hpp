@@ -23,6 +23,9 @@
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_UTILS_HPP_
 
 #include <iostream>
+#include <string>
+#include <locale>
+#include <codecvt>
 #include <QString>
 
 #include <fastdds/rtps/common/Time_t.h>
@@ -44,6 +47,15 @@ std::string QString_to_string(
 
 QString string_to_QString(
         const std::string& str);
+
+std::string to_string(
+        const std::wstring& str);
+
+std::string to_string(
+        char c);
+
+std::string to_string(
+        wchar_t c);
 
 } /* namespace utils */
 } /* namespace plotjuggler */

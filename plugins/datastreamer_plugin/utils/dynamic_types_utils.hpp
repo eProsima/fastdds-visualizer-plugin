@@ -41,7 +41,7 @@ void get_introspection_type_names(
         eprosima::fastrtps::types::DynamicType_ptr type,
         TypeIntrospectionStruct& numeric_type_names,
         TypeIntrospectionStruct& string_type_names,
-        const std::string& separator = ";");
+        const std::string& separator = "/");
 
 void get_introspection_data(
         eprosima::fastrtps::types::DynamicType_ptr type,
@@ -52,6 +52,11 @@ void get_introspection_data(
         TypeIntrospectionStringData& string_data);
 
 double get_numeric_type_from_data(
+        eprosima::fastrtps::types::DynamicData_ptr data,
+        eprosima::fastrtps::types::MemberId member,
+        eprosima::fastrtps::types::TypeKind kind);
+
+std::string get_string_type_from_data(
         eprosima::fastrtps::types::DynamicData_ptr data,
         eprosima::fastrtps::types::MemberId member,
         eprosima::fastrtps::types::TypeKind kind);
