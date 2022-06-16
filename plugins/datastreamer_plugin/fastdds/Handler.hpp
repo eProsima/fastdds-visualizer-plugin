@@ -70,8 +70,8 @@ public:
     void register_type_from_xml(
         const std::string& xml_path);
 
-    void create_subscriptions(
-        const std::vector<std::string>& topic_names);
+    void create_subscription(
+        const std::string& topic_name);
 
     std::shared_ptr<TopicDataBase> get_topic_data_base() const;
 

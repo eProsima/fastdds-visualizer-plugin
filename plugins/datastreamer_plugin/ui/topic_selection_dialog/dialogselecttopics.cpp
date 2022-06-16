@@ -219,6 +219,9 @@ void DialogSelectTopics::on_topic_discovery_slot(
         ui->listRosTopics->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
         ui->listRosTopics->sortByColumn(0, Qt::AscendingOrder);
     }
+
+    DEBUG("Finishing DialogSelectTopics::on_topic_discovery " <<
+        utils::QString_to_string(topic_name));
 }
 
 void DialogSelectTopics::on_reset_view_slot()

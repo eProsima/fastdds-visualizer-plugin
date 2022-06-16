@@ -67,15 +67,12 @@ void Handler::register_type_from_xml(
     }
 }
 
-void Handler::create_subscriptions(
-        const std::vector<std::string>& topic_names)
+void Handler::create_subscription(
+        const std::string& topic_name)
 {
     if(participant_)
     {
-        for (const auto& topic_name : topic_names)
-        {
-            participant_->create_subscription(topic_name);
-        }
+        participant_->create_subscription(topic_name);
     }
 }
 

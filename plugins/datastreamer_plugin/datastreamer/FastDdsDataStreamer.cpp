@@ -71,11 +71,19 @@ bool FastDdsDataStreamer::start(
         return false;
     }
 
-    // TODO add check that any topic is added
-    DEBUG("Dialog closed accepted, creating subscriptions: ");
-    for (auto topic : configuration_->topics_selected)
+    // Topics selected
+    auto& topics = configuration_->topics_selected;  // Decorator variable to avoid calling internal member
+
+    if (topics.empty())
     {
-        DEBUG(" - " << utils::QString_to_string(topic));
+        DEBUG("No topics selected, exiting");
+        return false;
+    }
+
+    for (auto& topic : topics)
+    {
+        // Create a subscription
+        fastdds_handler_->create_subscription(utils::QString_to_string(topic));
     }
 
     running_.store(true);

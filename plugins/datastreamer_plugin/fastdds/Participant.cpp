@@ -140,6 +140,7 @@ void Participant::create_subscription(
         const std::string& topic_name)
 {
     // TODO: check if mutex required
+    DEBUG("Creating subscription for topic: " << topic_name);
 
     // Check datareader does not exist yet
     if (readers_.find(topic_name) != readers_.end())
@@ -347,7 +348,13 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(con
     // If not builder associated, the type does not exist
     if (!builder)
     {
-        return eprosima::fastrtps::types::DynamicType_ptr(nullptr);
+        // Check if it could be generated
+        // This case is when it has not been registered by XML
+        auto type_object = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name, true);
+        auto type_id = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);
+        auto dyn_type = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(type_name, type_id, type_object);
+
+        return dyn_type;
     }
     else
     {
