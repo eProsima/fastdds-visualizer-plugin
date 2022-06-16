@@ -40,10 +40,9 @@ class FastDdsListener
 {
 public:
 
-    // TODO: check if timestap must be string or double or what
     virtual void on_double_data_read(
         const std::vector<std::pair<std::string, double>>& data_per_topic_value,
-        const std::string& timestamp)
+        double timestamp)
     {
         DEBUG("Calling on_double_data_read");
         static_cast<void>(data_per_topic_value);
@@ -52,7 +51,7 @@ public:
 
     virtual void on_string_data_read(
         const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
-        const std::string& timestamp)
+        double timestamp)
     {
         DEBUG("Calling on_string_data_read");
         static_cast<void>(data_per_topic_value);
@@ -68,11 +67,6 @@ public:
         static_cast<void>(topic_name);
         static_cast<void>(type_name);
         static_cast<void>(type_registered);
-    }
-
-    virtual void on_shutdown()
-    {
-        DEBUG("Calling on_shutdown");
     }
 };
 

@@ -96,7 +96,7 @@ void ReaderHandler::on_data_available(
             info.instance_state == eprosima::fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE)
             {
                 // Get timestamp
-                std::string timestamp(utils::get_timestamp_string(info.reception_timestamp));
+                double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);
 
                 // Get value maps from data and send callback if there are data
                 auto numeric_values = numeric_data_();
@@ -162,6 +162,18 @@ eprosima::fastdds::dds::StatusMask ReaderHandler::default_listener_mask_()
     return mask;
 }
 
+std::vector<std::string> ReaderHandler::numeric_data_series_names() const
+{
+    // TODO
+    return {topic_name()};
+}
+
+std::vector<std::string> ReaderHandler::string_data_series_names() const
+{
+    // TODO
+    return {};
+}
+
 std::vector<std::pair<std::string, double>> ReaderHandler::numeric_data_() const
 {
     return utils::get_numeric_data(topic_name(), data_);
@@ -169,7 +181,7 @@ std::vector<std::pair<std::string, double>> ReaderHandler::numeric_data_() const
 
 std::vector<std::pair<std::string, std::string>> ReaderHandler::string_data_() const
 {
-    return utils::get_string_data(topic_name(), data_);
+    return {};
 }
 
 } /* namespace fastdds */

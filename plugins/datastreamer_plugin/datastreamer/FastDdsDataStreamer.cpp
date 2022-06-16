@@ -86,6 +86,31 @@ bool FastDdsDataStreamer::start(
         fastdds_handler_->create_subscription(utils::QString_to_string(topic));
     }
 
+    // Get all series from topics and create them
+    // NUMERIC
+    std::vector<std::vector<std::string>> numeric_series = fastdds_handler_->numeric_data_series_names();
+    for (auto& topic_series : numeric_series)
+    {
+        for (auto& single_series : topic_series)
+        {
+            // Create a series
+            DEBUG("Creating numeric series: " << single_series);
+            dataMap().addNumeric(single_series);
+        }
+    }
+
+    // STRING
+    std::vector<std::vector<std::string>> string_series = fastdds_handler_->string_data_series_names();
+    for (auto& topic_series : string_series)
+    {
+        for (auto& single_series : topic_series)
+        {
+            // Create a series
+            DEBUG("Creating string series: " << single_series);
+            dataMap().addStringSeries(single_series);
+        }
+    }
+
     running_.store(true);
     return true;
 }
@@ -119,6 +144,50 @@ const char* FastDdsDataStreamer::name() const
 ////////////////////////////////////////////////////
 // FASTDDS LISTENER METHODS
 ////////////////////////////////////////////////////
+
+void FastDdsDataStreamer::on_double_data_read(
+    const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+    double timestamp)
+{
+    DEBUG("FastDdsDataStreamer on_double_data_read");
+
+    // Locking DataStream
+    std::lock_guard<std::mutex> lock(mutex());
+
+    for (auto& data : data_per_topic_value)
+    {
+        DEBUG("Adding to numeric series " << data.first << " value " << data.second << " with timestamp " << timestamp);
+
+        // Get data map
+        auto& series = dataMap().numeric.find(data.first)->second;
+        // Add data to series
+        series.pushBack( { timestamp, data.second});
+    }
+
+    emit dataReceived();
+}
+
+void FastDdsDataStreamer::on_string_data_read(
+    const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+    double timestamp    )
+{
+    DEBUG("FastDdsDataStreamer on_string_data_read");
+
+    // Locking DataStream
+    std::lock_guard<std::mutex> lock(mutex());
+
+    for (auto& data : data_per_topic_value)
+    {
+        DEBUG("Adding to string series " << data.first << " value " << data.second << " with timestamp " << timestamp);
+
+        // Get data map
+        auto& series = dataMap().strings.find(data.first)->second;
+        // Add data to series
+        series.pushBack( { timestamp, data.second});
+    }
+
+    emit dataReceived();
+}
 
 void FastDdsDataStreamer::on_topic_discovery(
         const std::string& topic_name,

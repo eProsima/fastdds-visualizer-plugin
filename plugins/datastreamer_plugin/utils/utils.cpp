@@ -38,7 +38,7 @@ std::string get_timestamp_string(
 double get_timestamp_seconds_numeric_value(
         const fastrtps::rtps::Time_t& timestamp)
 {
-    return timestamp.seconds() + timestamp.fraction();
+    return (timestamp.seconds() + (timestamp.nanosec() * 1e-9));
 }
 
 std::string QString_to_string(

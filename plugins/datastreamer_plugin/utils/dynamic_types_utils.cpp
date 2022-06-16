@@ -20,6 +20,7 @@
  */
 
 #include <sstream>
+#include <random>
 
 #include "dynamic_types_utils.hpp"
 
@@ -35,7 +36,7 @@ std::vector<std::pair<std::string, double>> get_numeric_data(
 
     // Dummy answer
     std::vector<std::pair<std::string, double>> result;
-    result.push_back(std::make_pair(member_name, 0.0));
+    result.push_back(std::make_pair(member_name, static_cast<double>(std::rand() % 10)));
 
     return result;
 }

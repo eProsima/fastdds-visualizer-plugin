@@ -214,19 +214,23 @@ void Participant::on_publisher_discovery(
         eprosima::fastdds::dds::DomainParticipant* participant,
         fastrtps::rtps::WriterDiscoveryInfo&& info)
 {
-    // Get Topic of DataWriter discovered and set it as discovered
-    std::string topic_name = info.info.topicName().to_string();
-    std::string type_name = info.info.typeName().to_string();
+    // Only set as new topic discovered if it is ALIVE
+    if (info.status == eprosima::fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
+    {
+        // Get Topic of DataWriter discovered and set it as discovered
+        std::string topic_name = info.info.topicName().to_string();
+        std::string type_name = info.info.typeName().to_string();
 
-    DEBUG("Publisher discovered: " << topic_name << " with type: " << type_name);
+        DEBUG("Publisher discovered: " << topic_name << " with type: " << type_name);
 
-    logInfo(
-        PLOTJUGGLER_FASTDDS,
-        "DataWriter with guid " << info.info.guid() << " discovered in topic : " <<
-            topic_name << " [ " << type_name << " ]");
+        logInfo(
+            PLOTJUGGLER_FASTDDS,
+            "DataWriter with guid " << info.info.guid() << " discovered in topic : " <<
+                topic_name << " [ " << type_name << " ]");
 
-    // Set Topic as discovered. If it is not new nothing happen
-    on_topic_discovery_(topic_name, type_name);
+        // Set Topic as discovered. If it is not new nothing happen
+        on_topic_discovery_(topic_name, type_name);
+    }
 }
 
 void Participant::on_type_information_received(
@@ -320,6 +324,35 @@ void Participant::on_topic_discovery_(
     {
         listener_->on_topic_discovery(topic_name, type_name, is_registered);
     }
+}
+
+
+////////////////////////////////////////////////////
+// RETRIEVE INFORMATION METHODS
+////////////////////////////////////////////////////
+
+std::vector<std::vector<std::string>> Participant::numeric_data_series_names() const
+{
+    std::vector<std::vector<std::string>> names;
+
+    for (auto& reader : readers_)
+    {
+        names.push_back(reader.second->numeric_data_series_names());
+    }
+
+    return names;
+}
+
+std::vector<std::vector<std::string>> Participant::string_data_series_names() const
+{
+    std::vector<std::vector<std::string>> names;
+
+    for (auto& reader : readers_)
+    {
+        names.push_back(reader.second->string_data_series_names());
+    }
+
+    return names;
 }
 
 

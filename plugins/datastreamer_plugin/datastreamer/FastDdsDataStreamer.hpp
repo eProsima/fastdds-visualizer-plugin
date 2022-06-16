@@ -86,12 +86,18 @@ public:
     // FASTDDS LISTENER METHODS
     ////////////////////////////////////////////////////
 
+    virtual void on_double_data_read(
+        const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+        double timestamp) override;
+
+    virtual void on_string_data_read(
+        const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+        double timestamp) override;
+
     virtual void on_topic_discovery(
             const std::string& topic_name,
             const std::string& type_name,
             bool type_registered) override;
-
-    // TODO add more slots
 
 
     ////////////////////////////////////////////////////
@@ -100,6 +106,7 @@ public:
 
     virtual void on_domain_connection(
         unsigned int domain_id) override;
+
 
 protected:
 

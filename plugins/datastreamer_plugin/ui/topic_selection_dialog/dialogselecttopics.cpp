@@ -186,6 +186,7 @@ void DialogSelectTopics::on_topic_discovery_slot(
             }
             else
             {
+                DEBUG("setting as registered " << r);
                 item->setFlags(item->flags() | Qt::ItemIsSelectable);
                 type_item->setFlags(type_item->flags() | Qt::ItemIsSelectable);
             }
@@ -201,6 +202,7 @@ void DialogSelectTopics::on_topic_discovery_slot(
 
         ui->listRosTopics->setItem(new_row, 0, new QTableWidgetItem(topic_name));
         ui->listRosTopics->setItem(new_row, 1, new QTableWidgetItem(type_name));
+        DEBUG("set item " << new_row << " 1");
 
         // In case it is not registered, make it unselectable
         if (!type_registered)
@@ -209,6 +211,7 @@ void DialogSelectTopics::on_topic_discovery_slot(
             item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
             auto item_type = ui->listRosTopics->item(new_row, 1);
             item_type->setFlags(item_type->flags() & ~Qt::ItemIsSelectable);
+            DEBUG("type was not registered so flags taken");
         }
     }
 
@@ -217,7 +220,10 @@ void DialogSelectTopics::on_topic_discovery_slot(
     {
         ui->listRosTopics->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
         ui->listRosTopics->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-        ui->listRosTopics->sortByColumn(0, Qt::AscendingOrder);
+
+        // TODO: this line causes a segfault when sorting topics, as the item with type dissapear
+        // and when trying to acces it to change the selectable, it breaks with seg fault
+        // ui->listRosTopics->sortByColumn(0, Qt::AscendingOrder);
     }
 
     DEBUG("Finishing DialogSelectTopics::on_topic_discovery " <<

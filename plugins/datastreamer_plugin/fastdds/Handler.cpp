@@ -88,6 +88,30 @@ void Handler::reset()
     clean_discovery_database_();
 }
 
+std::vector<std::vector<std::string>> Handler::numeric_data_series_names() const
+{
+    if (participant_)
+    {
+        return participant_->numeric_data_series_names();
+    }
+    else
+    {
+        return std::vector<std::vector<std::string>>();
+    }
+}
+
+std::vector<std::vector<std::string>> Handler::string_data_series_names() const
+{
+    if (participant_)
+    {
+        return participant_->string_data_series_names();
+    }
+    else
+    {
+        return std::vector<std::vector<std::string>>();
+    }
+}
+
 
 ////////////////////////////////////////////////////
 // AUXILIAR INTERNAL METHODS

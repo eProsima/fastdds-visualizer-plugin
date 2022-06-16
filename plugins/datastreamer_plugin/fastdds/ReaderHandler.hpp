@@ -82,6 +82,10 @@ public:
 
     std::string type_name() const;
 
+    std::vector<std::string> numeric_data_series_names() const;
+
+    std::vector<std::string> string_data_series_names() const;
+
     std::vector<std::pair<std::string, double>> numeric_data_() const;
 
     std::vector<std::pair<std::string, std::string>> string_data_() const;
