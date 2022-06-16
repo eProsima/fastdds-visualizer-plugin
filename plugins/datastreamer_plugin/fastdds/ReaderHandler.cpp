@@ -51,6 +51,33 @@ ReaderHandler::ReaderHandler(
     // Create data so it is not required to create it each time and avoid reallocation if possible
     data_ = eprosima::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type_);
 
+    // Create the static structures to store the data introspection information AND the data itself
+    utils::get_introspection_type_names(
+        topic_name(),
+        type_,
+        numeric_data_info_,
+        string_data_info_);
+
+    // Create the data structures so they are not copied in the future
+    for (auto& info : numeric_data_info_)
+    {
+        numeric_data_.push_back({ std::get<0>(info) , 0});
+    }
+    for (auto& info : string_data_info_)
+    {
+        string_data_.push_back({ std::get<0>(info) , "-"});
+    }
+
+    DEBUG("Reader created in topic: " << topic_name() << " with types: ");
+    for (auto& info : numeric_data_info_)
+    {
+        DEBUG("\tNumeric: " << std::get<0>(info));
+    }
+    for (auto& info : string_data_info_)
+    {
+        DEBUG("\tString: " << std::get<0>(info));
+    }
+
     // Set this object as this reader's listener
     reader_->set_listener(this);
 }
@@ -98,21 +125,28 @@ void ReaderHandler::on_data_available(
                 // Get timestamp
                 double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);
 
+                // Get data in already created structures
+                utils::get_introspection_data(
+                    type_,
+                    numeric_data_info_,
+                    string_data_info_,
+                    data_,
+                    numeric_data_,
+                    string_data_);
+
                 // Get value maps from data and send callback if there are data
-                auto numeric_values = numeric_data_();
-                if (!numeric_values.empty())
+                if (!numeric_data_.empty())
                 {
                     listener_->on_double_data_read(
-                        numeric_values,
+                        numeric_data_,
                         timestamp);
                 }
 
                 // Same for strings
-                auto string_values = string_data_();
-                if (!string_values.empty())
+                if (!string_data_.empty())
                 {
                     listener_->on_string_data_read(
-                        string_values,
+                        string_data_,
                         timestamp);
                 }
             }
@@ -164,24 +198,12 @@ eprosima::fastdds::dds::StatusMask ReaderHandler::default_listener_mask_()
 
 std::vector<std::string> ReaderHandler::numeric_data_series_names() const
 {
-    // TODO
-    return {topic_name()};
+    return utils::get_introspection_type_names(numeric_data_info_);
 }
 
 std::vector<std::string> ReaderHandler::string_data_series_names() const
 {
-    // TODO
-    return {};
-}
-
-std::vector<std::pair<std::string, double>> ReaderHandler::numeric_data_() const
-{
-    return utils::get_numeric_data(topic_name(), data_);
-}
-
-std::vector<std::pair<std::string, std::string>> ReaderHandler::string_data_() const
-{
-    return {};
+    return utils::get_introspection_type_names(string_data_info_);
 }
 
 } /* namespace fastdds */

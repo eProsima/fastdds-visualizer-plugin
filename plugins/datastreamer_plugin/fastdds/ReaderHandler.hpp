@@ -29,6 +29,7 @@
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 
 #include "FastDdsListener.hpp"
+#include "utils/dynamic_types_utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -86,10 +87,6 @@ public:
 
     std::vector<std::string> string_data_series_names() const;
 
-    std::vector<std::pair<std::string, double>> numeric_data_() const;
-
-    std::vector<std::pair<std::string, std::string>> string_data_() const;
-
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
@@ -130,6 +127,12 @@ public:
     eprosima::fastrtps::types::DynamicData_ptr data_;
 
     std::atomic<bool> stop_;
+
+    utils::TypeIntrospectionStruct numeric_data_info_;
+    utils::TypeIntrospectionStruct string_data_info_;
+
+    utils::TypeIntrospectionNumericData numeric_data_;
+    utils::TypeIntrospectionStringData string_data_;
 
 };
 
