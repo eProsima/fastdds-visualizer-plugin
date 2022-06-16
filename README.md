@@ -44,9 +44,23 @@ vcs import src < plotjuggler_fastdds.repos
 colcon build
 ```
 
-## Use of Fast DDS Plugin
+## Use Fast DDS Plugin
 
 In order to use this plugin, execute the PlotJuggler application (`./install/plotjuggler/bin/plotjuggler/`).
 Once in the application, go to the menu _App -> Preferences -> Plugins_ and add the location of the library
 `plotjuggler_fastdds`, installed by this project in `INSTALL_PREFIX_PATH/bin`.
 In case of colcon built, the path is `./install/plotjuggler_fastdds/bin/`.
+
+### Dynamic Types
+
+In order to use the Fast DDS Plugin of PlotJuggler, it is necessary to use Dynamic Types.
+There are several ways to configure this:
+
+1. Configure Fast DDS entities to share the data type information. This is done by:
+    1. Have Data Type descriptor:
+        1. Use Fast DDS Gen with `-objectype` option to generate Data Type description info from `.idl` file.
+        1. Register Data Type from `.xml` file.
+    1. Configure QoS to share Data Type Information.
+        1. `auto_fill_type_information(true)`
+        1. `auto_fill_type_object(true)`
+1. Add the `.xml` file with the data types required.
