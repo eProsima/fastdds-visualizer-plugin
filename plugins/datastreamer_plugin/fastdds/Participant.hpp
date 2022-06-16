@@ -46,13 +46,16 @@ namespace fastdds {
 class ReaderHandlerDeleter
 {
 public:
-    ReaderHandlerDeleter(
-        eprosima::fastdds::dds::DomainParticipant* participant,
-        eprosima::fastdds::dds::Subscriber* subscriber);
 
-    void operator ()(ReaderHandler* ptr) const;
+    ReaderHandlerDeleter(
+            eprosima::fastdds::dds::DomainParticipant* participant,
+            eprosima::fastdds::dds::Subscriber* subscriber);
+
+    void operator ()(
+            ReaderHandler* ptr) const;
 
 protected:
+
     eprosima::fastdds::dds::DomainParticipant* participant_;
     eprosima::fastdds::dds::Subscriber* subscriber_;
 };
@@ -77,9 +80,9 @@ public:
     ////////////////////////////////////////////////////
 
     Participant(
-        eprosima::fastdds::dds::DomainId_t domain_id,
-        std::shared_ptr<TopicDataBase> discovery_database,
-        FastDdsListener* listener);
+            eprosima::fastdds::dds::DomainId_t domain_id,
+            std::shared_ptr<TopicDataBase> discovery_database,
+            FastDdsListener* listener);
 
     virtual ~Participant();
 
@@ -89,10 +92,10 @@ public:
     ////////////////////////////////////////////////////
 
     bool register_type_from_xml(
-        const std::string& xml_path);
+            const std::string& xml_path);
 
     void create_subscription(
-        const std::string& topic_name);
+            const std::string& topic_name);
 
 
     ////////////////////////////////////////////////////
@@ -133,8 +136,8 @@ protected:
     ////////////////////////////////////////////////////
 
     void on_topic_discovery_(
-        const std::string& topic_name,
-        const std::string& type_name);
+            const std::string& topic_name,
+            const std::string& type_name);
 
 
     ////////////////////////////////////////////////////
@@ -143,9 +146,11 @@ protected:
 
     void refresh_types_registered_();
 
-    bool is_type_registered_(const std::string& type_name);
+    bool is_type_registered_(
+            const std::string& type_name);
 
-    eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(const std::string& type_name);
+    eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(
+            const std::string& type_name);
 
 
     ////////////////////////////////////////////////////

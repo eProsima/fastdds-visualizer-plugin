@@ -41,8 +41,8 @@ class FastDdsListener
 public:
 
     virtual void on_double_data_read(
-        const std::vector<std::pair<std::string, double>>& data_per_topic_value,
-        double timestamp)
+            const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+            double timestamp)
     {
         DEBUG("Calling on_double_data_read");
         static_cast<void>(data_per_topic_value);
@@ -50,8 +50,8 @@ public:
     }
 
     virtual void on_string_data_read(
-        const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
-        double timestamp)
+            const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+            double timestamp)
     {
         DEBUG("Calling on_string_data_read");
         static_cast<void>(data_per_topic_value);
@@ -59,15 +59,16 @@ public:
     }
 
     virtual void on_topic_discovery(
-        const std::string& topic_name,
-        const std::string& type_name,
-        bool type_registered)
+            const std::string& topic_name,
+            const std::string& type_name,
+            bool type_registered)
     {
         DEBUG("Calling on_topic_discovery");
         static_cast<void>(topic_name);
         static_cast<void>(type_name);
         static_cast<void>(type_registered);
     }
+
 };
 
 } /* namespace fastdds */

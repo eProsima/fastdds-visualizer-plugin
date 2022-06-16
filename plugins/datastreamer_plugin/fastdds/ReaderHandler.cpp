@@ -61,11 +61,11 @@ ReaderHandler::ReaderHandler(
     // Create the data structures so they are not copied in the future
     for (auto& info : numeric_data_info_)
     {
-        numeric_data_.push_back({ std::get<0>(info) , 0});
+        numeric_data_.push_back({ std::get<0>(info), 0});
     }
     for (auto& info : string_data_info_)
     {
-        string_data_.push_back({ std::get<0>(info) , "-"});
+        string_data_.push_back({ std::get<0>(info), "-"});
     }
 
     DEBUG("Reader created in topic: " << topic_name() << " with types: ");
@@ -88,7 +88,6 @@ ReaderHandler::~ReaderHandler()
     stop();
 }
 
-
 ////////////////////////////////////////////////////
 // INTERACTION METHODS
 ////////////////////////////////////////////////////
@@ -100,7 +99,6 @@ void ReaderHandler::stop()
     reader_->set_listener(nullptr);
 }
 
-
 ////////////////////////////////////////////////////
 // LISTENER METHODS [ DATAREADER ]
 ////////////////////////////////////////////////////
@@ -110,49 +108,48 @@ void ReaderHandler::on_data_available(
 {
     eprosima::fastdds::dds::SampleInfo info;
     eprosima::fastrtps::types::ReturnCode_t read_ret =
-        eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK;
+            eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK;
 
     // Read Data from reader while there is data available and not should stop
-    while(!stop_ && read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK)
+    while (!stop_ && read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK)
     {
         // Read next data
         read_ret = reader->take_next_sample(data_.get(), &info);
 
         // If data has been read
         if (read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK &&
-            info.instance_state == eprosima::fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE)
+                info.instance_state == eprosima::fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE)
+        {
+            // Get timestamp
+            double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);
+
+            // Get data in already created structures
+            utils::get_introspection_data(
+                type_,
+                numeric_data_info_,
+                string_data_info_,
+                data_,
+                numeric_data_,
+                string_data_);
+
+            // Get value maps from data and send callback if there are data
+            if (!numeric_data_.empty())
             {
-                // Get timestamp
-                double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);
-
-                // Get data in already created structures
-                utils::get_introspection_data(
-                    type_,
-                    numeric_data_info_,
-                    string_data_info_,
-                    data_,
+                listener_->on_double_data_read(
                     numeric_data_,
-                    string_data_);
-
-                // Get value maps from data and send callback if there are data
-                if (!numeric_data_.empty())
-                {
-                    listener_->on_double_data_read(
-                        numeric_data_,
-                        timestamp);
-                }
-
-                // Same for strings
-                if (!string_data_.empty())
-                {
-                    listener_->on_string_data_read(
-                        string_data_,
-                        timestamp);
-                }
+                    timestamp);
             }
+
+            // Same for strings
+            if (!string_data_.empty())
+            {
+                listener_->on_string_data_read(
+                    string_data_,
+                    timestamp);
+            }
+        }
     }
 }
-
 
 ////////////////////////////////////////////////////
 // VALUES METHODS
@@ -178,7 +175,6 @@ std::string ReaderHandler::type_name() const
 {
     return topic_->get_type_name();
 }
-
 
 ////////////////////////////////////////////////////
 // AUXILIAR STATIC METHODS

@@ -40,7 +40,7 @@ struct A_int : A
 template <class T>
 class A
 {
-    FORCE_SUBCLASS (T --> B)
+    FORCE_SUBCLASS (T-- > B)
 };
 
 struct A_string : A<string>

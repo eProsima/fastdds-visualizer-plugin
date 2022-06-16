@@ -34,9 +34,9 @@ FastDdsDataStreamer::FastDdsDataStreamer()
     , fastdds_handler_(std::make_unique<fastdds::Handler>(this))
     , configuration_(std::make_shared<ui::Configuration>())
     , select_topics_dialog_(std::make_unique<ui::DialogSelectTopics>(
-        configuration_,
-        fastdds_handler_->get_topic_data_base(),
-        this))
+                configuration_,
+                fastdds_handler_->get_topic_data_base(),
+                this))
 {
     DEBUG("Create FastDdsDataStreamer");
 }
@@ -140,14 +140,13 @@ const char* FastDdsDataStreamer::name() const
     return PLUGIN_NAME_;
 }
 
-
 ////////////////////////////////////////////////////
 // FASTDDS LISTENER METHODS
 ////////////////////////////////////////////////////
 
 void FastDdsDataStreamer::on_double_data_read(
-    const std::vector<std::pair<std::string, double>>& data_per_topic_value,
-    double timestamp)
+        const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+        double timestamp)
 {
     DEBUG("FastDdsDataStreamer on_double_data_read");
 
@@ -168,8 +167,8 @@ void FastDdsDataStreamer::on_double_data_read(
 }
 
 void FastDdsDataStreamer::on_string_data_read(
-    const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
-    double timestamp    )
+        const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+        double timestamp    )
 {
     DEBUG("FastDdsDataStreamer on_string_data_read");
 
@@ -201,7 +200,6 @@ void FastDdsDataStreamer::on_topic_discovery(
         type_registered);
 }
 
-
 ////////////////////////////////////////////////////
 // UI LISTENER METHODS
 ////////////////////////////////////////////////////
@@ -212,7 +210,6 @@ void FastDdsDataStreamer::on_domain_connection(
     DEBUG("FastDdsDataStreamer on_domain_connection " << domain_id);
     connect_to_domain_(domain_id);
 }
-
 
 ////////////////////////////////////////////////////
 // AUXILIAR METHODS

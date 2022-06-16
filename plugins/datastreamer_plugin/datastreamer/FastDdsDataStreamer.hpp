@@ -87,12 +87,12 @@ public:
     ////////////////////////////////////////////////////
 
     virtual void on_double_data_read(
-        const std::vector<std::pair<std::string, double>>& data_per_topic_value,
-        double timestamp) override;
+            const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+            double timestamp) override;
 
     virtual void on_string_data_read(
-        const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
-        double timestamp) override;
+            const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+            double timestamp) override;
 
     virtual void on_topic_discovery(
             const std::string& topic_name,
@@ -105,8 +105,7 @@ public:
     ////////////////////////////////////////////////////
 
     virtual void on_domain_connection(
-        unsigned int domain_id) override;
-
+            unsigned int domain_id) override;
 
 protected:
 
@@ -115,7 +114,7 @@ protected:
     ////////////////////////////////////////////////////
 
     void connect_to_domain_(
-        unsigned int domain_id);
+            unsigned int domain_id);
 
 
     ////////////////////////////////////////////////////

@@ -61,7 +61,7 @@ void get_introspection_type_names(
     {
         eprosima::fastrtps::types::TypeKind kind = members.second->get_descriptor()->get_kind();
 
-        switch(kind)
+        switch (kind)
         {
             case eprosima::fastrtps::types::TK_BOOLEAN:
             case eprosima::fastrtps::types::TK_BYTE:
@@ -75,7 +75,8 @@ void get_introspection_type_names(
             case eprosima::fastrtps::types::TK_FLOAT64:
             case eprosima::fastrtps::types::TK_FLOAT128:
                 // Numeric case
-                numeric_type_names.push_back({base_type_name + separator + members.first, members.second->get_id(), kind});
+                numeric_type_names.push_back({base_type_name + separator + members.first,
+                                              members.second->get_id(), kind});
                 break;
 
             case eprosima::fastrtps::types::TK_CHAR8:
@@ -84,7 +85,8 @@ void get_introspection_type_names(
             case eprosima::fastrtps::types::TK_STRING16:
             case eprosima::fastrtps::types::TK_ENUM:
                 // String case
-                string_type_names.push_back({base_type_name + separator + members.first, members.second->get_id(), kind});
+                string_type_names.push_back({base_type_name + separator + members.first, members.second->get_id(),
+                                             kind});
                 break;
 
             case eprosima::fastrtps::types::TK_NONE:
@@ -118,14 +120,14 @@ void get_introspection_data(
 {
     // First get numeric data
     // It is used by index of the vector to avoid unnecessary lookups, but vectors must be sorted
-    for (int i=0; i<numeric_type_names.size(); ++i)
+    for (int i = 0; i < numeric_type_names.size(); ++i)
     {
         numeric_data[i].second = get_numeric_type_from_data(
             data, std::get<1>(numeric_type_names[i]),
             std::get<2>(numeric_type_names[i]));
     }
 
-    for (int i=0; i<string_type_names.size(); ++i)
+    for (int i = 0; i < string_type_names.size(); ++i)
     {
         string_data[i].second = get_string_type_from_data(
             data, std::get<1>(string_type_names[i]),
@@ -138,7 +140,7 @@ double get_numeric_type_from_data(
         eprosima::fastrtps::types::MemberId member,
         eprosima::fastrtps::types::TypeKind kind)
 {
-    switch(kind)
+    switch (kind)
     {
         case eprosima::fastrtps::types::TK_BOOLEAN:
             return static_cast<double>(data->get_bool_value(member));
@@ -186,7 +188,7 @@ std::string get_string_type_from_data(
         eprosima::fastrtps::types::MemberId member,
         eprosima::fastrtps::types::TypeKind kind)
 {
-    switch(kind)
+    switch (kind)
     {
         case eprosima::fastrtps::types::TK_CHAR8:
             return to_string(data->get_char8_value(member));

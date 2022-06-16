@@ -44,7 +44,8 @@ ReaderHandlerDeleter::ReaderHandlerDeleter(
 {
 }
 
-void ReaderHandlerDeleter::operator ()(ReaderHandler* reader) const
+void ReaderHandlerDeleter::operator ()(
+        ReaderHandler* reader) const
 {
     // Stop data gathering
     reader->stop();
@@ -53,7 +54,6 @@ void ReaderHandlerDeleter::operator ()(ReaderHandler* reader) const
     // Delete topic
     participant_->delete_topic(reader->topic_);
 }
-
 
 ////////////////////////////////////////////////////
 // CREATION & DESTRUCTION
@@ -70,16 +70,16 @@ Participant::Participant(
 
     // Create Domain Participant
     participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-            domain_id,
-            default_participant_qos_(),
-            this,
-            default_listener_mask_());
+        domain_id,
+        default_participant_qos_(),
+        this,
+        default_listener_mask_());
 
     DEBUG("Participant created in domain " << domain_id << " with guid: " << participant_->guid());
 
     // Create Subscriber without listener
     subscriber_ = participant_->create_subscriber(
-            default_subscriber_qos_());
+        default_subscriber_qos_());
 
     // Initialize reader deleter
     reader_handler_deleter_ = std::make_unique<ReaderHandlerDeleter>(participant_, subscriber_);
@@ -112,7 +112,6 @@ Participant::~Participant()
     // The rest of maps and variables are destroyed by themselves
 }
 
-
 ////////////////////////////////////////////////////
 // INTERACTION METHODS
 ////////////////////////////////////////////////////
@@ -122,7 +121,7 @@ bool Participant::register_type_from_xml(
         const std::string& xml_path)
 {
     eprosima::fastrtps::xmlparser::XMLP_ret ret =
-        eprosima::fastrtps::xmlparser::XMLProfileManager::loadXMLFile(xml_path);
+            eprosima::fastrtps::xmlparser::XMLProfileManager::loadXMLFile(xml_path);
     if (eprosima::fastrtps::xmlparser::XMLP_ret::XML_OK != ret)
     {
         logWarning(PLOTJUGGLER_FASTDDS, "Error loading XML file: " << xml_path);
@@ -160,19 +159,19 @@ void Participant::create_subscription(
     }
 
     // Get TypeName associated with topic name
-    std::string type_name = discovery_database_->operator[](topic_name).first;
+    std::string type_name = discovery_database_->operator [](topic_name).first;
 
     // Create topic
     eprosima::fastdds::dds::Topic* topic = participant_->create_topic(
-            topic_name,
-            type_name,
-            default_topic_qos_());
+        topic_name,
+        type_name,
+        default_topic_qos_());
 
     // Create datareader
     eprosima::fastdds::dds::DataReader* datareader = subscriber_->create_datareader(
-            topic,
-            default_datareader_qos_(),
-            this); // Mask not required
+        topic,
+        default_datareader_qos_(),
+        this);     // Mask not required
 
     // Get Dyn Type for type
     // This could not fail, as we know type is registered
@@ -196,7 +195,7 @@ void Participant::create_subscription(
             dyn_type,
             listener_),
         (*reader_handler_deleter_)
-    );
+        );
 
     // Insert this new Reader Handler indexed by topic name
     readers_.insert(
@@ -204,7 +203,6 @@ void Participant::create_subscription(
             topic_name,
             std::move(new_reader)));
 }
-
 
 ////////////////////////////////////////////////////
 // LISTENER METHODS [ PARTICIPANT ]
@@ -316,7 +314,7 @@ void Participant::on_topic_discovery_(
     if (!is_already_discovered)
     {
         // Add topic as discovered
-        discovery_database_->operator[](topic_name) = {type_name, is_registered};
+        discovery_database_->operator [](topic_name) = {type_name, is_registered};
     }
 
     // Call listener callback to notify new topic
@@ -325,7 +323,6 @@ void Participant::on_topic_discovery_(
         listener_->on_topic_discovery(topic_name, type_name, is_registered);
     }
 }
-
 
 ////////////////////////////////////////////////////
 // RETRIEVE INFORMATION METHODS
@@ -355,7 +352,6 @@ std::vector<std::vector<std::string>> Participant::string_data_series_names() co
     return names;
 }
 
-
 ////////////////////////////////////////////////////
 // AUXILIAR METHODS
 ////////////////////////////////////////////////////
@@ -365,7 +361,8 @@ void Participant::refresh_types_registered_()
     // TODO
 }
 
-bool Participant::is_type_registered_(const std::string& type_name)
+bool Participant::is_type_registered_(
+        const std::string& type_name)
 {
     return participant_->find_type(type_name) != nullptr;
 
@@ -373,7 +370,8 @@ bool Participant::is_type_registered_(const std::string& type_name)
     // return get_type_registered_(type_name) != nullptr;
 }
 
-eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(const std::string& type_name)
+eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
+        const std::string& type_name)
 {
     // Get DynamicType builder
     auto builder = eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name);
@@ -383,9 +381,15 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(con
     {
         // Check if it could be generated
         // This case is when it has not been registered by XML
-        auto type_object = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name, true);
-        auto type_id = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);
-        auto dyn_type = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(type_name, type_id, type_object);
+        auto type_object =
+                eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name,
+                        true);
+        auto type_id =
+                eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_identifier(type_name,
+                        true);
+        auto dyn_type = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(type_name,
+                        type_id,
+                        type_object);
 
         return dyn_type;
     }
@@ -395,7 +399,6 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(con
     }
 }
 
-
 ////////////////////////////////////////////////////
 // AUXILIAR STATIC METHODS
 ////////////////////////////////////////////////////
@@ -403,7 +406,7 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(con
 eprosima::fastdds::dds::DomainParticipantQos Participant::default_participant_qos_()
 {
     eprosima::fastdds::dds::DomainParticipantQos qos =
-        eprosima::fastdds::dds::PARTICIPANT_QOS_DEFAULT;
+            eprosima::fastdds::dds::PARTICIPANT_QOS_DEFAULT;
 
     // Set Generic Name
     qos.name("PlotJuggler_FastDDSPlugin_Participant");
@@ -417,7 +420,7 @@ eprosima::fastdds::dds::DomainParticipantQos Participant::default_participant_qo
 eprosima::fastdds::dds::SubscriberQos Participant::default_subscriber_qos_()
 {
     eprosima::fastdds::dds::SubscriberQos qos =
-        eprosima::fastdds::dds::SUBSCRIBER_QOS_DEFAULT;
+            eprosima::fastdds::dds::SUBSCRIBER_QOS_DEFAULT;
 
     return qos;
 }
@@ -425,7 +428,7 @@ eprosima::fastdds::dds::SubscriberQos Participant::default_subscriber_qos_()
 eprosima::fastdds::dds::DataReaderQos Participant::default_datareader_qos_()
 {
     eprosima::fastdds::dds::DataReaderQos qos =
-        eprosima::fastdds::dds::DATAREADER_QOS_DEFAULT;
+            eprosima::fastdds::dds::DATAREADER_QOS_DEFAULT;
 
     return qos;
 }
@@ -433,7 +436,7 @@ eprosima::fastdds::dds::DataReaderQos Participant::default_datareader_qos_()
 eprosima::fastdds::dds::TopicQos Participant::default_topic_qos_()
 {
     eprosima::fastdds::dds::TopicQos qos =
-        eprosima::fastdds::dds::TOPIC_QOS_DEFAULT;
+            eprosima::fastdds::dds::TOPIC_QOS_DEFAULT;
 
     return qos;
 }

@@ -29,7 +29,7 @@ namespace plotjuggler {
 namespace utils {
 
 using TypeIntrospectionStruct =
-    std::vector<std::tuple<std::string, eprosima::fastrtps::types::MemberId, eprosima::fastrtps::types::TypeKind>>;
+        std::vector<std::tuple<std::string, eprosima::fastrtps::types::MemberId, eprosima::fastrtps::types::TypeKind>>;
 using TypeIntrospectionNumericData = std::vector<std::pair<std::string, double>>;
 using TypeIntrospectionStringData = std::vector<std::pair<std::string, std::string>>;
 

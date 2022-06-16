@@ -51,7 +51,7 @@ QString string_to_QString(
         const std::string& str)
 {
     // return QString::fromStdString(str);
-    return QString::fromUtf8( str.data(), str.size() );
+    return QString::fromUtf8( str.data(), str.size());
 }
 
 std::string to_string(

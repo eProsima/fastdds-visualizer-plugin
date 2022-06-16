@@ -38,14 +38,14 @@ struct UiListener
 public:
 
     virtual void on_xml_datatype_file_added(
-        const QString& file_path)
+            const QString& file_path)
     {
         DEBUG("Calling on_xml_datatype_file_added " << file_path.toStdString());
         static_cast<void>(file_path);
     }
 
     virtual void on_domain_connection(
-        unsigned int domain_id)
+            unsigned int domain_id)
     {
         DEBUG("Calling on_domain_connection " << domain_id);
         static_cast<void>(domain_id);

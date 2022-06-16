@@ -55,7 +55,7 @@ public:
     ////////////////////////////////////////////////////
 
     Handler(
-        FastDdsListener* listener);
+            FastDdsListener* listener);
 
     virtual ~Handler();
 
@@ -65,13 +65,13 @@ public:
     ////////////////////////////////////////////////////
 
     void connect_to_domain(
-        const uint32_t domain);
+            const uint32_t domain);
 
     void register_type_from_xml(
-        const std::string& xml_path);
+            const std::string& xml_path);
 
     void create_subscription(
-        const std::string& topic_name);
+            const std::string& topic_name);
 
     std::shared_ptr<TopicDataBase> get_topic_data_base() const;
 
@@ -80,7 +80,6 @@ public:
     std::vector<std::vector<std::string>> numeric_data_series_names() const;
 
     std::vector<std::vector<std::string>> string_data_series_names() const;
-
 
 protected:
 

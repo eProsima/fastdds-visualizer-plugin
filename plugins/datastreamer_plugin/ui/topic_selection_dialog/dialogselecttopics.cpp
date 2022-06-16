@@ -16,7 +16,7 @@ DialogSelectTopics::DialogSelectTopics(
         std::shared_ptr<Configuration> configuration,
         std::shared_ptr<fastdds::TopicDataBase> discovery_database,
         UiListener* listener,
-        QWidget *parent /* = nullptr */)
+        QWidget* parent /* = nullptr */)
     : QDialog(parent)
     , ui(new Ui::DialogSelectTopics)
     , discovery_database_(discovery_database)
@@ -87,7 +87,7 @@ void DialogSelectTopics::on_change_domain_button_clicked()
 
     // Change domain connected
     configuration_->domain_id_connected =
-        static_cast<unsigned int>(ui->domainid_spin->value());
+            static_cast<unsigned int>(ui->domainid_spin->value());
     ui->current_domain_label->setText(
         QString::number(configuration_->domain_id_connected));
     check_domain_button_must_be_enable_();
@@ -121,11 +121,11 @@ void DialogSelectTopics::on_buttonBox_accepted()
 
     // Domain id
     configuration_->domain_id_selected =
-        static_cast<unsigned int>(ui->domainid_spin->value());
+            static_cast<unsigned int>(ui->domainid_spin->value());
 
     // Array
     configuration_->max_array_size =
-        static_cast<unsigned int>(ui->maximum_array_spin->value());
+            static_cast<unsigned int>(ui->maximum_array_spin->value());
     configuration_->use_header_stamp = ui->clamp_radiobutton->isChecked();
     configuration_->discard_large_arrays = ui->discard_radiobutton->isChecked();
 
@@ -133,7 +133,7 @@ void DialogSelectTopics::on_buttonBox_accepted()
 
     // Get Topics
     configuration_->topics_selected.clear();
-        for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
+    for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
     {
         QTableWidgetItem* item = ui->listRosTopics->item(r, 0);
         // Check if this is the topic name
@@ -147,7 +147,8 @@ void DialogSelectTopics::on_buttonBox_accepted()
     // TODO
 }
 
-void DialogSelectTopics::on_domainid_spin_valueChanged(int arg1)
+void DialogSelectTopics::on_domainid_spin_valueChanged(
+        int arg1)
 {
     DEBUG("Calling on_domainid_spin_valueChanged");
 
@@ -161,9 +162,9 @@ void DialogSelectTopics::on_topic_discovery_slot(
         bool type_registered)
 {
     DEBUG("Calling DialogSelectTopics::on_topic_discovery " <<
-        utils::QString_to_string(topic_name) << " " <<
-        utils::QString_to_string(type_name) << " " <<
-        type_registered);
+            utils::QString_to_string(topic_name) << " " <<
+            utils::QString_to_string(type_name) << " " <<
+            type_registered);
 
     // Check if topic already exist
     bool already_in_list = false;
@@ -227,7 +228,7 @@ void DialogSelectTopics::on_topic_discovery_slot(
     }
 
     DEBUG("Finishing DialogSelectTopics::on_topic_discovery " <<
-        utils::QString_to_string(topic_name));
+            utils::QString_to_string(topic_name));
 }
 
 void DialogSelectTopics::on_reset_view_slot()

@@ -48,17 +48,19 @@ public:
     ////////////////////////////////////////////////////
 
     ReaderHandler(
-        eprosima::fastdds::dds::Topic* topic,
-        eprosima::fastdds::dds::DataReader* datareader,
-        eprosima::fastrtps::types::DynamicType_ptr type,
-        FastDdsListener* listener);
+            eprosima::fastdds::dds::Topic* topic,
+            eprosima::fastdds::dds::DataReader* datareader,
+            eprosima::fastrtps::types::DynamicType_ptr type,
+            FastDdsListener* listener);
 
 
     virtual ~ReaderHandler();
 
-    ReaderHandler& operator=(ReaderHandler&& other);
+    ReaderHandler& operator =(
+            ReaderHandler&& other);
 
-    ReaderHandler& operator=(const ReaderHandler& other);
+    ReaderHandler& operator =(
+            const ReaderHandler& other);
 
     ////////////////////////////////////////////////////
     // INTERACTION METHODS

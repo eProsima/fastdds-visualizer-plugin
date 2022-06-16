@@ -43,7 +43,6 @@ Handler::~Handler()
     reset();
 }
 
-
 ////////////////////////////////////////////////////
 // INTERACTION METHODS
 ////////////////////////////////////////////////////
@@ -61,7 +60,7 @@ void Handler::connect_to_domain(
 void Handler::register_type_from_xml(
         const std::string& xml_path)
 {
-    if(participant_)
+    if (participant_)
     {
         participant_->register_type_from_xml(xml_path);
     }
@@ -70,7 +69,7 @@ void Handler::register_type_from_xml(
 void Handler::create_subscription(
         const std::string& topic_name)
 {
-    if(participant_)
+    if (participant_)
     {
         participant_->create_subscription(topic_name);
     }
@@ -112,7 +111,6 @@ std::vector<std::vector<std::string>> Handler::string_data_series_names() const
     }
 }
 
-
 ////////////////////////////////////////////////////
 // AUXILIAR INTERNAL METHODS
 ////////////////////////////////////////////////////
@@ -121,7 +119,6 @@ void Handler::clean_discovery_database_()
 {
     discovery_database_->clear();
 }
-
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */
