@@ -230,7 +230,7 @@ void Participant::on_publisher_discovery(
 }
 
 void Participant::on_type_information_received(
-        eprosima::fastdds::dds::DomainParticipant* participant,
+        eprosima::fastdds::dds::DomainParticipant*,
         const fastrtps::string_255 topic_name,
         const fastrtps::string_255 type_name,
         const fastrtps::types::TypeInformation& type_information)
@@ -242,11 +242,12 @@ void Participant::on_type_information_received(
         [this, topic_name]
             (const std::string&, const eprosima::fastrtps::types::DynamicType_ptr type)
         {
-            // Once the type has been registered, call on_topic_discovery_ so the callback is sent if it must
+            DEBUG(
+                "Type discovered by lookup info: " << type->get_name() << " in topic: " << topic_name.to_string());
             this->on_topic_discovery_(topic_name.to_string(), type->get_name());
         });
 
-    // Register participant
+    // Registering type and creating reader
     participant_->register_remote_type(
         type_information,
         type_name.to_string(),

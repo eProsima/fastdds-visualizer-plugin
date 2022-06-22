@@ -25,6 +25,7 @@
 
 #include <fastrtps/types/DynamicDataFactory.h>
 #include <fastrtps/types/DynamicTypeMember.h>
+#include <fastrtps/types/TypeDescriptor.h>
 
 #include "dynamic_types_utils.hpp"
 #include "utils.hpp"
@@ -34,149 +35,260 @@ namespace eprosima {
 namespace plotjuggler {
 namespace utils {
 
+using namespace eprosima::fastrtps::types;
+
 std::vector<std::string> get_introspection_type_names(
         const TypeIntrospectionCollection& numeric_type_names)
 {
     std::vector<std::string> type_names;
     for (const auto& type_name : numeric_type_names)
     {
-        type_names.push_back(std::get<0>(type_name));
+        type_names.push_back(std::get<types::DatumLabel>(type_name));
     }
     return type_names;
 }
 
 void get_introspection_type_names(
         const std::string& base_type_name,
-        eprosima::fastrtps::types::DynamicType_ptr type,
+        const DynamicType_ptr& type,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
+        const std::vector<MemberId>& current_members_tree /* = {} */,
+        const std::vector<TypeKind>& current_kinds_tree /* = {} */,
         const std::string& separator /* = "/" */)
 {
-    // TODO add return code checks
+    DEBUG("Getting types for type member " << base_type_name);
 
-    // Using the Dynamic type, retrieve the name of the fields and its descriptions
-    std::map<std::string, eprosima::fastrtps::types::DynamicTypeMember*> members_by_name;
-    type->get_all_members_by_name(members_by_name);
+    // Get type kind and store it as kind tree
+    TypeKind kind = type->get_kind();
 
-    for (const auto& members : members_by_name)
+    switch(kind)
     {
-        eprosima::fastrtps::types::TypeKind kind = members.second->get_descriptor()->get_kind();
+        case TK_BOOLEAN:
+        case TK_BYTE:
+        case TK_INT16:
+        case TK_INT32:
+        case TK_INT64:
+        case TK_UINT16:
+        case TK_UINT32:
+        case TK_UINT64:
+        case TK_FLOAT32:
+        case TK_FLOAT64:
+        case TK_FLOAT128:
+            // Add numeric value
+            numeric_type_names.push_back(
+                {base_type_name, current_members_tree, current_kinds_tree, kind});
+            break;
 
+        case TK_CHAR8:
+        case TK_CHAR16:
+        case TK_STRING8:
+        case TK_STRING16:
+        case TK_ENUM:
+            string_type_names.push_back(
+                {base_type_name, current_members_tree, current_kinds_tree, kind});
+            break;
+
+        case TK_ARRAY:
+        {
+            DynamicType_ptr internal_type =
+                array_internal_kind(type);
+            unsigned int this_array_size = array_size(type);
+
+            for (unsigned int i = 0; i < this_array_size; i++)
+            {
+                std::vector<MemberId> new_members_tree(current_members_tree);
+                new_members_tree.push_back(i);
+                std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
+                new_kinds_tree.push_back(kind);
+
+                get_introspection_type_names(
+                    base_type_name + separator + std::to_string(i),
+                    internal_type,
+                    numeric_type_names,
+                    string_type_names,
+                    new_members_tree,
+                    current_kinds_tree,
+                    separator);
+            }
+            break;
+        }
+
+        case TK_STRUCTURE:
+        {
+            // Using the Dynamic type, retrieve the name of the fields and its descriptions
+            std::map<std::string, DynamicTypeMember*> members_by_name;
+            type->get_all_members_by_name(members_by_name);
+
+            for (auto& members : members_by_name)
+            {
+                std::vector<MemberId> new_members_tree(current_members_tree);
+                new_members_tree.push_back(members.second->get_id());
+                std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
+                new_kinds_tree.push_back(kind);
+
+                get_introspection_type_names(
+                    base_type_name + separator + members.first,
+                    members.second->get_descriptor()->get_type(),
+                    numeric_type_names,
+                    string_type_names,
+                    new_members_tree,
+                    current_kinds_tree,
+                    separator);
+            }
+            break;
+        }
+
+        case TK_BITSET:
+        case TK_UNION:
+        case TK_SEQUENCE:
+        case TK_MAP:
+        case TK_NONE:
+        default:
+            WARNING(kind << " DataKind Not supported");
+            throw std::runtime_error("Unsupported Dynamic Types kind");
+    }
+}
+
+void get_introspection_numeric_data(
+        const TypeIntrospectionCollection& numeric_type_names,
+        const DynamicData_ptr& data,
+        TypeIntrospectionNumericStruct& numeric_data_result)
+{
+    DEBUG("Getting numeric data");
+
+    // It is used by index of the vector to avoid unnecessary lookups.
+    // Vectors must be sorted in the same order => creation order given in get_introspection_type_names
+    for (int i = 0; i < numeric_type_names.size(); ++i)
+    {
+        const auto& member_type_info = numeric_type_names[i];
+
+        // Get reference to variables to avoid calling get twice
+        const std::vector<MemberId>& members =
+            std::get<std::vector<MemberId>>(member_type_info);
+        const std::vector<TypeKind>& kinds =
+            std::get<std::vector<TypeKind>>(member_type_info);
+
+        const TypeKind& actual_kind =
+            std::get<TypeKind>(member_type_info);
+
+        // Get Data parent that has the member we are looking for
+        const auto& parent_data = get_parent_data_of_member(
+            data,
+            members,
+            kinds);
+
+        numeric_data_result[i].second = get_numeric_type_from_data(
+            parent_data,
+            members[members.size() - 1], // use last member Id (direct parent = parent_data)
+            actual_kind);    // use last kind (direct parent = parent_data)
+    }
+}
+
+void get_introspection_string_data(
+        const TypeIntrospectionCollection& string_type_names,
+        const eprosima::fastrtps::types::DynamicData_ptr& data,
+        TypeIntrospectionStringStruct& string_data_result)
+{
+    DEBUG("Getting string data");
+
+    // It is used by index of the vector to avoid unnecessary lookups.
+    // Vectors must be sorted in the same order => creation order given in get_introspection_type_names
+    for (int i = 0; i < string_type_names.size(); ++i)
+    {
+        const auto& member_type_info = string_type_names[i];
+
+        // Get reference to variables to avoid calling get twice
+        const std::vector<MemberId>& members =
+            std::get<std::vector<MemberId>>(member_type_info);
+        const std::vector<TypeKind>& kinds =
+            std::get<std::vector<TypeKind>>(member_type_info);
+
+        const TypeKind& actual_kind =
+            std::get<TypeKind>(member_type_info);
+
+        // Get Data parent that has the member we are looking for
+        const auto& parent_data = get_parent_data_of_member(
+            data,
+            members,
+            kinds);
+
+        string_data_result[i].second = get_string_type_from_data(
+            parent_data,
+            members[members.size() - 1], // use last member Id (direct parent = parent_data)
+            actual_kind);    // use last kind (direct parent = parent_data)
+    }
+}
+
+DynamicData_ptr get_parent_data_of_member(
+        const DynamicData_ptr& data,
+        const std::vector<MemberId>& members_tree,
+        const std::vector<TypeKind>& kind_tree,
+        unsigned int array_indexes /* = 0 */)
+{
+    // Get the member and kind of the current level
+    const MemberId& member_id = members_tree[array_indexes];
+    const TypeKind& kind = kind_tree[array_indexes];
+
+    if (array_indexes == members_tree.size() - 1)
+    {
+        // One-to-last value, so this one is the value to take, as it is the parent of the data
+        return data;
+    }
+    else
+    {
         switch (kind)
         {
-            case eprosima::fastrtps::types::TK_BOOLEAN:
-            case eprosima::fastrtps::types::TK_BYTE:
-            case eprosima::fastrtps::types::TK_INT16:
-            case eprosima::fastrtps::types::TK_INT32:
-            case eprosima::fastrtps::types::TK_INT64:
-            case eprosima::fastrtps::types::TK_UINT16:
-            case eprosima::fastrtps::types::TK_UINT32:
-            case eprosima::fastrtps::types::TK_UINT64:
-            case eprosima::fastrtps::types::TK_FLOAT32:
-            case eprosima::fastrtps::types::TK_FLOAT64:
-            case eprosima::fastrtps::types::TK_FLOAT128:
-                // Numeric case
-                numeric_type_names.push_back({base_type_name + separator + members.first,
-                                              members.second->get_id(), kind});
-                break;
-
-            case eprosima::fastrtps::types::TK_CHAR8:
-            case eprosima::fastrtps::types::TK_CHAR16:
-            case eprosima::fastrtps::types::TK_STRING8:
-            case eprosima::fastrtps::types::TK_STRING16:
-            case eprosima::fastrtps::types::TK_ENUM:
-                // String case
-                string_type_names.push_back({base_type_name + separator + members.first, members.second->get_id(),
-                                             kind});
-                break;
-
-            case eprosima::fastrtps::types::TK_NONE:
-            case eprosima::fastrtps::types::TK_ALIAS:
-            case eprosima::fastrtps::types::TK_BITMASK:
-            case eprosima::fastrtps::types::TK_ANNOTATION:
-            case eprosima::fastrtps::types::TK_STRUCTURE:
-            case eprosima::fastrtps::types::TK_UNION:
-            case eprosima::fastrtps::types::TK_BITSET:
-            case eprosima::fastrtps::types::TK_SEQUENCE:
-            case eprosima::fastrtps::types::TK_ARRAY:
-            case eprosima::fastrtps::types::TK_MAP:
-                // Complex types
-                // TODO
-                WARNING("DataType member " << members.first << "with not supported kind " << kind);
-                break;
-
-            default:
-                // Shouold not happen
-                throw InconsistencyException("Kind not in switch");
+            // TODO
+        default:
+            // TODO add exception
+            WARNING("Error getting data");
+            return data;
+            break;
         }
     }
 }
 
-void get_introspection_data(
-        eprosima::fastrtps::types::DynamicType_ptr type,
-        const TypeIntrospectionCollection& numeric_type_names,
-        const TypeIntrospectionCollection& string_type_names,
-        eprosima::fastrtps::types::DynamicData_ptr data,
-        TypeIntrospectionNumericDatum& numeric_data,
-        TypeIntrospectionStringDatum& string_data)
-{
-    // First get numeric data
-    // It is used by index of the vector to avoid unnecessary lookups, but vectors must be sorted
-    for (int i = 0; i < numeric_type_names.size(); ++i)
-    {
-        numeric_data[i].second = get_numeric_type_from_data(
-            data,
-            std::get<eprosima::fastrtps::types::MemberId>(numeric_type_names[i]),
-            std::get<eprosima::fastrtps::types::TypeKind>(numeric_type_names[i]));
-    }
-
-    for (int i = 0; i < string_type_names.size(); ++i)
-    {
-        string_data[i].second = get_string_type_from_data(
-            data,
-            std::get<eprosima::fastrtps::types::MemberId>(string_type_names[i]),
-            std::get<eprosima::fastrtps::types::TypeKind>(string_type_names[i]));
-    }
-}
-
 double get_numeric_type_from_data(
-        eprosima::fastrtps::types::DynamicData_ptr data,
-        eprosima::fastrtps::types::MemberId member,
-        eprosima::fastrtps::types::TypeKind kind)
+        const DynamicData_ptr& data,
+        const MemberId& member,
+        const TypeKind& kind)
 {
+    DEBUG("Getting numeric data of kind " << kind << " in member " << member);
+
     switch (kind)
     {
-        case eprosima::fastrtps::types::TK_BOOLEAN:
+        case TK_BOOLEAN:
             return static_cast<double>(data->get_bool_value(member));
 
-        case eprosima::fastrtps::types::TK_BYTE:
+        case TK_BYTE:
             return static_cast<double>(data->get_byte_value(member));
 
-        case eprosima::fastrtps::types::TK_INT16:
+        case TK_INT16:
             return static_cast<double>(data->get_int16_value(member));
 
-        case eprosima::fastrtps::types::TK_INT32:
+        case TK_INT32:
             return static_cast<double>(data->get_int32_value(member));
 
-        case eprosima::fastrtps::types::TK_INT64:
+        case TK_INT64:
             return static_cast<double>(data->get_int64_value(member));
 
-        case eprosima::fastrtps::types::TK_UINT16:
+        case TK_UINT16:
             return static_cast<double>(data->get_uint16_value(member));
 
-        case eprosima::fastrtps::types::TK_UINT32:
+        case TK_UINT32:
             return static_cast<double>(data->get_uint32_value(member));
 
-        case eprosima::fastrtps::types::TK_UINT64:
+        case TK_UINT64:
             return static_cast<double>(data->get_uint64_value(member));
 
-        case eprosima::fastrtps::types::TK_FLOAT32:
+        case TK_FLOAT32:
             return static_cast<double>(data->get_float32_value(member));
 
-        case eprosima::fastrtps::types::TK_FLOAT64:
+        case TK_FLOAT64:
             return static_cast<double>(data->get_float64_value(member));
 
-        case eprosima::fastrtps::types::TK_FLOAT128:
+        case TK_FLOAT128:
             return static_cast<double>(data->get_float128_value(member));
 
         default:
@@ -186,31 +298,85 @@ double get_numeric_type_from_data(
 }
 
 std::string get_string_type_from_data(
-        eprosima::fastrtps::types::DynamicData_ptr data,
-        eprosima::fastrtps::types::MemberId member,
-        eprosima::fastrtps::types::TypeKind kind)
+        const DynamicData_ptr& data,
+        const MemberId& member,
+        const TypeKind& kind)
 {
+    DEBUG("Getting string data of kind " << kind << " in member " << member);
     switch (kind)
     {
-        case eprosima::fastrtps::types::TK_CHAR8:
+        case TK_CHAR8:
             return to_string(data->get_char8_value(member));
 
-        case eprosima::fastrtps::types::TK_CHAR16:
+        case TK_CHAR16:
             return to_string(data->get_char16_value(member));
 
-        case eprosima::fastrtps::types::TK_STRING8:
+        case TK_STRING8:
             return data->get_string_value(member);
 
-        case eprosima::fastrtps::types::TK_STRING16:
+        case TK_STRING16:
             return to_string(data->get_wstring_value(member));
 
-        case eprosima::fastrtps::types::TK_ENUM:
+        case TK_ENUM:
             return data->get_enum_value(member);
 
         default:
             // The rest of values should not arrive here (are cut before when creating type names)
             throw InconsistencyException("Member wrongly set as string");
     }
+}
+
+
+bool is_kind_numeric(
+        TypeKind kind)
+{
+    switch (kind)
+    {
+        case TK_BOOLEAN:
+        case TK_BYTE:
+        case TK_INT16:
+        case TK_INT32:
+        case TK_INT64:
+        case TK_UINT16:
+        case TK_UINT32:
+        case TK_UINT64:
+        case TK_FLOAT32:
+        case TK_FLOAT64:
+        case TK_FLOAT128:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+bool is_kind_string(
+        TypeKind kind)
+{
+    switch (kind)
+    {
+        case TK_CHAR8:
+        case TK_CHAR16:
+        case TK_STRING8:
+        case TK_STRING16:
+        case TK_ENUM:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+DynamicType_ptr array_internal_kind(
+        DynamicType_ptr dyn_type)
+{
+    return dyn_type->get_descriptor()->get_element_type();
+}
+
+unsigned int array_size(
+        DynamicType_ptr dyn_type)
+{
+    return dyn_type->get_descriptor()->get_total_bounds();
 }
 
 } /* namespace utils */
