@@ -13,7 +13,7 @@ namespace plotjuggler {
 namespace ui {
 
 DialogSelectTopics::DialogSelectTopics(
-        std::shared_ptr<Configuration> configuration,
+        const Configuration& configuration,
         std::shared_ptr<fastdds::TopicDataBase> discovery_database,
         UiListener* listener,
         QWidget* parent /* = nullptr */)
@@ -43,26 +43,7 @@ DialogSelectTopics::DialogSelectTopics(
     ////////////
     // Reset data with the current configuration
     // Remove every topic
-    clean_topics_list_();
-
-    // FastDDS configuration
-    // Set current domain
-    ui->domainid_spin->setValue(configuration_->domain_id_selected);
-    ui->current_domain_label->setText(
-        QString::number(configuration_->domain_id_connected));
-    check_domain_button_must_be_enable_();
-
-    // Add XML files
-    for (const auto& file : configuration_->xml_datatypes_files)
-    {
-        // TODO
-    }
-
-    // Array config
-    ui->discard_radiobutton->setChecked(configuration_->discard_large_arrays);
-    ui->clamp_radiobutton->setChecked(configuration_->use_header_stamp);
-    ui->maximum_array_spin->setValue(configuration_->max_array_size);
-    ui->convert_booleans_check->setChecked(configuration_->boolean_strings_to_number);
+    reset_to_configuration_();
 }
 
 DialogSelectTopics::~DialogSelectTopics()
@@ -76,6 +57,11 @@ void DialogSelectTopics::reset()
     emit reset_view_signal();
 }
 
+const Configuration& DialogSelectTopics::get_configuration() const
+{
+    return configuration_;
+}
+
 void DialogSelectTopics::on_lineEditFilter_editingFinished()
 {
     DEBUG("Calling on_lineEditFilter_editingFinished");
@@ -86,15 +72,15 @@ void DialogSelectTopics::on_change_domain_button_clicked()
     DEBUG("Calling on_change_domain_button_clicked");
 
     // Change domain connected
-    configuration_->domain_id_connected =
+    configuration_.domain_id_connected =
             static_cast<unsigned int>(ui->domainid_spin->value());
     ui->current_domain_label->setText(
-        QString::number(configuration_->domain_id_connected));
+        QString::number(configuration_.domain_id_connected));
     check_domain_button_must_be_enable_();
 
     // Call listener to connect to domain
     listener_->on_domain_connection(
-        static_cast<unsigned int>(configuration_->domain_id_connected));
+        static_cast<unsigned int>(configuration_.domain_id_connected));
 }
 
 void DialogSelectTopics::on_include_files_button_clicked()
@@ -115,36 +101,7 @@ void DialogSelectTopics::on_buttonBox_rejected()
 void DialogSelectTopics::on_buttonBox_accepted()
 {
     DEBUG("Calling on_buttonBox_accepted");
-
-    /////
-    // Store every value in configuration
-
-    // Domain id
-    configuration_->domain_id_selected =
-            static_cast<unsigned int>(ui->domainid_spin->value());
-
-    // Array
-    configuration_->max_array_size =
-            static_cast<unsigned int>(ui->maximum_array_spin->value());
-    configuration_->use_header_stamp = ui->clamp_radiobutton->isChecked();
-    configuration_->discard_large_arrays = ui->discard_radiobutton->isChecked();
-
-    configuration_->boolean_strings_to_number = ui->convert_booleans_check->isChecked();
-
-    // Get Topics
-    configuration_->topics_selected.clear();
-    for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
-    {
-        QTableWidgetItem* item = ui->listRosTopics->item(r, 0);
-        // Check if this is the topic name
-        if (item->isSelected())
-        {
-            configuration_->topics_selected.push_back(item->text());
-        }
-    }
-
-    // Get XML files
-    // TODO
+    update_configuration_();
 }
 
 void DialogSelectTopics::on_domainid_spin_valueChanged(
@@ -235,6 +192,7 @@ void DialogSelectTopics::on_reset_view_slot()
 {
     DEBUG("Calling on_reset_view");
     clean_topics_list_();
+    reset_to_configuration_();
 }
 
 void DialogSelectTopics::check_domain_button_must_be_enable_()
@@ -243,13 +201,72 @@ void DialogSelectTopics::check_domain_button_must_be_enable_()
 
     // Set enable disable of the button
     ui->change_domain_button->setEnabled(
-        configuration_->domain_id_connected != ui->domainid_spin->value());
+        configuration_.domain_id_connected != ui->domainid_spin->value());
 }
 
 void DialogSelectTopics::clean_topics_list_()
 {
     DEBUG("Calling clean_topics_list_");
     ui->listRosTopics->setRowCount(0);
+}
+
+void DialogSelectTopics::reset_to_configuration_()
+{
+    ////////////
+    // Reset data with the current configuration
+    // Remove every topic
+    clean_topics_list_();
+
+    // FastDDS configuration
+    // Set current domain
+    ui->domainid_spin->setValue(configuration_.domain_id_selected);
+    ui->current_domain_label->setText(
+        QString::number(configuration_.domain_id_connected));
+    check_domain_button_must_be_enable_();
+
+    // Add XML files
+    for (const auto& file : configuration_.xml_datatypes_files)
+    {
+        // TODO
+    }
+
+    // Array config
+    ui->discard_radiobutton->setChecked(configuration_.discard_large_arrays);
+    ui->clamp_radiobutton->setChecked(configuration_.use_header_stamp);
+    ui->maximum_array_spin->setValue(configuration_.max_array_size);
+    ui->convert_booleans_check->setChecked(configuration_.boolean_strings_to_number);
+}
+
+void DialogSelectTopics::update_configuration_()
+{
+    // Store every value in configuration
+
+    // Domain id
+    configuration_.domain_id_selected =
+            static_cast<unsigned int>(ui->domainid_spin->value());
+
+    // Array
+    configuration_.max_array_size =
+            static_cast<unsigned int>(ui->maximum_array_spin->value());
+    configuration_.use_header_stamp = ui->clamp_radiobutton->isChecked();
+    configuration_.discard_large_arrays = ui->discard_radiobutton->isChecked();
+
+    configuration_.boolean_strings_to_number = ui->convert_booleans_check->isChecked();
+
+    // Get Topics
+    configuration_.topics_selected.clear();
+    for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
+    {
+        QTableWidgetItem* item = ui->listRosTopics->item(r, 0);
+        // Check if this is the topic name
+        if (item->isSelected())
+        {
+            configuration_.topics_selected.push_back(item->text());
+        }
+    }
+
+    // Get XML files
+    // TODO
 }
 
 } /* namespace ui */

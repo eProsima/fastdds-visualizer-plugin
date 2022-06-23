@@ -29,7 +29,7 @@ namespace datastreamer {
 
 FastDdsDataStreamer::FastDdsDataStreamer()
     : running_(false)
-    , configuration_(std::make_shared<ui::Configuration>())
+    , configuration_()
     , fastdds_handler_(this)
     , select_topics_dialog_(
                 configuration_,
@@ -57,7 +57,7 @@ bool FastDdsDataStreamer::start(
     }
 
     // Creating a default DomainParticipant in domain by default (configuration_)
-    this->connect_to_domain_(configuration_->domain_id_connected);
+    this->connect_to_domain_(configuration_.domain_id_connected);
 
     // Execute Dialog
     int dialog_result = select_topics_dialog_.exec();
@@ -69,8 +69,11 @@ bool FastDdsDataStreamer::start(
         return false;
     }
 
+    // Get configuration from dialog
+    configuration_ = select_topics_dialog_.get_configuration();
+
     // Topics selected
-    const auto& topics = configuration_->topics_selected;  // Decorator variable to avoid calling internal member
+    const auto& topics = configuration_.topics_selected;  // Decorator variable to avoid calling internal member
 
     if (topics.empty())
     {

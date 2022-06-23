@@ -27,7 +27,7 @@ class DialogSelectTopics : public QDialog
 public:
 
     DialogSelectTopics(
-            std::shared_ptr<Configuration> configuration,
+            const Configuration& configuration,
             std::shared_ptr<fastdds::TopicDataBase> discovery_database,
             UiListener* listener,
             QWidget* parent = nullptr);
@@ -35,6 +35,8 @@ public:
     ~DialogSelectTopics();
 
     void reset();
+
+    const Configuration& get_configuration() const;
 
 signals:
 
@@ -78,9 +80,13 @@ protected:
 
     void clean_topics_list_();
 
+    void reset_to_configuration_();
+
+    void update_configuration_();
+
     std::shared_ptr<fastdds::TopicDataBase> discovery_database_;
 
-    std::shared_ptr<Configuration> configuration_;
+    Configuration configuration_;
 
     UiListener* listener_;
 

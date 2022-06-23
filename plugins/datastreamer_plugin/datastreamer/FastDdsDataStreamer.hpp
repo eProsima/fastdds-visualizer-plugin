@@ -128,7 +128,7 @@ protected:
     // INTERNAL VALUES
     ////////////////////////////////////////////////////
 
-    std::shared_ptr<ui::Configuration> configuration_;
+    ui::Configuration configuration_;
 
     fastdds::Handler fastdds_handler_;
 
