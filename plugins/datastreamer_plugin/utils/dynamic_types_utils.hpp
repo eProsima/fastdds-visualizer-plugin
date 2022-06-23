@@ -30,10 +30,10 @@ namespace plotjuggler {
 namespace utils {
 
 using SingleDataTypeIntrospectionInfo =
-    std::tuple<
-        types::DatumLabel,
-        eprosima::fastrtps::types::MemberId,
-        eprosima::fastrtps::types::TypeKind>;
+        std::tuple<
+    types::DatumLabel,
+    eprosima::fastrtps::types::MemberId,
+    eprosima::fastrtps::types::TypeKind>;
 using TypeIntrospectionCollection =
         std::vector<SingleDataTypeIntrospectionInfo>;
 

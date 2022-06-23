@@ -256,7 +256,6 @@ void Participant::on_type_discovery(
     on_topic_discovery_(topic.to_string(), dyn_type->get_name());
 }
 
-
 ////////////////////////////////////////////////////
 // EXTERNAL EVENT METHODS
 ////////////////////////////////////////////////////

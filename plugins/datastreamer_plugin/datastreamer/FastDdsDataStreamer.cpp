@@ -32,9 +32,9 @@ FastDdsDataStreamer::FastDdsDataStreamer()
     , configuration_()
     , fastdds_handler_(this)
     , select_topics_dialog_(
-                configuration_,
-                fastdds_handler_.get_topic_data_base(),
-                this)
+        configuration_,
+        fastdds_handler_.get_topic_data_base(),
+        this)
 {
     DEBUG("Create FastDdsDataStreamer");
 }
@@ -134,7 +134,6 @@ const char* FastDdsDataStreamer::name() const
 {
     return PLUGIN_NAME_;
 }
-
 
 ////////////////////////////////////////////////////
 // FASTDDS LISTENER METHODS
