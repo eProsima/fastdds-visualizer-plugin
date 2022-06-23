@@ -24,6 +24,7 @@ jobs:
           - 'Debug'
         ubuntu-distro:
           - ubuntu-20.04
+          - ubuntu-22.04
 
     steps:
       - name: Sync eProsima/plotjuggler-fastdds-plugins repository
@@ -78,6 +79,74 @@ jobs:
           name: colcon-logs-ubuntu
           path: log/
         if: always()
+
+
+  windows-build-test:
+    runs-on: ${{ matrix.ubuntu-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cmake-config:
+          - 'Release'
+        windows-version:
+          - 'windows-2019'
+          - 'windows-latest'
+    env:
+      CXXFLAGS: /MP
+      OPENSSL64_ROOT: "C:/Program Files/OpenSSL-Win64"
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: plotjuggler_fastdds
+
+      - name: Install OpenSSL
+        uses: ./plotjuggler_fastdds/.github/actions/install-openssl-windows
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.13.0
+        with:
+          version: '5.15.2'
+          arch: 'win64_msvc2019_64'
+          dir: '${{ github.workspace }}/qt_installation/'
+          modules: 'qtcharts'
+
+      - name: Install foonatham memory
+        shell: pwsh
+        run: >
+          git clone --recurse-submodules --branch v0.6-2 https://github.com/foonathan/memory.git;
+          cmake -DBUILD_SHARED_LIBS=OFF -DFOONATHAN_MEMORY_BUILD_TOOLS=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON `
+            -DFOONATHAN_MEMORY_BUILD_TESTS=OFF -Ax64 -T host=x64 -B build\memory memory;
+          cmake --build build\memory --config ${{ matrix.cmake-config }} --target install
+
+      - name: install Fast-CDR
+        shell: pwsh
+        run: >
+          git clone https://github.com/eProsima/Fast-CDR.git;
+          cmake -Ax64 -T host=x64 -B build\fastcdr Fast-CDR;
+          cmake --build build\fastcdr --config ${{ matrix.cmake-config }} --target install
+
+      - name: Install Fast-DDS
+        shell: pwsh
+        run: >
+          git clone https://github.com/eProsima/Fast-DDS.git;
+          cmake -DTHIRDPARTY=ON -DSECURITY=ON -DCOMPILE_EXAMPLES=OFF -DEPROSIMA_BUILD_TESTS=OFF `
+            -DINTERNAL_DEBUG=ON -Ax64 -T host=x64 -B build\fastdds Fast-DDS;
+          cmake --build build\fastdds --config ${{ matrix.cmake-config }} --target install
+
+      - name: Install Plotjuggler
+        shell: pwsh
+        run: >
+          git clone https://github.com/facontidavide/PlotJuggler.git;
+          cmake -Ax64 -T host=x64 -B build\plotjuggler PlotJuggler;
+          cmake --build build\plotjuggler --config ${{ matrix.cmake-config }} --target install
+
+      - name: Install Plotjuggler Fast-DDS- plugin
+        shell: pwsh
+        run: >
+          cmake -DCMAKE_CXX_FLAGS="/WX /EHsc" -B build\plotjuggler_fastdds `
+           -A x64 -T host=x64 plotjuggler_fastdds;
+          cmake --build build\plotjuggler_fastdds --config ${{ matrix.cmake-config }} --target install
 
 
   # This job is used to test the format and linter of the new code added to repository
