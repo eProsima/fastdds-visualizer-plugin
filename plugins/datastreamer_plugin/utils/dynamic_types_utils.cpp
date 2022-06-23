@@ -28,6 +28,7 @@
 
 #include "dynamic_types_utils.hpp"
 #include "utils.hpp"
+#include "Exception.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -101,11 +102,12 @@ void get_introspection_type_names(
             case eprosima::fastrtps::types::TK_MAP:
                 // Complex types
                 // TODO
+                WARNING("DataType member " << members.first << "with not supported kind " << kind);
                 break;
 
             default:
                 // Shouold not happen
-                break;
+                throw InconsistencyException("Kind not in switch");
         }
     }
 }
@@ -179,10 +181,8 @@ double get_numeric_type_from_data(
 
         default:
             // The rest of values should not arrive here (are cut before when creating type names)
-            break;
+            throw InconsistencyException("Member wrongly set as numeric");
     }
-
-    return std::numeric_limits<double>::min();
 }
 
 std::string get_string_type_from_data(
@@ -209,10 +209,8 @@ std::string get_string_type_from_data(
 
         default:
             // The rest of values should not arrive here (are cut before when creating type names)
-            break;
+            throw InconsistencyException("Member wrongly set as string");
     }
-
-    return "TYPE ERROR! Ask for help.";
 }
 
 } /* namespace utils */
