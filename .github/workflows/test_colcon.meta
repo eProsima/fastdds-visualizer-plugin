@@ -1,0 +1,12 @@
+{
+    "names":
+    {
+        "plotjuggler_fastdds_datastream_plugin":
+        {
+            "cmake-args":
+            [
+                "-DCMAKE_CXX_FLAGS='-Werror'"
+            ]
+        }
+    }
+}
