@@ -108,7 +108,7 @@ void get_introspection_type_names(
                     numeric_type_names,
                     string_type_names,
                     new_members_tree,
-                    current_kinds_tree,
+                    new_kinds_tree,
                     separator);
             }
             break;
@@ -120,8 +120,12 @@ void get_introspection_type_names(
             std::map<std::string, DynamicTypeMember*> members_by_name;
             type->get_all_members_by_name(members_by_name);
 
+            DEBUG("Size of members " << members_by_name.size());
+
             for (auto& members : members_by_name)
             {
+                DEBUG("Calling introspection for " << members.first);
+
                 std::vector<MemberId> new_members_tree(current_members_tree);
                 new_members_tree.push_back(members.second->get_id());
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
@@ -133,7 +137,7 @@ void get_introspection_type_names(
                     numeric_type_names,
                     string_type_names,
                     new_members_tree,
-                    current_kinds_tree,
+                    new_kinds_tree,
                     separator);
             }
             break;
@@ -226,9 +230,6 @@ DynamicData_ptr get_parent_data_of_member(
         const std::vector<TypeKind>& kind_tree,
         unsigned int array_indexes /* = 0 */)
 {
-    // Get the member and kind of the current level
-    const MemberId& member_id = members_tree[array_indexes];
-    const TypeKind& kind = kind_tree[array_indexes];
 
     if (array_indexes == members_tree.size() - 1)
     {
@@ -237,8 +238,29 @@ DynamicData_ptr get_parent_data_of_member(
     }
     else
     {
+        // Get the member and kind of the current level
+        const MemberId& member_id = members_tree[array_indexes];
+        const TypeKind& kind = kind_tree[array_indexes];
+
         switch (kind)
         {
+        case TK_STRUCTURE:
+        {
+            // Access to the data inside the structure
+            DynamicData* child_data;
+            data->get_complex_value(&child_data, member_id);
+
+            return get_parent_data_of_member(
+                DynamicData_ptr(child_data),
+                members_tree,
+                kind_tree,
+                array_indexes + 1);
+        }
+        case TK_ARRAY:
+        {
+            // TODO (this is not so important as a type with a complex array will die before
+            // arriving here)
+        }
             // TODO
         default:
             // TODO add exception
@@ -328,7 +350,7 @@ std::string get_string_type_from_data(
 
 
 bool is_kind_numeric(
-        TypeKind kind)
+        const TypeKind& kind)
 {
     switch (kind)
     {
@@ -351,7 +373,7 @@ bool is_kind_numeric(
 }
 
 bool is_kind_string(
-        TypeKind kind)
+        const TypeKind& kind)
 {
     switch (kind)
     {
@@ -368,13 +390,13 @@ bool is_kind_string(
 }
 
 DynamicType_ptr array_internal_kind(
-        DynamicType_ptr dyn_type)
+        const DynamicType_ptr& dyn_type)
 {
     return dyn_type->get_descriptor()->get_element_type();
 }
 
 unsigned int array_size(
-        DynamicType_ptr dyn_type)
+        const DynamicType_ptr& dyn_type)
 {
     return dyn_type->get_descriptor()->get_total_bounds();
 }

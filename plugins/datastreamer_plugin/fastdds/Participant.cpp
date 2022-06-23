@@ -271,13 +271,24 @@ void Participant::on_type_discovery(
 
     DEBUG("TypeObject discovered: " << dyn_type->get_name() << " for topic: " << topic.to_string());
 
-    // Create TypeSupport and register it in Participant
-    eprosima::fastdds::dds::TypeSupport(
-        new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
+    // TOOD study this
+    // In case of complex data types, registering here means that the data type will be incorrectly registered
+    // because the internal data will be received and registered faster than lookup service, which produces an error
+    // when registering type:
+    //  logError(PARTICIPANT, "Another type with the same name Struct_TypeIntrospectionExample is already registered.");
+    // WORKAROUND: only use TypeLookup service to get Type Information and forget about the TypeObject
+    // For the future: it seems like the error appears when registering the type from here because this callback is
+    // erroneous, so it can be checked wether this type has already been registered. Be careful because it should
+    // not only check it has been registered but it has been discovered by the Service, that may be in process of
+    // registering when this callback arrives
 
-    // In case this callback is sent, it means that the type is already registered, so notify
-    // TODO in future it would be better to update every topic in this type name, and not just the one calling here
-    on_topic_discovery_(topic.to_string(), dyn_type->get_name());
+    // Create TypeSupport and register it
+    // eprosima::fastdds::dds::TypeSupport(
+    //     new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
+
+    // // In case this callback is sent, it means that the type is already registered, so notify
+    // // TODO in future it would be better to update every topic in this type name, and not just the one calling here
+    // on_topic_discovery_(topic.to_string(), dyn_type->get_name());
 }
 
 ////////////////////////////////////////////////////
