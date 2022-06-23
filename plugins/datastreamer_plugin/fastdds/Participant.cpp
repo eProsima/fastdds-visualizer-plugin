@@ -89,6 +89,10 @@ Participant::Participant(
 
     if (!subscriber_)
     {
+        // Delete participant
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
+        participant_ = nullptr;
+
         throw InitializationException("Error creating Subscriber");
     }
 }
@@ -231,7 +235,22 @@ void Participant::on_type_information_received(
         const fastrtps::string_255 type_name,
         const fastrtps::types::TypeInformation& type_information)
 {
-    // TODO (check if needed)
+    DEBUG("Type Information received: " << type_name.to_string() << " in topic: " << topic_name.to_string());
+
+    // Prepare callback that will be executed after registering type
+    std::function<void(const std::string&, const eprosima::fastrtps::types::DynamicType_ptr)> callback(
+        [this, topic_name]
+        (const std::string& , const eprosima::fastrtps::types::DynamicType_ptr type)
+        {
+            // Once the type has been registered, call on_topic_discovery_ so the callback is sent if it must
+            this->on_topic_discovery_(topic_name.to_string(), type->get_name());
+        });
+
+    // Register participant
+    participant_->register_remote_type(
+        type_information,
+        type_name.to_string(),
+        callback);
 }
 
 void Participant::on_type_discovery(
@@ -245,6 +264,7 @@ void Participant::on_type_discovery(
     if (!dyn_type)
     {
         // Fast DDS may call this callback with a nullptr in dyn_type because of reasons. Avoid break.
+        WARNING("on_type_discovery callback called with nullptr dyn type");
         return;
     }
 
