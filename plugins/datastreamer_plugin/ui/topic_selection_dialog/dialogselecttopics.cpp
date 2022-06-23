@@ -53,7 +53,7 @@ DialogSelectTopics::DialogSelectTopics(
     check_domain_button_must_be_enable_();
 
     // Add XML files
-    for (auto& file : configuration_->xml_datatypes_files)
+    for (const auto& file : configuration_->xml_datatypes_files)
     {
         // TODO
     }
@@ -201,8 +201,8 @@ void DialogSelectTopics::on_topic_discovery_slot(
         int new_row = ui->listRosTopics->rowCount();
         ui->listRosTopics->setRowCount(new_row + 1);
 
-        ui->listRosTopics->setItem(new_row, 0, new QTableWidgetItem(topic_name));
-        ui->listRosTopics->setItem(new_row, 1, new QTableWidgetItem(type_name));
+        ui->listRosTopics->setItem(new_row, TopicNameTableIndex_, new QTableWidgetItem(topic_name));
+        ui->listRosTopics->setItem(new_row, TypeNameTableIndex_, new QTableWidgetItem(type_name));
         DEBUG("set item " << new_row << " 1");
 
         // In case it is not registered, make it unselectable

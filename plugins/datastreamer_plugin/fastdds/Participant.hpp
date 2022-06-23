@@ -125,9 +125,9 @@ public:
     // RETRIEVE INFORMATION METHODS
     ////////////////////////////////////////////////////
 
-    std::vector<std::vector<std::string>> numeric_data_series_names() const;
+    std::vector<types::DatumLabel> numeric_data_series_names() const;
 
-    std::vector<std::vector<std::string>> string_data_series_names() const;
+    std::vector<types::DatumLabel> string_data_series_names() const;
 
 protected:
 
@@ -171,7 +171,7 @@ protected:
      * Callbacks accepted by this mask:
      * - Every DomainParticipantListener callback (cannot be disabled)
      *
-     * NOTE: it is important to have a mask, otherwise onDataOnReaders would hide on_data_available
+     * @note it is important to have a mask, otherwise onDataOnReaders would hide on_data_available
      *
      * @return eprosima::fastdds::dds::StatusMask with callbacks needed
      */
@@ -183,14 +183,6 @@ protected:
     ////////////////////////////////////////////////////
 
     std::shared_ptr<TopicDataBase> discovery_database_;
-
-    /**
-     * @brief TODO
-     *
-     * @note this required to be a pointer as it cannot be created without initialize its internal values.
-     * Thus, it will be created once the participant and subscriber are created.
-     */
-    std::unique_ptr<ReaderHandlerDeleter> reader_handler_deleter_;
 
     FastDdsListener* listener_;
 

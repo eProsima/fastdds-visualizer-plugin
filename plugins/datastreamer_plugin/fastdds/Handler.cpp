@@ -87,7 +87,7 @@ void Handler::reset()
     clean_discovery_database_();
 }
 
-std::vector<std::vector<std::string>> Handler::numeric_data_series_names() const
+std::vector<types::DatumLabel> Handler::numeric_data_series_names() const
 {
     if (participant_)
     {
@@ -95,11 +95,11 @@ std::vector<std::vector<std::string>> Handler::numeric_data_series_names() const
     }
     else
     {
-        return std::vector<std::vector<std::string>>();
+        return std::vector<types::DatumLabel>();
     }
 }
 
-std::vector<std::vector<std::string>> Handler::string_data_series_names() const
+std::vector<types::DatumLabel> Handler::string_data_series_names() const
 {
     if (participant_)
     {
@@ -107,7 +107,7 @@ std::vector<std::vector<std::string>> Handler::string_data_series_names() const
     }
     else
     {
-        return std::vector<std::vector<std::string>>();
+        return std::vector<types::DatumLabel>();
     }
 }
 

@@ -80,9 +80,6 @@ Participant::Participant(
     // Create Subscriber without listener
     subscriber_ = participant_->create_subscriber(
         default_subscriber_qos_());
-
-    // Initialize reader deleter
-    reader_handler_deleter_ = std::make_unique<ReaderHandlerDeleter>(participant_, subscriber_);
 }
 
 Participant::~Participant()
@@ -194,7 +191,7 @@ void Participant::create_subscription(
             datareader,
             dyn_type,
             listener_),
-        (*reader_handler_deleter_)
+        ReaderHandlerDeleter(participant_, subscriber_)
         );
 
     // Insert this new Reader Handler indexed by topic name
@@ -259,26 +256,6 @@ void Participant::on_type_discovery(
     on_topic_discovery_(topic.to_string(), dyn_type->get_name());
 }
 
-////////////////////////////////////////////////////
-// RETRIEVE VALUES METHODS
-////////////////////////////////////////////////////
-
-// TODO erase
-// void Participant::listener(const std::shared_ptr<FastDdsListener>& listener)
-// {
-//     listener_ = listener;
-
-//     // Change listener in every reader handler
-//     for (auto& reader : readers_)
-//     {
-//         reader.second->listener(listener_);
-//     }
-// }
-
-// std::shared_ptr<FastDdsListener> Participant::listener() const
-// {
-//     return listener_;
-// }
 
 ////////////////////////////////////////////////////
 // EXTERNAL EVENT METHODS
@@ -328,25 +305,31 @@ void Participant::on_topic_discovery_(
 // RETRIEVE INFORMATION METHODS
 ////////////////////////////////////////////////////
 
-std::vector<std::vector<std::string>> Participant::numeric_data_series_names() const
+std::vector<types::DatumLabel> Participant::numeric_data_series_names() const
 {
-    std::vector<std::vector<std::string>> names;
+    std::vector<types::DatumLabel> names;
 
-    for (auto& reader : readers_)
+    for (const auto& reader : readers_)
     {
-        names.push_back(reader.second->numeric_data_series_names());
+        for (const auto& series : reader.second->numeric_data_series_names())
+        {
+            names.push_back(series);
+        }
     }
 
     return names;
 }
 
-std::vector<std::vector<std::string>> Participant::string_data_series_names() const
+std::vector<types::DatumLabel> Participant::string_data_series_names() const
 {
-    std::vector<std::vector<std::string>> names;
+    std::vector<types::DatumLabel> names;
 
-    for (auto& reader : readers_)
+    for (const auto& reader : readers_)
     {
-        names.push_back(reader.second->string_data_series_names());
+        for (const auto& series : reader.second->string_data_series_names())
+        {
+            names.push_back(series);
+        }
     }
 
     return names;

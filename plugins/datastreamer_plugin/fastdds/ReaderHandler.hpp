@@ -81,13 +81,13 @@ public:
     // VALUES METHODS
     ////////////////////////////////////////////////////
 
-    std::string topic_name() const;
+    const std::string& topic_name() const;
 
-    std::string type_name() const;
+    const std::string& type_name() const;
 
-    std::vector<std::string> numeric_data_series_names() const;
+    std::vector<types::DatumLabel> numeric_data_series_names() const;
 
-    std::vector<std::string> string_data_series_names() const;
+    std::vector<types::DatumLabel> string_data_series_names() const;
 
 
     ////////////////////////////////////////////////////
@@ -130,11 +130,11 @@ public:
 
     std::atomic<bool> stop_;
 
-    utils::TypeIntrospectionStruct numeric_data_info_;
-    utils::TypeIntrospectionStruct string_data_info_;
+    utils::TypeIntrospectionCollection numeric_data_info_;
+    utils::TypeIntrospectionCollection string_data_info_;
 
-    utils::TypeIntrospectionNumericData numeric_data_;
-    utils::TypeIntrospectionStringData string_data_;
+    utils::TypeIntrospectionNumericDatum numeric_data_;
+    utils::TypeIntrospectionStringDatum string_data_;
 
 };
 

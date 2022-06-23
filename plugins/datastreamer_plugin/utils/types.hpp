@@ -16,31 +16,24 @@
 // along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * @file TopicDataBase.hpp
+ * @file types.hpp
  */
 
-#ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_TOPICDATABASE_HPP_
-#define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_TOPICDATABASE_HPP_
+#ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_TYPES_HPP_
+#define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_TYPES_HPP_
 
-#include <unordered_map>
-#include <tuple>
+#include <string>
 
 namespace eprosima {
 namespace plotjuggler {
-namespace fastdds {
+namespace types {
 
-/**
- * @brief TODO
- *
- */
-using TopicName = std::string;
-using DataTypeNameType = std::string;
-using DataTypeRegistered = bool;
-using DataTypeInfo = std::pair<std::string, bool>;
-using TopicDataBase = std::unordered_map<TopicName, DataTypeInfo>;
+using DatumLabel = std::string;
+using NumericDatum = std::pair<DatumLabel, double>;
+using TextDatum = std::pair<DatumLabel, std::string>;
 
-} /* namespace fastdds */
+} /* namespace types */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
 
-#endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_TOPICDATABASE_HPP_
+#endif // _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_TYPES_HPP_

@@ -34,10 +34,10 @@ namespace plotjuggler {
 namespace utils {
 
 std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionStruct& numeric_type_names)
+        const TypeIntrospectionCollection& numeric_type_names)
 {
     std::vector<std::string> type_names;
-    for (auto& type_name : numeric_type_names)
+    for (const auto& type_name : numeric_type_names)
     {
         type_names.push_back(std::get<0>(type_name));
     }
@@ -47,8 +47,8 @@ std::vector<std::string> get_introspection_type_names(
 void get_introspection_type_names(
         const std::string& base_type_name,
         eprosima::fastrtps::types::DynamicType_ptr type,
-        TypeIntrospectionStruct& numeric_type_names,
-        TypeIntrospectionStruct& string_type_names,
+        TypeIntrospectionCollection& numeric_type_names,
+        TypeIntrospectionCollection& string_type_names,
         const std::string& separator /* = "/" */)
 {
     // TODO add return code checks
@@ -57,7 +57,7 @@ void get_introspection_type_names(
     std::map<std::string, eprosima::fastrtps::types::DynamicTypeMember*> members_by_name;
     type->get_all_members_by_name(members_by_name);
 
-    for (auto& members : members_by_name)
+    for (const auto& members : members_by_name)
     {
         eprosima::fastrtps::types::TypeKind kind = members.second->get_descriptor()->get_kind();
 
@@ -112,26 +112,28 @@ void get_introspection_type_names(
 
 void get_introspection_data(
         eprosima::fastrtps::types::DynamicType_ptr type,
-        const TypeIntrospectionStruct& numeric_type_names,
-        const TypeIntrospectionStruct& string_type_names,
+        const TypeIntrospectionCollection& numeric_type_names,
+        const TypeIntrospectionCollection& string_type_names,
         eprosima::fastrtps::types::DynamicData_ptr data,
-        TypeIntrospectionNumericData& numeric_data,
-        TypeIntrospectionStringData& string_data)
+        TypeIntrospectionNumericDatum& numeric_data,
+        TypeIntrospectionStringDatum& string_data)
 {
     // First get numeric data
     // It is used by index of the vector to avoid unnecessary lookups, but vectors must be sorted
     for (int i = 0; i < numeric_type_names.size(); ++i)
     {
         numeric_data[i].second = get_numeric_type_from_data(
-            data, std::get<1>(numeric_type_names[i]),
-            std::get<2>(numeric_type_names[i]));
+            data,
+            std::get<eprosima::fastrtps::types::MemberId>(numeric_type_names[i]),
+            std::get<eprosima::fastrtps::types::TypeKind>(numeric_type_names[i]));
     }
 
     for (int i = 0; i < string_type_names.size(); ++i)
     {
         string_data[i].second = get_string_type_from_data(
-            data, std::get<1>(string_type_names[i]),
-            std::get<2>(string_type_names[i]));
+            data,
+            std::get<eprosima::fastrtps::types::MemberId>(string_type_names[i]),
+            std::get<eprosima::fastrtps::types::TypeKind>(string_type_names[i]));
     }
 }
 

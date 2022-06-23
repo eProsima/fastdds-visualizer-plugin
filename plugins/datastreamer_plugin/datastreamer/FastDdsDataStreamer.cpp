@@ -27,16 +27,14 @@ namespace eprosima {
 namespace plotjuggler {
 namespace datastreamer {
 
-const char* FastDdsDataStreamer::PLUGIN_NAME_ = "Fast DDS DataStreamer PlotJuggler Plugin";
-
 FastDdsDataStreamer::FastDdsDataStreamer()
     : running_(false)
-    , fastdds_handler_(std::make_unique<fastdds::Handler>(this))
     , configuration_(std::make_shared<ui::Configuration>())
-    , select_topics_dialog_(std::make_unique<ui::DialogSelectTopics>(
+    , fastdds_handler_(this)
+    , select_topics_dialog_(
                 configuration_,
-                fastdds_handler_->get_topic_data_base(),
-                this))
+                fastdds_handler_.get_topic_data_base(),
+                this)
 {
     DEBUG("Create FastDdsDataStreamer");
 }
@@ -53,7 +51,7 @@ bool FastDdsDataStreamer::start(
     DEBUG("FastDdsDataStreamer::start");
 
     // Check if it is already running
-    if (running_.load())
+    if (running_)
     {
         return true;
     }
@@ -62,7 +60,7 @@ bool FastDdsDataStreamer::start(
     this->connect_to_domain_(configuration_->domain_id_connected);
 
     // Execute Dialog
-    int dialog_result = select_topics_dialog_->exec();
+    int dialog_result = select_topics_dialog_.exec();
 
     // Check if Accept has been pressed
     if (dialog_result != QDialog::Accepted)
@@ -72,7 +70,7 @@ bool FastDdsDataStreamer::start(
     }
 
     // Topics selected
-    auto& topics = configuration_->topics_selected;  // Decorator variable to avoid calling internal member
+    const auto& topics = configuration_->topics_selected;  // Decorator variable to avoid calling internal member
 
     if (topics.empty())
     {
@@ -80,38 +78,32 @@ bool FastDdsDataStreamer::start(
         return false;
     }
 
-    for (auto& topic : topics)
+    for (const auto& topic : topics)
     {
         // Create a subscription
-        fastdds_handler_->create_subscription(utils::QString_to_string(topic));
+        fastdds_handler_.create_subscription(utils::QString_to_string(topic));
     }
 
     // Get all series from topics and create them
     // NUMERIC
-    std::vector<std::vector<std::string>> numeric_series = fastdds_handler_->numeric_data_series_names();
-    for (auto& topic_series : numeric_series)
+    std::vector<types::DatumLabel> numeric_series = fastdds_handler_.numeric_data_series_names();
+    for (const auto& series : numeric_series)
     {
-        for (auto& single_series : topic_series)
-        {
-            // Create a series
-            DEBUG("Creating numeric series: " << single_series);
-            dataMap().addNumeric(single_series);
-        }
+        // Create a series
+        DEBUG("Creating numeric series: " << series);
+        dataMap().addNumeric(series);
     }
 
     // STRING
-    std::vector<std::vector<std::string>> string_series = fastdds_handler_->string_data_series_names();
-    for (auto& topic_series : string_series)
+    std::vector<types::DatumLabel> string_series = fastdds_handler_.string_data_series_names();
+    for (const auto& series : string_series)
     {
-        for (auto& single_series : topic_series)
-        {
-            // Create a series
-            DEBUG("Creating string series: " << single_series);
-            dataMap().addStringSeries(single_series);
-        }
+        // Create a series
+        DEBUG("Creating string series: " << series);
+        dataMap().addStringSeries(series);
     }
 
-    running_.store(true);
+    running_ = true;
     return true;
 }
 
@@ -120,25 +112,26 @@ void FastDdsDataStreamer::shutdown()
     DEBUG("Bye World");
 
     // If it is running, stop it
-    if (running_.load())
+    if (running_)
     {
-        running_.store(false);
+        running_ = false;
 
         // Reset FastDDS so DDS entities are destroyed
-        fastdds_handler_->reset();
-        select_topics_dialog_->reset();
+        fastdds_handler_.reset();
+        select_topics_dialog_.reset();
     }
 }
 
 bool FastDdsDataStreamer::isRunning() const
 {
-    return running_.load();
+    return running_;
 }
 
 const char* FastDdsDataStreamer::name() const
 {
     return PLUGIN_NAME_;
 }
+
 
 ////////////////////////////////////////////////////
 // FASTDDS LISTENER METHODS
@@ -153,7 +146,7 @@ void FastDdsDataStreamer::on_double_data_read(
     // Locking DataStream
     std::lock_guard<std::mutex> lock(mutex());
 
-    for (auto& data : data_per_topic_value)
+    for (const auto& data : data_per_topic_value)
     {
         DEBUG("Adding to numeric series " << data.first << " value " << data.second << " with timestamp " << timestamp);
 
@@ -175,7 +168,7 @@ void FastDdsDataStreamer::on_string_data_read(
     // Locking DataStream
     std::lock_guard<std::mutex> lock(mutex());
 
-    for (auto& data : data_per_topic_value)
+    for (const auto& data : data_per_topic_value)
     {
         DEBUG("Adding to string series " << data.first << " value " << data.second << " with timestamp " << timestamp);
 
@@ -194,7 +187,7 @@ void FastDdsDataStreamer::on_topic_discovery(
         bool type_registered)
 {
     DEBUG("FastDdsDataStreamer topic_discovery_signal " << topic_name);
-    emit select_topics_dialog_->topic_discovery_signal(
+    emit select_topics_dialog_.topic_discovery_signal(
         utils::string_to_QString(topic_name),
         utils::string_to_QString(type_name),
         type_registered);
@@ -221,11 +214,11 @@ void FastDdsDataStreamer::connect_to_domain_(
     DEBUG("FastDdsDataStreamer connect_to_domain_ " << domain_id);
 
     // Reset view and handler
-    select_topics_dialog_->reset();
-    fastdds_handler_->reset();
+    select_topics_dialog_.reset();
+    fastdds_handler_.reset();
 
     // Connect to domain
-    fastdds_handler_->connect_to_domain(domain_id);
+    fastdds_handler_.connect_to_domain(domain_id);
 }
 
 } /* namespace datastreamer */

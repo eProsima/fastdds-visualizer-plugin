@@ -85,6 +85,9 @@ protected:
     UiListener* listener_;
 
     Ui::DialogSelectTopics* ui;
+
+    constexpr static const unsigned int TopicNameTableIndex_ = 0;
+    constexpr static const unsigned int TypeNameTableIndex_ = 1;
 };
 
 } /* namespace ui */

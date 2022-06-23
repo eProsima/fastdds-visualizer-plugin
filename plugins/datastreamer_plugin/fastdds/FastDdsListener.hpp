@@ -25,6 +25,7 @@
 #include <string>
 
 #include "utils/utils.hpp"
+#include "utils/types.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -41,20 +42,20 @@ class FastDdsListener
 public:
 
     virtual void on_double_data_read(
-            const std::vector<std::pair<std::string, double>>& data_per_topic_value,
+            const std::vector<types::NumericDatum>& numeric_data,
             double timestamp)
     {
         DEBUG("Calling on_double_data_read");
-        static_cast<void>(data_per_topic_value);
+        static_cast<void>(numeric_data);
         static_cast<void>(timestamp);
     }
 
     virtual void on_string_data_read(
-            const std::vector<std::pair<std::string, std::string>>& data_per_topic_value,
+            const std::vector<types::TextDatum>& text_data,
             double timestamp)
     {
         DEBUG("Calling on_string_data_read");
-        static_cast<void>(data_per_topic_value);
+        static_cast<void>(text_data);
         static_cast<void>(timestamp);
     }
 

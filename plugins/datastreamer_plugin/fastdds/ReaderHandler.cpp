@@ -59,21 +59,21 @@ ReaderHandler::ReaderHandler(
         string_data_info_);
 
     // Create the data structures so they are not copied in the future
-    for (auto& info : numeric_data_info_)
+    for (const auto& info : numeric_data_info_)
     {
         numeric_data_.push_back({ std::get<0>(info), 0});
     }
-    for (auto& info : string_data_info_)
+    for (const auto& info : string_data_info_)
     {
         string_data_.push_back({ std::get<0>(info), "-"});
     }
 
     DEBUG("Reader created in topic: " << topic_name() << " with types: ");
-    for (auto& info : numeric_data_info_)
+    for (const auto& info : numeric_data_info_)
     {
         DEBUG("\tNumeric: " << std::get<0>(info));
     }
-    for (auto& info : string_data_info_)
+    for (const auto& info : string_data_info_)
     {
         DEBUG("\tString: " << std::get<0>(info));
     }
@@ -155,23 +155,12 @@ void ReaderHandler::on_data_available(
 // VALUES METHODS
 ////////////////////////////////////////////////////
 
-// TODO erase
-// void ReaderHandler::listener(const std::shared_ptr<FastDdsListener>& listener)
-// {
-//     listener_ = listener;
-// }
-
-// std::shared_ptr<FastDdsListener> ReaderHandler::listener() const
-// {
-//     return listener_;
-// }
-
-std::string ReaderHandler::topic_name() const
+const std::string& ReaderHandler::topic_name() const
 {
     return topic_->get_name();
 }
 
-std::string ReaderHandler::type_name() const
+const std::string& ReaderHandler::type_name() const
 {
     return topic_->get_type_name();
 }

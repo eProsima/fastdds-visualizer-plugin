@@ -8,9 +8,6 @@ ROS is supported through external plugins that can be found in this [repository]
 
 - DataStream for Dynamic Types.
 
-## Install with Debians (TODO)
-
-> :warning: **TODO**
 
 ## Install from source using Colcon
 
@@ -22,7 +19,7 @@ Download Qt dependencies for PlotJuggler:
 sudo apt -y install qtbase5-dev libqt5svg5-dev libqt5websockets5-dev libqt5opengl5-dev libqt5x11extras5-dev libprotoc-dev
 ```
 
-### Qt dependencies
+### Fast DDS dependencies
 
 Download Fast DDS dependencies as specified in the following [link](https://fast-dds.docs.eprosima.com/en/latest/installation/sources/sources_linux.html#requirements).
 It is not needed to install Fast DDS, as it will be installed within this workspace.

@@ -23,33 +23,40 @@
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_DYNAMICTYPESUTILS_HPP_
 
 #include <fastrtps/types/DynamicData.h>
+#include "utils/types.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
 namespace utils {
 
-using TypeIntrospectionStruct =
-        std::vector<std::tuple<std::string, eprosima::fastrtps::types::MemberId, eprosima::fastrtps::types::TypeKind>>;
-using TypeIntrospectionNumericData = std::vector<std::pair<std::string, double>>;
-using TypeIntrospectionStringData = std::vector<std::pair<std::string, std::string>>;
+using SingleDataTypeIntrospectionInfo =
+    std::tuple<
+        types::DatumLabel,
+        eprosima::fastrtps::types::MemberId,
+        eprosima::fastrtps::types::TypeKind>;
+using TypeIntrospectionCollection =
+        std::vector<SingleDataTypeIntrospectionInfo>;
+
+using TypeIntrospectionNumericDatum = std::vector<types::NumericDatum>;
+using TypeIntrospectionStringDatum = std::vector<types::TextDatum>;
 
 std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionStruct& numeric_type_names);
+        const TypeIntrospectionCollection& numeric_type_names);
 
 void get_introspection_type_names(
         const std::string& base_type_name,
         eprosima::fastrtps::types::DynamicType_ptr type,
-        TypeIntrospectionStruct& numeric_type_names,
-        TypeIntrospectionStruct& string_type_names,
+        TypeIntrospectionCollection& numeric_type_names,
+        TypeIntrospectionCollection& string_type_names,
         const std::string& separator = "/");
 
 void get_introspection_data(
         eprosima::fastrtps::types::DynamicType_ptr type,
-        const TypeIntrospectionStruct& numeric_type_names,
-        const TypeIntrospectionStruct& string_type_names,
+        const TypeIntrospectionCollection& numeric_type_names,
+        const TypeIntrospectionCollection& string_type_names,
         eprosima::fastrtps::types::DynamicData_ptr data,
-        TypeIntrospectionNumericData& numeric_data,
-        TypeIntrospectionStringData& string_data);
+        TypeIntrospectionNumericDatum& numeric_data,
+        TypeIntrospectionStringDatum& string_data);
 
 double get_numeric_type_from_data(
         eprosima::fastrtps::types::DynamicData_ptr data,

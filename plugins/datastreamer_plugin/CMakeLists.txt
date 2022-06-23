@@ -18,9 +18,8 @@
 ###############################################################################
 # Configure CMake values
 ###############################################################################
-
 set(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
@@ -50,15 +49,6 @@ find_package(Qt5 REQUIRED COMPONENTS
 ###############################################################################
 # Include Qt
 ###############################################################################
-# include_directories(
-#     ${Qt5Core_INCLUDE_DIRS}
-#     ${Qt5Widgets_INCLUDE_DIRS}
-#     ${Qt5Concurrent_INCLUDE_DIRS}
-#     ${Qt5Xml_INCLUDE_DIRS}
-#     ${Qt5WebSockets_INCLUDE_DIRS}
-#     ${Qt5Svg_INCLUDE_DIRS}
-# )
-
 include_directories(
     ${Qt5Core_INCLUDE_DIRS}
     ${Qt5Widgets_INCLUDE_DIRS}
@@ -78,13 +68,12 @@ set( QT_LINK_LIBRARIES
 ###############################################################################
 # Configure Qt values
 ###############################################################################
-
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 
 # Get .ui files to autogenerate code
-SET(
+set(
     QT_UI_SOURCES
         "ui/topic_selection_dialog/dialogselecttopics.ui")
 
@@ -97,7 +86,6 @@ QT5_WRAP_UI (
 ###############################################################################
 # Getting sources
 ###############################################################################
-
 set (ALL_LIBRARY_SOURCES
 
         # utils files
@@ -131,7 +119,6 @@ set (ALL_LIBRARY_SOURCES
 ###############################################################################
 # Compile
 ###############################################################################
-
 # Include PlogJuggler directories
 find_package(plotjuggler REQUIRED)
 message(STATUS "PlotJuggler FOUND")
@@ -159,7 +146,6 @@ target_link_libraries(
 ###############################################################################
 # Install
 ###############################################################################
-
 install(
     TARGETS
         ${PROJECT_NAME}

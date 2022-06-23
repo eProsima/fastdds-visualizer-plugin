@@ -77,9 +77,9 @@ public:
 
     void reset();
 
-    std::vector<std::vector<std::string>> numeric_data_series_names() const;
+    std::vector<types::DatumLabel> numeric_data_series_names() const;
 
-    std::vector<std::vector<std::string>> string_data_series_names() const;
+    std::vector<types::DatumLabel> string_data_series_names() const;
 
 protected:
 
