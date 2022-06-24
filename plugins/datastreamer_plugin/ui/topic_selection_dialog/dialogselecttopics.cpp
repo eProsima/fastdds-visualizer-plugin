@@ -1,8 +1,28 @@
-// TODO add license
+// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+//
+// This file is part of eProsima Fast DDS Monitor.
+//
+// eProsima Fast DDS Monitor is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// eProsima Fast DDS Monitor is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * @file dialogselecttopics.cpp
+ */
 
 #include <iostream>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QFileDialog>
 
 #include "dialogselecttopics.h"
 #include "ui_dialogselecttopics.h"
@@ -86,11 +106,36 @@ void DialogSelectTopics::on_change_domain_button_clicked()
 void DialogSelectTopics::on_include_files_button_clicked()
 {
     DEBUG("Calling on_include_files_button_clicked");
+
+    // Let user to choose the file
+    QString file_path = QFileDialog::getOpenFileName(
+        this,
+        tr("Select .xml Data Type file"),
+        QDir::homePath(),
+        tr("XML files (*.xml)"));
+
+    // Add it to this object
+    add_xml_file_(utils::QString_to_string(file_path));
 }
 
 void DialogSelectTopics::on_include_dir_button_clicked()
 {
     DEBUG("Calling on_include_dir_button_clicked");
+
+    // Let user choose the directory from dialog
+    QString dir = QFileDialog::getExistingDirectory(
+        this, tr("Select a Directory"), QDir::homePath(),
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    // Loop the directory searching for xml files
+    std::vector<std::string> xml_files =
+        utils::get_files_in_dir(utils::QString_to_string(dir), "xml", false);
+
+    // For each file, add xml file to object
+    for (const auto& file_path : xml_files)
+    {
+        add_xml_file_(file_path);
+    }
 }
 
 void DialogSelectTopics::on_buttonBox_rejected()
@@ -267,6 +312,21 @@ void DialogSelectTopics::update_configuration_()
 
     // Get XML files
     // TODO
+}
+
+void DialogSelectTopics::add_xml_file_(const std::string& path)
+{
+    // Check it does not exist yet
+    // TODO
+
+    DEBUG("Adding xml file: " << path);
+
+    // Add item to list
+    const auto item = new QListWidgetItem(utils::string_to_QString(path));
+    ui->xml_files_list->addItem(item);
+
+    // Call listener with file
+    listener_->on_xml_datatype_file_added(path);
 }
 
 } /* namespace ui */
