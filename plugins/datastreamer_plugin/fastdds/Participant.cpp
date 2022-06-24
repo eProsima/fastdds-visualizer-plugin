@@ -140,6 +140,8 @@ bool Participant::register_type_from_xml(
         throw IncorrectParamException("Failed reading XML file: " + xml_path);
     }
 
+    DEBUG("Registered types in xml file: " << xml_path);
+
     // Loading an xml does not retrieve the types loaded.
     // Thus, it is necessary to loop over all types discovered and check if they are registered already
     refresh_types_registered_();
@@ -302,7 +304,7 @@ void Participant::on_topic_discovery_(
     // TODO: check if mutex required
 
     // Check if type is registered in Participant
-    bool is_registered = is_type_registered_(type_name);
+    bool is_registered = is_type_registered_in_participant_(type_name);
     bool is_already_discovered = false;
 
     // Check if this topic has already been discovered
@@ -387,12 +389,11 @@ void Participant::refresh_types_registered_()
         }
         else
         {
-            // Type not check as registered, check if it is registered in participant
-            if (is_type_registered_(topic_entry.second.first))
+            // If already registered, add it to database and notify listener by own topic discovery callback
+            if (is_type_registered_in_participant_(topic_entry.second.first))
             {
-                // Type is registered, so update database
-                discovery_database_->operator [](topic_entry.first) = {topic_entry.second.first, true};
-
+                // NOTE Do not modify the discovery database, as it must be consistent with the data sent in
+                // callbacks and not with the internal data.
                 // Set as discovered, so listener is called
                 on_topic_discovery_(topic_entry.first, topic_entry.second.first);
             }
@@ -400,11 +401,37 @@ void Participant::refresh_types_registered_()
     }
 }
 
-bool Participant::is_type_registered_(
+bool Participant::is_type_registered_in_participant_(
         const std::string& type_name)
 {
-    // If type is registered in "Fast", it is also registered in Participant
-    return participant_->find_type(type_name) != nullptr;
+    // Check type is registered in Participant
+    if (participant_->find_type(type_name) != nullptr)
+    {
+        return true;
+    }
+    else
+    {
+        // It may happen that type is registered in XML and not in Participant
+        // If so, register it in Participant
+        if (is_type_registered_in_xml_(type_name))
+        {
+            // Create TypeSupport and register it
+            eprosima::fastdds::dds::TypeSupport(
+                new eprosima::fastrtps::types::DynamicPubSubType(
+                    get_type_registered_(type_name))).register_type(participant_);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+bool Participant::is_type_registered_in_xml_(
+        const std::string& type_name)
+{
+    return nullptr != eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name);
 }
 
 eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
