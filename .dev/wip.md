@@ -7,7 +7,7 @@ Known features and bugs that will be fixed in future contributions
 
 - [-] support to discover a type using TypeObject
   - This implies to manage an internal logic so the type is not registered twice. Else it fails.
-- [-] support Data Types XML files addition
+- [X] support Data Types XML files addition
 - [-] support store Configuration for future runs
 - [-] support array clamp
 - [-] support string booleans to convert to numeric
@@ -19,6 +19,7 @@ Known features and bugs that will be fixed in future contributions
 - [-] do not repeat xml files in list
 - [-] check xml files exist before adding them to the list
 - [-] implement a way that non type discovered topics are seen differently (blush/transparent) in topic list
+- [-] store xml files in configurtion
 
 ## Bugs
 
