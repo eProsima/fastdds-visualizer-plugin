@@ -104,6 +104,9 @@ public:
     // UI LISTENER METHODS
     ////////////////////////////////////////////////////
 
+    virtual void on_xml_datatype_file_added(
+            const std::string& file_path) override;
+
     virtual void on_domain_connection(
             unsigned int domain_id) override;
 

@@ -374,7 +374,30 @@ std::vector<types::DatumLabel> Participant::string_data_series_names() const
 
 void Participant::refresh_types_registered_()
 {
-    // TODO when adding xml files
+    // Loop over every Topic discovered and check if type is registered
+    // In case it is not, it may happen that the type is registered now, so check in participant and
+    // modify it if necessary
+    for (auto& topic_entry : *discovery_database_)
+    {
+        // Check if type is registered in database
+        if (topic_entry.second.second)
+        {
+            // Type is registered, so nothing to do
+            continue;
+        }
+        else
+        {
+            // Type not check as registered, check if it is registered in participant
+            if (is_type_registered_(topic_entry.second.first))
+            {
+                // Type is registered, so update database
+                discovery_database_->operator [](topic_entry.first) = {topic_entry.second.first, true};
+
+                // Set as discovered, so listener is called
+                on_topic_discovery_(topic_entry.first, topic_entry.second.first);
+            }
+        }
+    }
 }
 
 bool Participant::is_type_registered_(

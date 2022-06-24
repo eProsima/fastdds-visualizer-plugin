@@ -12,14 +12,16 @@ Known features and bugs that will be fixed in future contributions
 - [-] support array clamp
 - [-] support string booleans to convert to numeric
 
-## Bad behaviour
+## Improvementes
 
 - [-] list of topics/types in DialogTopics is not sorted
 - [-] when opening the TopicDialog the second time it does not use the last configuration, but an older one
 - [-] do not repeat xml files in list
+- [-] check xml files exist before adding them to the list
+- [-] implement a way that non type discovered topics are seen differently (blush/transparent) in topic list
 
 ## Bugs
 
 - [-] when taken `flags()` from a topic in DialogTopics, sometimes it crashes because it does not found flags element
-- [-] allow "complex" Data Types
+- [-] allow complex (array of structs) Data Types
   - This is a Fast DDS bug
