@@ -94,24 +94,28 @@ protected:
 class UnsupportedException : public Exception
 {
 public:
+
     using Exception::Exception;
 };
 
 class InitializationException : public Exception
 {
 public:
+
     using Exception::Exception;
 };
 
 class InconsistencyException : public Exception
 {
 public:
+
     using Exception::Exception;
 };
 
 class IncorrectParamException : public Exception
 {
 public:
+
     using Exception::Exception;
 };
 
