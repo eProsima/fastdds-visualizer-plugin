@@ -8,19 +8,20 @@ Known features and bugs that will be fixed in future contributions
 - [-] support to discover a type using TypeObject
   - This implies to manage an internal logic so the type is not registered twice. Else it fails.
 - [X] support Data Types XML files addition
-- [-] support store Configuration for future runs
+- [X] support store Configuration for future runs
 - [-] support array clamp/discard
 - [-] support string booleans to convert to numeric
 - [-] filter topics
+- [-] create group topics
 
-## Improvementes
+## Improvements
 
 - [-] list of topics/types in DialogTopics is not sorted
-- [-] when opening the TopicDialog the second time it does not use the last configuration, but an older one
+- [X] when opening the TopicDialog the second time it does not use the last configuration, but an older one
 - [-] do not repeat xml files in list
 - [-] check xml files exist before adding them to the list
 - [-] implement a way that non type discovered topics are seen differently (blush/transparent) in topic list
-- [-] store xml files in configuration
+- [X] store xml files in configuration
 - [-] treat matrixes differently than vectors
 
 ## Bugs
@@ -28,3 +29,6 @@ Known features and bugs that will be fixed in future contributions
 - [-] when taken `flags()` from a topic in DialogTopics, sometimes it crashes because it does not found flags element
 - [-] allow complex (array of structs) Data Types
   - This is a Fast DDS bug
+- [-] discovering topic types does not work properly
+  - when a type belongs to two different topics, it does not work properly
+  - when publisher is already running, there are some times it does not work
