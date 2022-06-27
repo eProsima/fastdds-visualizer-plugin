@@ -26,7 +26,9 @@ namespace eprosima {
 namespace plotjuggler {
 
 /**
- * @brief Base class for all exceptions thrown by the eProsima DDSRouter library.
+ * @brief Base class for all exceptions thrown by the eProsima PlotJuggler FastDDS plugin.
+ *
+ * This class extends the std::exception class and adds the functionality to raise an exception with a custom message.
  *
  * @note This class is implemented in header because of its simplicity in order to save time.
  */

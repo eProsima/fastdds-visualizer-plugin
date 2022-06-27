@@ -368,7 +368,7 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
                         true);
         if (!type_object)
         {
-            IncorrectParamException("Dynamic type not registered");
+            throw IncorrectParamException("Dynamic type not registered");
         }
 
         auto type_id =
@@ -376,7 +376,7 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
                         true);
         if (!type_id)
         {
-            IncorrectParamException("Dynamic type not registered");
+            throw IncorrectParamException("Dynamic type not registered");
         }
 
         auto dyn_type = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(type_name,
