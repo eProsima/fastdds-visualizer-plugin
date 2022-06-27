@@ -54,8 +54,7 @@ struct Configuration
 
     ////////////////////
     // DDS Configuration
-    unsigned int domain_id_connected = 0;
-    unsigned int domain_id_selected = 0;
+    unsigned int domain_id = 0;
     QStringList xml_datatypes_files;  // Empty in initialization
 
     ////////////////////
@@ -64,12 +63,13 @@ struct Configuration
 
     ////////////////////
     // Save Load configuration
-    void xmlSaveState(
+    bool xmlSaveState(
             QDomDocument& doc,
             QDomElement& plugin_elem) const;
-    void xmlLoadState(
+    bool xmlLoadState(
             const QDomElement& parent_element);
 
+    // TODO: check if needed
     void saveToSettings(
             QSettings& setting,
             QString prefix) const;
@@ -77,7 +77,13 @@ struct Configuration
             const QSettings& settings,
             QString prefix);
 
+protected:
+
+    constexpr static const char* MAX_ARRAY_SIZE_SETTINGS_TAG = "max_array_size";
+    constexpr static const char* USE_HEADER_STAMP_SETTINGS_TAG = "use_header_stamp";
+    constexpr static const char* DISCARD_LARGE_ARRAYS_SETTINGS_TAG = "discard_large_arrays";
 };
+
 
 } /* namespace ui */
 } /* namespace plotjuggler */

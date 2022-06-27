@@ -42,6 +42,7 @@ DialogSelectTopics::DialogSelectTopics(
     , discovery_database_(discovery_database)
     , configuration_(configuration)
     , listener_(listener)
+    , domain_id_connected_(configuration.domain_id) // This is initialized here as it does not come from configuration
 {
     ui->setupUi(this);
 
@@ -60,10 +61,20 @@ DialogSelectTopics::DialogSelectTopics(
         this,
         &DialogSelectTopics::on_reset_view_slot);
 
+    connect(
+        this,
+        &DialogSelectTopics::connection_to_domain_signal,
+        this,
+        &DialogSelectTopics::on_connection_to_domain_slot);
+
     ////////////
     // Reset data with the current configuration
     // Remove every topic
     reset_to_configuration_();
+
+    ////////////
+    // UNSUPPORTED
+    ui->convert_booleans_check->setEnabled(false);
 }
 
 DialogSelectTopics::~DialogSelectTopics()
@@ -77,9 +88,22 @@ void DialogSelectTopics::reset()
     emit reset_view_signal();
 }
 
+void DialogSelectTopics::reset_to_configuration_(const Configuration& configuration)
+{
+    // Set new configuration as current and call reset
+    configuration_ = configuration;
+    emit reset_view_signal();
+}
+
 const Configuration& DialogSelectTopics::get_configuration() const
 {
     return configuration_;
+}
+
+void DialogSelectTopics::connect_to_domain(
+        const uint32_t domain_id)
+{
+    emit connection_to_domain_signal(domain_id);
 }
 
 void DialogSelectTopics::on_lineEditFilter_editingFinished()
@@ -98,15 +122,12 @@ void DialogSelectTopics::on_change_domain_button_clicked()
     DEBUG("Calling on_change_domain_button_clicked");
 
     // Change domain connected
-    configuration_.domain_id_connected =
+    domain_id_selected_ =
             static_cast<unsigned int>(ui->domainid_spin->value());
-    ui->current_domain_label->setText(
-        QString::number(configuration_.domain_id_connected));
-    check_domain_button_must_be_enable_();
 
     // Call listener to connect to domain
     listener_->on_domain_connection(
-        static_cast<unsigned int>(configuration_.domain_id_connected));
+        static_cast<unsigned int>(domain_id_selected_));
 }
 
 void DialogSelectTopics::on_include_files_button_clicked()
@@ -258,13 +279,24 @@ void DialogSelectTopics::on_reset_view_slot()
     reset_to_configuration_();
 }
 
+void DialogSelectTopics::on_connection_to_domain_slot(
+        const uint32_t domain_id)
+{
+    domain_id_connected_ = domain_id;
+
+    ui->current_domain_label->setText(
+        QString::number(domain_id_connected_));
+
+    check_domain_button_must_be_enable_();
+}
+
 void DialogSelectTopics::check_domain_button_must_be_enable_()
 {
     DEBUG("Calling check_domain_button_must_be_enable_");
 
     // Set enable disable of the button
     ui->change_domain_button->setEnabled(
-        configuration_.domain_id_connected != ui->domainid_spin->value());
+        domain_id_connected_ != ui->domainid_spin->value());
 }
 
 void DialogSelectTopics::clean_topics_list_()
@@ -282,15 +314,21 @@ void DialogSelectTopics::reset_to_configuration_()
 
     // FastDDS configuration
     // Set current domain
-    ui->domainid_spin->setValue(configuration_.domain_id_selected);
+    domain_id_selected_ = configuration_.domain_id;
+
+    ui->domainid_spin->setValue(domain_id_selected_);
     ui->current_domain_label->setText(
-        QString::number(configuration_.domain_id_connected));
+        QString::number(domain_id_connected_));
     check_domain_button_must_be_enable_();
 
     // Add XML files
+    // First erase every data in the list
+    ui->xml_files_list->clear();
     for (const auto& file : configuration_.xml_datatypes_files)
     {
-        // TODO
+        // Add every xml file in configuration
+        const auto item = new QListWidgetItem(file);
+        ui->xml_files_list->addItem(item);
     }
 
     // Array config
@@ -305,8 +343,8 @@ void DialogSelectTopics::update_configuration_()
     // Store every value in configuration
 
     // Domain id
-    configuration_.domain_id_selected =
-            static_cast<unsigned int>(ui->domainid_spin->value());
+    configuration_.domain_id =
+            static_cast<unsigned int>(domain_id_connected_);
 
     // Array
     configuration_.max_array_size =
@@ -329,7 +367,12 @@ void DialogSelectTopics::update_configuration_()
     }
 
     // Get XML files
-    // TODO
+    for (int r = 0; r < ui->xml_files_list->count(); r++)
+    {
+        QListWidgetItem* item = ui->xml_files_list->item(r);
+        // Store item
+        configuration_.xml_datatypes_files.push_back(item->text());
+    }
 }
 
 void DialogSelectTopics::add_xml_file_(

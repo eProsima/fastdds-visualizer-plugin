@@ -55,7 +55,12 @@ public:
 
     void reset();
 
+    void reset_to_configuration_(const Configuration& configuration);
+
     const Configuration& get_configuration() const;
+
+    void connect_to_domain(
+            const uint32_t domain_id);
 
 signals:
 
@@ -65,6 +70,9 @@ signals:
             const QString& topic_name,
             const QString& type_name,
             bool type_registered);
+
+    void connection_to_domain_signal(
+            const uint32_t domain_id);
 
 private slots:
 
@@ -86,12 +94,15 @@ private slots:
 
     void on_buttonBox_rejected();
 
+    void on_reset_view_slot();
+
     void on_topic_discovery_slot(
             const QString& topic_name,
             const QString& type_name,
             bool type_registered);
 
-    void on_reset_view_slot();
+    void on_connection_to_domain_slot(
+            const uint32_t domain_id);
 
 protected:
 
@@ -116,6 +127,9 @@ protected:
 
     constexpr static const unsigned int TopicNameTableIndex_ = 0;
     constexpr static const unsigned int TypeNameTableIndex_ = 1;
+
+    unsigned int domain_id_connected_;
+    unsigned int domain_id_selected_;
 };
 
 } /* namespace ui */

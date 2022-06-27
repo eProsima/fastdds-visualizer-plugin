@@ -72,7 +72,7 @@ class ViewListener
     + SLOT xml_datatype_added ( <str> )
 }
 
-ViewListener  ---*  "1"  Configuration
+ViewListener  --->  Configuration
 
 ' ---------------------------------------------------------
 
@@ -99,5 +99,6 @@ DataStream  --|>  BackendListener
 DataStream  --|>  ViewListener
 DataStream  ---*  "1"  FastDdsHandler : <<create>>
 DataStream  ---*  "1"  DialogTopicSelect : <<create>> + <<exec>>
+DataStream  --->  Configuration
 
 @enduml
