@@ -240,7 +240,7 @@ void Participant::on_type_information_received(
     // Prepare callback that will be executed after registering type
     std::function<void(const std::string&, const eprosima::fastrtps::types::DynamicType_ptr)> callback(
         [this, topic_name]
-        (const std::string& , const eprosima::fastrtps::types::DynamicType_ptr type)
+            (const std::string&, const eprosima::fastrtps::types::DynamicType_ptr type)
         {
             // Once the type has been registered, call on_topic_discovery_ so the callback is sent if it must
             this->on_topic_discovery_(topic_name.to_string(), type->get_name());
