@@ -64,32 +64,32 @@ void get_introspection_type_names(
 
     switch(kind)
     {
-        case TK_BOOLEAN:
-        case TK_BYTE:
-        case TK_INT16:
-        case TK_INT32:
-        case TK_INT64:
-        case TK_UINT16:
-        case TK_UINT32:
-        case TK_UINT64:
-        case TK_FLOAT32:
-        case TK_FLOAT64:
-        case TK_FLOAT128:
+        case fastrtps::types::TK_BOOLEAN:
+        case fastrtps::types::TK_BYTE:
+        case fastrtps::types::TK_INT16:
+        case fastrtps::types::TK_INT32:
+        case fastrtps::types::TK_INT64:
+        case fastrtps::types::TK_UINT16:
+        case fastrtps::types::TK_UINT32:
+        case fastrtps::types::TK_UINT64:
+        case fastrtps::types::TK_FLOAT32:
+        case fastrtps::types::TK_FLOAT64:
+        case fastrtps::types::TK_FLOAT128:
             // Add numeric value
             numeric_type_names.push_back(
                 {base_type_name, current_members_tree, current_kinds_tree, kind});
             break;
 
-        case TK_CHAR8:
-        case TK_CHAR16:
-        case TK_STRING8:
-        case TK_STRING16:
-        case TK_ENUM:
+        case fastrtps::types::TK_CHAR8:
+        case fastrtps::types::TK_CHAR16:
+        case fastrtps::types::TK_STRING8:
+        case fastrtps::types::TK_STRING16:
+        case fastrtps::types::TK_ENUM:
             string_type_names.push_back(
                 {base_type_name, current_members_tree, current_kinds_tree, kind});
             break;
 
-        case TK_ARRAY:
+        case fastrtps::types::TK_ARRAY:
         {
             DynamicType_ptr internal_type =
                 array_internal_kind(type);
@@ -114,7 +114,7 @@ void get_introspection_type_names(
             break;
         }
 
-        case TK_STRUCTURE:
+        case fastrtps::types::TK_STRUCTURE:
         {
             // Using the Dynamic type, retrieve the name of the fields and its descriptions
             std::map<std::string, DynamicTypeMember*> members_by_name;
@@ -122,7 +122,7 @@ void get_introspection_type_names(
 
             DEBUG("Size of members " << members_by_name.size());
 
-            for (auto& members : members_by_name)
+            for (const auto& members : members_by_name)
             {
                 DEBUG("Calling introspection for " << members.first);
 
@@ -143,11 +143,11 @@ void get_introspection_type_names(
             break;
         }
 
-        case TK_BITSET:
-        case TK_UNION:
-        case TK_SEQUENCE:
-        case TK_MAP:
-        case TK_NONE:
+        case fastrtps::types::TK_BITSET:
+        case fastrtps::types::TK_UNION:
+        case fastrtps::types::TK_SEQUENCE:
+        case fastrtps::types::TK_MAP:
+        case fastrtps::types::TK_NONE:
         default:
             WARNING(kind << " DataKind Not supported");
             throw std::runtime_error("Unsupported Dynamic Types kind");
@@ -161,6 +161,10 @@ void get_introspection_numeric_data(
 {
     DEBUG("Getting numeric data");
 
+    if (numeric_type_names.size() != numeric_data_result.size()) {
+        throw InconsistencyException("Vector of struct and result sizes mismatch in get_introspection_numeric_data");
+    }
+
     // It is used by index of the vector to avoid unnecessary lookups.
     // Vectors must be sorted in the same order => creation order given in get_introspection_type_names
     for (int i = 0; i < numeric_type_names.size(); ++i)
@@ -168,9 +172,9 @@ void get_introspection_numeric_data(
         const auto& member_type_info = numeric_type_names[i];
 
         // Get reference to variables to avoid calling get twice
-        const std::vector<MemberId>& members =
+        const auto& members =
             std::get<std::vector<MemberId>>(member_type_info);
-        const std::vector<TypeKind>& kinds =
+        const auto& kinds =
             std::get<std::vector<TypeKind>>(member_type_info);
 
         const TypeKind& actual_kind =
@@ -196,6 +200,10 @@ void get_introspection_string_data(
 {
     DEBUG("Getting string data");
 
+    if (string_type_names.size() != string_data_result.size()) {
+        throw InconsistencyException("Vector of struct and result sizes mismatch in get_introspection_string_data");
+    }
+
     // It is used by index of the vector to avoid unnecessary lookups.
     // Vectors must be sorted in the same order => creation order given in get_introspection_type_names
     for (int i = 0; i < string_type_names.size(); ++i)
@@ -203,9 +211,9 @@ void get_introspection_string_data(
         const auto& member_type_info = string_type_names[i];
 
         // Get reference to variables to avoid calling get twice
-        const std::vector<MemberId>& members =
+        const auto& members =
             std::get<std::vector<MemberId>>(member_type_info);
-        const std::vector<TypeKind>& kinds =
+        const auto& kinds =
             std::get<std::vector<TypeKind>>(member_type_info);
 
         const TypeKind& actual_kind =
@@ -244,7 +252,7 @@ DynamicData_ptr get_parent_data_of_member(
 
         switch (kind)
         {
-        case TK_STRUCTURE:
+        case fastrtps::types::TK_STRUCTURE:
         {
             // Access to the data inside the structure
             DynamicData* child_data;
@@ -256,7 +264,7 @@ DynamicData_ptr get_parent_data_of_member(
                 kind_tree,
                 array_indexes + 1);
         }
-        case TK_ARRAY:
+        case fastrtps::types::TK_ARRAY:
         {
             // TODO (this is not so important as a type with a complex array will die before
             // arriving here)
@@ -280,37 +288,37 @@ double get_numeric_type_from_data(
 
     switch (kind)
     {
-        case TK_BOOLEAN:
+        case fastrtps::types::TK_BOOLEAN:
             return static_cast<double>(data->get_bool_value(member));
 
-        case TK_BYTE:
+        case fastrtps::types::TK_BYTE:
             return static_cast<double>(data->get_byte_value(member));
 
-        case TK_INT16:
+        case fastrtps::types::TK_INT16:
             return static_cast<double>(data->get_int16_value(member));
 
-        case TK_INT32:
+        case fastrtps::types::TK_INT32:
             return static_cast<double>(data->get_int32_value(member));
 
-        case TK_INT64:
+        case fastrtps::types::TK_INT64:
             return static_cast<double>(data->get_int64_value(member));
 
-        case TK_UINT16:
+        case fastrtps::types::TK_UINT16:
             return static_cast<double>(data->get_uint16_value(member));
 
-        case TK_UINT32:
+        case fastrtps::types::TK_UINT32:
             return static_cast<double>(data->get_uint32_value(member));
 
-        case TK_UINT64:
+        case fastrtps::types::TK_UINT64:
             return static_cast<double>(data->get_uint64_value(member));
 
-        case TK_FLOAT32:
+        case fastrtps::types::TK_FLOAT32:
             return static_cast<double>(data->get_float32_value(member));
 
-        case TK_FLOAT64:
+        case fastrtps::types::TK_FLOAT64:
             return static_cast<double>(data->get_float64_value(member));
 
-        case TK_FLOAT128:
+        case fastrtps::types::TK_FLOAT128:
             return static_cast<double>(data->get_float128_value(member));
 
         default:
@@ -327,19 +335,19 @@ std::string get_string_type_from_data(
     DEBUG("Getting string data of kind " << kind << " in member " << member);
     switch (kind)
     {
-        case TK_CHAR8:
+        case fastrtps::types::TK_CHAR8:
             return to_string(data->get_char8_value(member));
 
-        case TK_CHAR16:
+        case fastrtps::types::TK_CHAR16:
             return to_string(data->get_char16_value(member));
 
-        case TK_STRING8:
+        case fastrtps::types::TK_STRING8:
             return data->get_string_value(member);
 
-        case TK_STRING16:
+        case fastrtps::types::TK_STRING16:
             return to_string(data->get_wstring_value(member));
 
-        case TK_ENUM:
+        case fastrtps::types::TK_ENUM:
             return data->get_enum_value(member);
 
         default:
@@ -354,17 +362,17 @@ bool is_kind_numeric(
 {
     switch (kind)
     {
-        case TK_BOOLEAN:
-        case TK_BYTE:
-        case TK_INT16:
-        case TK_INT32:
-        case TK_INT64:
-        case TK_UINT16:
-        case TK_UINT32:
-        case TK_UINT64:
-        case TK_FLOAT32:
-        case TK_FLOAT64:
-        case TK_FLOAT128:
+        case fastrtps::types::TK_BOOLEAN:
+        case fastrtps::types::TK_BYTE:
+        case fastrtps::types::TK_INT16:
+        case fastrtps::types::TK_INT32:
+        case fastrtps::types::TK_INT64:
+        case fastrtps::types::TK_UINT16:
+        case fastrtps::types::TK_UINT32:
+        case fastrtps::types::TK_UINT64:
+        case fastrtps::types::TK_FLOAT32:
+        case fastrtps::types::TK_FLOAT64:
+        case fastrtps::types::TK_FLOAT128:
             return true;
 
         default:
@@ -377,11 +385,11 @@ bool is_kind_string(
 {
     switch (kind)
     {
-        case TK_CHAR8:
-        case TK_CHAR16:
-        case TK_STRING8:
-        case TK_STRING16:
-        case TK_ENUM:
+        case fastrtps::types::TK_CHAR8:
+        case fastrtps::types::TK_CHAR16:
+        case fastrtps::types::TK_STRING8:
+        case fastrtps::types::TK_STRING16:
+        case fastrtps::types::TK_ENUM:
             return true;
 
         default:
