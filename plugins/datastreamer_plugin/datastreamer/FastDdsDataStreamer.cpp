@@ -189,6 +189,8 @@ void FastDdsDataStreamer::on_topic_discovery(
         bool type_registered)
 {
     DEBUG("FastDdsDataStreamer topic_discovery_signal " << topic_name);
+
+    // Emit signal to UI so it is handled from Qt thread
     emit select_topics_dialog_.topic_discovery_signal(
         utils::string_to_QString(topic_name),
         utils::string_to_QString(type_name),

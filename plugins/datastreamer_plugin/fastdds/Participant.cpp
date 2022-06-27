@@ -27,6 +27,7 @@
 
 #include "Participant.hpp"
 #include "utils/utils.hpp"
+#include "utils/Exception.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -75,11 +76,21 @@ Participant::Participant(
         this,
         default_listener_mask_());
 
+    if (!participant_)
+    {
+        throw InitializationException("Error creating Domain Participant");
+    }
+
     DEBUG("Participant created in domain " << domain_id << " with guid: " << participant_->guid());
 
     // Create Subscriber without listener
     subscriber_ = participant_->create_subscriber(
         default_subscriber_qos_());
+
+    if (!subscriber_)
+    {
+        throw InitializationException("Error creating Subscriber");
+    }
 }
 
 Participant::~Participant()
@@ -121,8 +132,8 @@ bool Participant::register_type_from_xml(
             eprosima::fastrtps::xmlparser::XMLProfileManager::loadXMLFile(xml_path);
     if (eprosima::fastrtps::xmlparser::XMLP_ret::XML_OK != ret)
     {
-        logWarning(PLOTJUGGLER_FASTDDS, "Error loading XML file: " << xml_path);
-        return false;
+        WARNING("Error loading XML file: " << xml_path);
+        throw IncorrectParamException("Failed reading XML file: " + xml_path);
     }
 
     // Loading an xml does not retrieve the types loaded.
@@ -141,18 +152,16 @@ void Participant::create_subscription(
     // Check datareader does not exist yet
     if (readers_.find(topic_name) != readers_.end())
     {
-        logWarning(PLOTJUGGLER_FASTDDS, "Datareader already exists for topic: " << topic_name);
-        return;
+        WARNING("Datareader already exists for topic: " << topic_name);
+        throw InconsistencyException("Trying to create Data Reader again in topic: " + topic_name);
     }
 
     // Check the Topic exist, so the type name is known
     auto topic_type = discovery_database_->find(topic_name);
     if (topic_type == discovery_database_->end())
     {
-        logWarning(
-            PLOTJUGGLER_FASTDDS,
-            "Topic " << topic_name << " has not been discovered not exist, so type unknowon");
-        return;
+        WARNING("Topic " << topic_name << " has not been discovered not exist, so type unknowon");
+        throw InconsistencyException("Trying to create Data Reader in a non existing topic: " + topic_name);
     }
 
     // Get TypeName associated with topic name
@@ -173,15 +182,6 @@ void Participant::create_subscription(
     // Get Dyn Type for type
     // This could not fail, as we know type is registered
     eprosima::fastrtps::types::DynamicType_ptr dyn_type = get_type_registered_(type_name);
-
-    // In case type is not registered, do not create subscription and show error
-    if (!dyn_type)
-    {
-        logError(
-            PLOTJUGGLER_FASTDDS,
-            "Type " << type_name << " is not registered, so datareader cannot be created.");
-        return;
-    }
 
     // Create Reader Handler with all this information and add it to readers
     // Create it with specific deleter for reader and topic
@@ -216,10 +216,7 @@ void Participant::on_publisher_discovery(
         std::string topic_name = info.info.topicName().to_string();
         std::string type_name = info.info.typeName().to_string();
 
-        DEBUG("Publisher discovered: " << topic_name << " with type: " << type_name);
-
-        logInfo(
-            PLOTJUGGLER_FASTDDS,
+        DEBUG(
             "DataWriter with guid " << info.info.guid() << " discovered in topic : " <<
                 topic_name << " [ " << type_name << " ]");
 
@@ -245,9 +242,15 @@ void Participant::on_type_discovery(
         const fastrtps::types::TypeObject* object,
         fastrtps::types::DynamicType_ptr dyn_type)
 {
-    DEBUG("Type discovered: " << dyn_type->get_name() << " in topic: " << topic.to_string());
+    if (!dyn_type)
+    {
+        // Fast DDS may call this callback with a nullptr in dyn_type because of reasons. Avoid break.
+        return;
+    }
 
-    // Create TypeSupport and register it
+    DEBUG("TypeObject discovered: " << dyn_type->get_name() << " for topic: " << topic.to_string());
+
+    // Create TypeSupport and register it in Participant
     eprosima::fastdds::dds::TypeSupport(
         new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
 
@@ -280,8 +283,7 @@ void Participant::on_topic_discovery_(
         if (it->second.second)
         {
             // The topic had already been discovered and registered, so not sending callback twice
-            logInfo(
-                PLOTJUGGLER_FASTDDS,
+            DEBUG(
                 "Topic " << topic_name << " has already been discovered");
             return;
         }
@@ -340,16 +342,14 @@ std::vector<types::DatumLabel> Participant::string_data_series_names() const
 
 void Participant::refresh_types_registered_()
 {
-    // TODO
+    // TODO when adding xml files
 }
 
 bool Participant::is_type_registered_(
         const std::string& type_name)
 {
+    // If type is registered in "Fast", it is also registered in Participant
     return participant_->find_type(type_name) != nullptr;
-
-    // Use method get_type_registered_
-    // return get_type_registered_(type_name) != nullptr;
 }
 
 eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
@@ -366,9 +366,19 @@ eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
         auto type_object =
                 eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name,
                         true);
+        if (!type_object)
+        {
+            throw IncorrectParamException("Dynamic type not registered");
+        }
+
         auto type_id =
                 eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_identifier(type_name,
                         true);
+        if (!type_id)
+        {
+            throw IncorrectParamException("Dynamic type not registered");
+        }
+
         auto dyn_type = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(type_name,
                         type_id,
                         type_object);
