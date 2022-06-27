@@ -31,5 +31,5 @@ Known features and bugs that will be fixed in future contributions
 - [-] allow complex (array of structs) Data Types
   - This is a Fast DDS bug
 - [-] discovering topic types does not work properly
-  - when a type belongs to two different topics, it does not work properly
-  - when publisher is already running, there are some times it does not work
+  - [X] when a type belongs to two different topics, it does not work properly
+  - [X] when publisher is already running, there are some times it does not work
