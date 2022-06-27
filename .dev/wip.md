@@ -19,7 +19,8 @@ Known features and bugs that will be fixed in future contributions
 - [-] do not repeat xml files in list
 - [-] check xml files exist before adding them to the list
 - [-] implement a way that non type discovered topics are seen differently (blush/transparent) in topic list
-- [-] store xml files in configurtion
+- [-] store xml files in configuration
+- [-] Treat matrixes differently than vectors
 
 ## Bugs
 
