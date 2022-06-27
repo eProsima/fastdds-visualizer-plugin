@@ -19,7 +19,7 @@
 #ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_EXCEPTION_HPP_
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_EXCEPTION_HPP_
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 namespace eprosima {
@@ -28,67 +28,13 @@ namespace plotjuggler {
 /**
  * @brief Base class for all exceptions thrown by the eProsima PlotJuggler FastDDS plugin.
  *
- * This class extends the std::exception class and adds the functionality to raise an exception with a custom message.
- *
- * @note This class is implemented in header because of its simplicity in order to save time.
+ * @note This class extends the std::runtime_error class to inherit functionality to be created with a custom message.
  */
-class Exception : public std::exception
+class Exception : public std::runtime_error
 {
-
 public:
 
-    /**
-     * @brief Construct a new ddsrouter::Exception object
-     *
-     * @param message The message to be returned by what()
-     */
-    Exception(
-            const char* message) noexcept
-        : message_(message)
-    {
-    }
-
-    /**
-     * @brief Construct a new ddsrouter::Exception object
-     *
-     * @param message The message to be returned by what()
-     */
-    Exception(
-            const std::string& message) noexcept
-        : message_(message)
-    {
-    }
-
-    /**
-     * @brief Copies the ddsrouter::Exception object into a new one
-     *
-     * @param other The original exception object to copy
-     */
-    Exception(
-            const Exception& other) = default;
-
-    /**
-     * @brief Copies the ddsrouter::Exception object into the current one
-     *
-     * @param other The original exception object to copy
-     * @return the current ddsrouter::Exception object after the copy
-     */
-    Exception& operator =(
-            const Exception& other) = default;
-
-    /**
-     * @brief Returns the explanatory string of the exception
-     *
-     * @return Null-terminated string with the explanatory information
-     */
-    virtual const char* what() const noexcept override
-    {
-        return message_.c_str();
-    }
-
-protected:
-
-    std::string message_;
+    using std::runtime_error::runtime_error;
 };
 
 class UnsupportedException : public Exception
