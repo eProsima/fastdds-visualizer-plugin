@@ -379,10 +379,10 @@ void Participant::refresh_types_registered_()
     // Loop over every Topic discovered and check if type is registered
     // In case it is not, it may happen that the type is registered now, so check in participant and
     // modify it if necessary
-    for (auto& topic_entry : *discovery_database_)
+    for (auto const& [topic_name, topic_data_type_info] : *discovery_database_)
     {
         // Check if type is registered in database
-        if (topic_entry.second.second)
+        if (std::get<DataTypeRegistered>(topic_data_type_info))
         {
             // Type is registered, so nothing to do
             continue;
@@ -390,12 +390,12 @@ void Participant::refresh_types_registered_()
         else
         {
             // If already registered, add it to database and notify listener by own topic discovery callback
-            if (is_type_registered_in_participant_(topic_entry.second.first))
+            if (is_type_registered_in_participant_(std::get<DataTypeNameType>(topic_data_type_info)))
             {
                 // NOTE Do not modify the discovery database, as it must be consistent with the data sent in
                 // callbacks and not with the internal data.
                 // Set as discovered, so listener is called
-                on_topic_discovery_(topic_entry.first, topic_entry.second.first);
+                on_topic_discovery_(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
             }
         }
     }
