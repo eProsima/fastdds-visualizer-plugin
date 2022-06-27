@@ -150,7 +150,8 @@ bool Participant::register_type_from_xml(
 }
 
 void Participant::create_subscription(
-        const std::string& topic_name)
+        const std::string& topic_name,
+        const DataTypeConfiguration& data_type_configuration)
 {
     // TODO: check if mutex required
     DEBUG("Creating subscription for topic: " << topic_name);
@@ -196,7 +197,8 @@ void Participant::create_subscription(
             topic,
             datareader,
             dyn_type,
-            listener_),
+            listener_,
+            data_type_configuration),
         ReaderHandlerDeleter(participant_, subscriber_)
         );
 

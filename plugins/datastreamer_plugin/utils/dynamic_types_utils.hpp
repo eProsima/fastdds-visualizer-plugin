@@ -24,6 +24,7 @@
 
 #include <fastrtps/types/DynamicData.h>
 #include "utils/types.hpp"
+#include "utils/DataTypeConfiguration.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -83,6 +84,7 @@ std::vector<std::string> get_introspection_type_names(
 void get_introspection_type_names(
         const std::string& base_type_name,
         const DynamicType_ptr& type,
+        const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
         const std::vector<MemberId>& current_members_tree = {},

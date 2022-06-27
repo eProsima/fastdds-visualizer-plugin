@@ -93,7 +93,9 @@ bool FastDdsDataStreamer::start(
     for (const auto& topic : topics)
     {
         // Create a subscription
-        fastdds_handler_.create_subscription(utils::QString_to_string(topic));
+        fastdds_handler_.create_subscription(
+            utils::QString_to_string(topic),
+            configuration_.data_type_configuration);
     }
 
     // Get all series from topics and create them

@@ -30,6 +30,7 @@
 
 #include "FastDdsListener.hpp"
 #include "utils/dynamic_types_utils.hpp"
+#include "utils/DataTypeConfiguration.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -51,7 +52,8 @@ public:
             eprosima::fastdds::dds::Topic* topic,
             eprosima::fastdds::dds::DataReader* datareader,
             eprosima::fastrtps::types::DynamicType_ptr type,
-            FastDdsListener* listener);
+            FastDdsListener* listener,
+            const DataTypeConfiguration& data_type_configuration);
 
 
     virtual ~ReaderHandler();

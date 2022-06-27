@@ -71,7 +71,8 @@ public:
             const std::string& xml_path);
 
     void create_subscription(
-            const std::string& topic_name);
+            const std::string& topic_name,
+            const DataTypeConfiguration& data_type_configuration);
 
     std::shared_ptr<TopicDataBase> get_topic_data_base() const;
 

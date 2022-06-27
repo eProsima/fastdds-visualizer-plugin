@@ -26,6 +26,8 @@
 #include <QSettings>
 #include <QDomDocument>
 
+#include "utils/DataTypeConfiguration.hpp"
+
 namespace eprosima {
 namespace plotjuggler {
 namespace ui {
@@ -48,9 +50,7 @@ struct Configuration
 
     ////////////////////
     // Max array size
-    unsigned max_array_size = 1000;
-    bool use_header_stamp = true;
-    bool discard_large_arrays = false;
+    DataTypeConfiguration data_type_configuration;
 
     ////////////////////
     // DDS Configuration
