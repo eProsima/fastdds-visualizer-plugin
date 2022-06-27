@@ -82,7 +82,7 @@ jobs:
 
 
   windows-build-test:
-    runs-on: ${{ matrix.ubuntu-version }}
+    runs-on: ${{ matrix.windows-version }}
     strategy:
       fail-fast: false
       matrix:
