@@ -153,6 +153,9 @@ protected:
     bool is_type_registered_in_xml_(
             const std::string& type_name);
 
+    bool is_type_registered_in_factory_(
+            const std::string& type_name);
+
     eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(
             const std::string& type_name);
 
