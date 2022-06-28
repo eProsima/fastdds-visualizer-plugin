@@ -87,6 +87,12 @@ void DialogSelectTopics::on_lineEditFilter_editingFinished()
     DEBUG("Calling on_lineEditFilter_editingFinished");
 }
 
+void DialogSelectTopics::on_convert_booleans_check_stateChanged(
+        int)
+{
+    // TODO
+}
+
 void DialogSelectTopics::on_change_domain_button_clicked()
 {
     DEBUG("Calling on_change_domain_button_clicked");
