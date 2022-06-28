@@ -103,7 +103,8 @@ protected:
 
     void update_configuration_();
 
-    void add_xml_file_(const std::string& path);
+    void add_xml_file_(
+            const std::string& path);
 
     std::shared_ptr<fastdds::TopicDataBase> discovery_database_;
 

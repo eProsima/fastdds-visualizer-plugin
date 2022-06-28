@@ -74,9 +74,9 @@ std::string to_string(
 }
 
 std::vector<std::string> get_files_in_dir(
-    const std::string& dir_path,
-    const std::string& file_extension /* = ".xml" */,
-    bool recursive /* = false */)
+        const std::string& dir_path,
+        const std::string& file_extension /* = ".xml" */,
+        bool recursive /* = false */)
 {
     return get_files_in_dir_regex(
         dir_path,
@@ -85,14 +85,14 @@ std::vector<std::string> get_files_in_dir(
 }
 
 std::vector<std::string> get_files_in_dir_regex(
-    const std::string& dir_path,
-    const std::regex& regex_rule,
-    bool recursive /* = false */)
+        const std::string& dir_path,
+        const std::regex& regex_rule,
+        bool recursive /* = false */)
 {
     std::vector<std::string> result;
 
     // Get all files in dir
-    for (const auto & entry : std::filesystem::directory_iterator(dir_path))
+    for (const auto& entry : std::filesystem::directory_iterator(dir_path))
     {
         const auto& file_path = entry.path().string();
 

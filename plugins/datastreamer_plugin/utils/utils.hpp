@@ -60,14 +60,14 @@ std::string to_string(
         wchar_t c);
 
 std::vector<std::string> get_files_in_dir(
-    const std::string& dir_path,
-    const std::string& file_extension = "xml",
-    bool recursive = false);
+        const std::string& dir_path,
+        const std::string& file_extension = "xml",
+        bool recursive = false);
 
 std::vector<std::string> get_files_in_dir_regex(
-    const std::string& dir_path,
-    const std::regex& regex_rule,
-    bool recursive = false);
+        const std::string& dir_path,
+        const std::regex& regex_rule,
+        bool recursive = false);
 
 } /* namespace utils */
 } /* namespace plotjuggler */

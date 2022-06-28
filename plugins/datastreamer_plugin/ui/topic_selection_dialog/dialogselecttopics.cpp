@@ -115,7 +115,8 @@ void DialogSelectTopics::on_include_files_button_clicked()
         tr("XML files (*.xml)"));
 
     // Check if dialog has been cancelled
-    if(file_path.isEmpty() || file_path.isNull()){
+    if (file_path.isEmpty() || file_path.isNull())
+    {
         return;
     }
 
@@ -133,13 +134,14 @@ void DialogSelectTopics::on_include_dir_button_clicked()
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     // Check if dialog has been cancelled
-    if(dir_path.isEmpty() || dir_path.isNull()){
+    if (dir_path.isEmpty() || dir_path.isNull())
+    {
         return;
     }
 
     // Loop the directory searching for xml files
     std::vector<std::string> xml_files =
-        utils::get_files_in_dir(utils::QString_to_string(dir_path), "xml", false);
+            utils::get_files_in_dir(utils::QString_to_string(dir_path), "xml", false);
 
     // For each file, add xml file to object
     for (const auto& file_path : xml_files)
@@ -324,7 +326,8 @@ void DialogSelectTopics::update_configuration_()
     // TODO
 }
 
-void DialogSelectTopics::add_xml_file_(const std::string& path)
+void DialogSelectTopics::add_xml_file_(
+        const std::string& path)
 {
     // Check it does not exist yet
     // TODO
