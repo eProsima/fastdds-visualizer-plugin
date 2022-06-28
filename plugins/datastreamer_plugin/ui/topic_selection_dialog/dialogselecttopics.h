@@ -118,6 +118,22 @@ protected:
     void add_xml_file_(
             const std::string& path);
 
+    void type_format_(const int row, bool registered);
+
+    /**
+     * @brief Change format of the row \c row in \c listDdsTopics to set as a registered data type
+     *
+     * This set the text color to black and make item selectable
+     */
+    void registered_type_change_format_(const int row);
+
+    /**
+     * @brief Change format of the row \c row in \c listDdsTopics to set as a not registered data type
+     *
+     * This set the text color to grey and make item non selectable
+     */
+    void unregistered_type_change_format_(const int row);
+
     std::shared_ptr<fastdds::TopicDataBase> discovery_database_;
 
     Configuration configuration_;
