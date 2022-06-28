@@ -33,10 +33,10 @@ using namespace eprosima::fastrtps::types;
 
 using SingleDataTypeIntrospectionInfo =
         std::tuple<
-            types::DatumLabel,
-            std::vector<MemberId>,   // Member Ids of the parents of the data member
-            std::vector<TypeKind>,   // Kind of the parents of the data member
-            TypeKind>;               // Kind of this member
+    types::DatumLabel,
+    std::vector<MemberId>,           // Member Ids of the parents of the data member
+    std::vector<TypeKind>,           // Kind of the parents of the data member
+    TypeKind>;                       // Kind of this member
 
 using TypeIntrospectionCollection =
         std::vector<SingleDataTypeIntrospectionInfo>;

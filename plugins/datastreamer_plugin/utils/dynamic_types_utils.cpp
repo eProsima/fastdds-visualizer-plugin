@@ -62,7 +62,7 @@ void get_introspection_type_names(
     // Get type kind and store it as kind tree
     TypeKind kind = type->get_kind();
 
-    switch(kind)
+    switch (kind)
     {
         case fastrtps::types::TK_BOOLEAN:
         case fastrtps::types::TK_BYTE:
@@ -92,7 +92,7 @@ void get_introspection_type_names(
         case fastrtps::types::TK_ARRAY:
         {
             DynamicType_ptr internal_type =
-                array_internal_kind(type);
+                    array_internal_kind(type);
             unsigned int this_array_size = array_size(type);
 
             for (unsigned int i = 0; i < this_array_size; i++)
@@ -161,7 +161,8 @@ void get_introspection_numeric_data(
 {
     DEBUG("Getting numeric data");
 
-    if (numeric_type_names.size() != numeric_data_result.size()) {
+    if (numeric_type_names.size() != numeric_data_result.size())
+    {
         throw InconsistencyException("Vector of struct and result sizes mismatch in get_introspection_numeric_data");
     }
 
@@ -173,12 +174,12 @@ void get_introspection_numeric_data(
 
         // Get reference to variables to avoid calling get twice
         const auto& members =
-            std::get<std::vector<MemberId>>(member_type_info);
+                std::get<std::vector<MemberId>>(member_type_info);
         const auto& kinds =
-            std::get<std::vector<TypeKind>>(member_type_info);
+                std::get<std::vector<TypeKind>>(member_type_info);
 
         const TypeKind& actual_kind =
-            std::get<TypeKind>(member_type_info);
+                std::get<TypeKind>(member_type_info);
 
         // Get Data parent that has the member we are looking for
         const auto& parent_data = get_parent_data_of_member(
@@ -200,7 +201,8 @@ void get_introspection_string_data(
 {
     DEBUG("Getting string data");
 
-    if (string_type_names.size() != string_data_result.size()) {
+    if (string_type_names.size() != string_data_result.size())
+    {
         throw InconsistencyException("Vector of struct and result sizes mismatch in get_introspection_string_data");
     }
 
@@ -212,12 +214,12 @@ void get_introspection_string_data(
 
         // Get reference to variables to avoid calling get twice
         const auto& members =
-            std::get<std::vector<MemberId>>(member_type_info);
+                std::get<std::vector<MemberId>>(member_type_info);
         const auto& kinds =
-            std::get<std::vector<TypeKind>>(member_type_info);
+                std::get<std::vector<TypeKind>>(member_type_info);
 
         const TypeKind& actual_kind =
-            std::get<TypeKind>(member_type_info);
+                std::get<TypeKind>(member_type_info);
 
         // Get Data parent that has the member we are looking for
         const auto& parent_data = get_parent_data_of_member(
@@ -252,29 +254,29 @@ DynamicData_ptr get_parent_data_of_member(
 
         switch (kind)
         {
-        case fastrtps::types::TK_STRUCTURE:
-        {
-            // Access to the data inside the structure
-            DynamicData* child_data;
-            data->get_complex_value(&child_data, member_id);
+            case fastrtps::types::TK_STRUCTURE:
+            {
+                // Access to the data inside the structure
+                DynamicData* child_data;
+                data->get_complex_value(&child_data, member_id);
 
-            return get_parent_data_of_member(
-                DynamicData_ptr(child_data),
-                members_tree,
-                kind_tree,
-                array_indexes + 1);
-        }
-        case fastrtps::types::TK_ARRAY:
-        {
-            // TODO (this is not so important as a type with a complex array will die before
-            // arriving here)
-        }
+                return get_parent_data_of_member(
+                    DynamicData_ptr(child_data),
+                    members_tree,
+                    kind_tree,
+                    array_indexes + 1);
+            }
+            case fastrtps::types::TK_ARRAY:
+            {
+                // TODO (this is not so important as a type with a complex array will die before
+                // arriving here)
+            }
             // TODO
-        default:
-            // TODO add exception
-            WARNING("Error getting data");
-            return data;
-            break;
+            default:
+                // TODO add exception
+                WARNING("Error getting data");
+                return data;
+                break;
         }
     }
 }
@@ -355,7 +357,6 @@ std::string get_string_type_from_data(
             throw InconsistencyException("Member wrongly set as string");
     }
 }
-
 
 bool is_kind_numeric(
         const TypeKind& kind)
