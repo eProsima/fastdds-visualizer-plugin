@@ -44,6 +44,14 @@ namespace ui {
 struct Configuration
 {
 
+    Configuration();
+
+    //! Load default configuration with specific prefix
+    Configuration(const QString& prefix);
+
+    Configuration(const Configuration& other) = default;
+    Configuration& operator=(const Configuration& other) = default;
+
     ////////////////////
     // Topics
     QStringList topics_selected;  // Empty in initialization
@@ -69,19 +77,19 @@ struct Configuration
     bool xmlLoadState(
             const QDomElement& parent_element);
 
-    // TODO: check if needed
-    void saveToSettings(
-            QSettings& setting,
-            QString prefix) const;
-    void loadFromSettings(
-            const QSettings& settings,
-            QString prefix);
+    void save_default_settings(
+            const QString& prefix) const;
+
+    void load_default_settings(
+            const QString& prefix);
 
 protected:
 
     constexpr static const char* MAX_ARRAY_SIZE_SETTINGS_TAG = "max_array_size";
     constexpr static const char* USE_HEADER_STAMP_SETTINGS_TAG = "use_header_stamp";
     constexpr static const char* DISCARD_LARGE_ARRAYS_SETTINGS_TAG = "discard_large_arrays";
+    constexpr static const char* XML_DATATYPE_FILES_SETTINGS_TAG = "xml_datatype_files";
+    constexpr static const char* DOMAIN_ID_SETTINGS_TAG = "domain_id_files";
 };
 
 

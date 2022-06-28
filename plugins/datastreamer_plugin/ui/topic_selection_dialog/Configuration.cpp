@@ -66,6 +66,32 @@ bool Configuration::xmlLoadState(
     return true;
 }
 
+void Configuration::save_default_settings(
+        const QString& prefix) const
+{
+    // Get default Qt settings
+    QSettings settings;
+
+    settings.setValue(prefix + MAX_ARRAY_SIZE_SETTINGS_TAG, data_type_configuration.max_array_size);
+    settings.setValue(prefix + USE_HEADER_STAMP_SETTINGS_TAG, data_type_configuration.use_header_stamp);
+    settings.setValue(prefix + DISCARD_LARGE_ARRAYS_SETTINGS_TAG, data_type_configuration.discard_large_arrays);
+    settings.setValue(prefix + XML_DATATYPE_FILES_SETTINGS_TAG, xml_datatypes_files);
+    settings.setValue(prefix + DOMAIN_ID_SETTINGS_TAG, domain_id);
+}
+
+void Configuration::load_default_settings(
+        const QString& prefix)
+{
+    // Get default Qt settings
+    QSettings settings;
+
+    data_type_configuration.max_array_size = settings.value(prefix + MAX_ARRAY_SIZE_SETTINGS_TAG, data_type_configuration.max_array_size).toInt();
+    data_type_configuration.use_header_stamp = settings.value(prefix + USE_HEADER_STAMP_SETTINGS_TAG, data_type_configuration.use_header_stamp).toBool();
+    data_type_configuration.discard_large_arrays = settings.value(prefix + DISCARD_LARGE_ARRAYS_SETTINGS_TAG, data_type_configuration.discard_large_arrays).toBool();
+    xml_datatypes_files = settings.value(prefix + XML_DATATYPE_FILES_SETTINGS_TAG, xml_datatypes_files).toStringList();
+    domain_id = settings.value(prefix + DOMAIN_ID_SETTINGS_TAG, domain_id).toInt();
+}
+
 } /* namespace ui */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
