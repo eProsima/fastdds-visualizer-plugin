@@ -172,11 +172,10 @@ const std::string& ReaderHandler::type_name() const
 
 eprosima::fastdds::dds::StatusMask ReaderHandler::default_listener_mask_()
 {
-    eprosima::fastdds::dds::StatusMask mask;
+    // Start from all bits set to 0
+    eprosima::fastdds::dds::StatusMask mask = eprosima::fastdds::dds::StatusMask::none();
 
-    // Erase all
-    mask.any();
-    // Only listen these callbacks (and the DomainParticipantListener ones)
+    // Only listen this callback (and the DomainParticipantListener ones)
     mask << eprosima::fastdds::dds::StatusMask::data_available();
 
     return mask;
