@@ -146,7 +146,10 @@ protected:
 
     void refresh_types_registered_();
 
-    bool is_type_registered_(
+    bool is_type_registered_in_participant_(
+            const std::string& type_name);
+
+    bool is_type_registered_in_xml_(
             const std::string& type_name);
 
     eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(

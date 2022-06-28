@@ -19,6 +19,7 @@
  * @file utils.cpp
  */
 
+#include <filesystem>
 #include <sstream>
 
 #include "utils.hpp"
@@ -70,6 +71,41 @@ std::string to_string(
         wchar_t c)
 {
     return to_string(std::wstring(1, c));
+}
+
+std::vector<std::string> get_files_in_dir(
+        const std::string& dir_path,
+        const std::string& file_extension /* = ".xml" */,
+        bool recursive /* = false */)
+{
+    return get_files_in_dir_regex(
+        dir_path,
+        std::regex(".*\\." + file_extension + "$"),
+        recursive);
+}
+
+std::vector<std::string> get_files_in_dir_regex(
+        const std::string& dir_path,
+        const std::regex& regex_rule,
+        bool recursive /* = false */)
+{
+    std::vector<std::string> result;
+
+    // Get all files in dir
+    for (const auto& entry : std::filesystem::directory_iterator(dir_path))
+    {
+        const auto& file_path = entry.path().string();
+
+        // For each file found, check it follows the pattern
+        bool match = std::regex_match(file_path, regex_rule);
+        if (match)
+        {
+            // If it matches, add it to the list
+            result.push_back(file_path);
+        }
+    }
+
+    return result;
 }
 
 } /* namespace utils */

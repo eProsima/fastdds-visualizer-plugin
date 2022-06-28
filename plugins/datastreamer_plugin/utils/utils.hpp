@@ -22,11 +22,12 @@
 #ifndef _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_UTILS_HPP_
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_UTILS_UTILS_HPP_
 
-#include <iostream>
-#include <string>
-#include <locale>
 #include <codecvt>
+#include <iostream>
+#include <locale>
 #include <QString>
+#include <regex>
+#include <string>
 
 #include <fastdds/rtps/common/Time_t.h>
 
@@ -57,6 +58,16 @@ std::string to_string(
 
 std::string to_string(
         wchar_t c);
+
+std::vector<std::string> get_files_in_dir(
+        const std::string& dir_path,
+        const std::string& file_extension = "xml",
+        bool recursive = false);
+
+std::vector<std::string> get_files_in_dir_regex(
+        const std::string& dir_path,
+        const std::regex& regex_rule,
+        bool recursive = false);
 
 } /* namespace utils */
 } /* namespace plotjuggler */

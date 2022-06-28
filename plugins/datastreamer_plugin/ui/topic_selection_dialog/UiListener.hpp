@@ -38,9 +38,9 @@ struct UiListener
 public:
 
     virtual void on_xml_datatype_file_added(
-            const QString& file_path)
+            const std::string& file_path)
     {
-        DEBUG("Calling on_xml_datatype_file_added " << file_path.toStdString());
+        DEBUG("Calling on_xml_datatype_file_added " << file_path);
         static_cast<void>(file_path);
     }
 

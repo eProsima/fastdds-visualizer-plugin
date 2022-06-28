@@ -36,7 +36,7 @@ namespace fastdds {
 using TopicName = std::string;
 using DataTypeNameType = std::string;
 using DataTypeRegistered = bool;
-using DataTypeInfo = std::pair<std::string, bool>;
+using DataTypeInfo = std::pair<DataTypeNameType, DataTypeRegistered>;
 using TopicDataBase = std::unordered_map<TopicName, DataTypeInfo>;
 
 } /* namespace fastdds */

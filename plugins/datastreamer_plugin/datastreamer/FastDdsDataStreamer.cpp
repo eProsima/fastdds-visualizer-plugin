@@ -201,6 +201,13 @@ void FastDdsDataStreamer::on_topic_discovery(
 // UI LISTENER METHODS
 ////////////////////////////////////////////////////
 
+void FastDdsDataStreamer::on_xml_datatype_file_added(
+        const std::string& file_path)
+{
+    DEBUG("FastDdsDataStreamer on_xml_datatype_file_added " << file_path);
+    fastdds_handler_.register_type_from_xml(file_path);
+}
+
 void FastDdsDataStreamer::on_domain_connection(
         unsigned int domain_id)
 {
