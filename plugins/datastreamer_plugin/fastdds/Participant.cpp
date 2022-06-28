@@ -230,7 +230,7 @@ void Participant::on_publisher_discovery(
 }
 
 void Participant::on_type_information_received(
-        eprosima::fastdds::dds::DomainParticipant* participant,
+        eprosima::fastdds::dds::DomainParticipant*,
         const fastrtps::string_255 topic_name,
         const fastrtps::string_255 type_name,
         const fastrtps::types::TypeInformation& type_information)
@@ -242,11 +242,12 @@ void Participant::on_type_information_received(
         [this, topic_name]
             (const std::string&, const eprosima::fastrtps::types::DynamicType_ptr type)
         {
-            // Once the type has been registered, call on_topic_discovery_ so the callback is sent if it must
+            DEBUG(
+                "Type discovered by lookup info: " << type->get_name() << " in topic: " << topic_name.to_string());
             this->on_topic_discovery_(topic_name.to_string(), type->get_name());
         });
 
-    // Register participant
+    // Registering type and creating reader
     participant_->register_remote_type(
         type_information,
         type_name.to_string(),
@@ -270,13 +271,24 @@ void Participant::on_type_discovery(
 
     DEBUG("TypeObject discovered: " << dyn_type->get_name() << " for topic: " << topic.to_string());
 
-    // Create TypeSupport and register it in Participant
-    eprosima::fastdds::dds::TypeSupport(
-        new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
+    // TOOD study this
+    // In case of complex data types, registering here means that the data type will be incorrectly registered
+    // because the internal data will be received and registered faster than lookup service, which produces an error
+    // when registering type:
+    //  logError(PARTICIPANT, "Another type with the same name Struct_TypeIntrospectionExample is already registered.");
+    // WORKAROUND: only use TypeLookup service to get Type Information and forget about the TypeObject
+    // For the future: it seems like the error appears when registering the type from here because this callback is
+    // erroneous, so it can be checked wether this type has already been registered. Be careful because it should
+    // not only check it has been registered but it has been discovered by the Service, that may be in process of
+    // registering when this callback arrives
 
-    // In case this callback is sent, it means that the type is already registered, so notify
-    // TODO in future it would be better to update every topic in this type name, and not just the one calling here
-    on_topic_discovery_(topic.to_string(), dyn_type->get_name());
+    // Create TypeSupport and register it
+    // eprosima::fastdds::dds::TypeSupport(
+    //     new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
+
+    // // In case this callback is sent, it means that the type is already registered, so notify
+    // // TODO in future it would be better to update every topic in this type name, and not just the one calling here
+    // on_topic_discovery_(topic.to_string(), dyn_type->get_name());
 }
 
 ////////////////////////////////////////////////////

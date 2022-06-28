@@ -133,8 +133,8 @@ public:
     utils::TypeIntrospectionCollection numeric_data_info_;
     utils::TypeIntrospectionCollection string_data_info_;
 
-    utils::TypeIntrospectionNumericDatum numeric_data_;
-    utils::TypeIntrospectionStringDatum string_data_;
+    utils::TypeIntrospectionNumericStruct numeric_data_;
+    utils::TypeIntrospectionStringStruct string_data_;
 
 };
 

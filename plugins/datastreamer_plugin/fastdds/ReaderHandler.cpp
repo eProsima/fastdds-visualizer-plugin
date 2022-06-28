@@ -124,12 +124,13 @@ void ReaderHandler::on_data_available(
             double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);
 
             // Get data in already created structures
-            utils::get_introspection_data(
-                type_,
+            utils::get_introspection_numeric_data(
                 numeric_data_info_,
+                data_,
+                numeric_data_);
+            utils::get_introspection_string_data(
                 string_data_info_,
                 data_,
-                numeric_data_,
                 string_data_);
 
             // Get value maps from data and send callback if there are data
