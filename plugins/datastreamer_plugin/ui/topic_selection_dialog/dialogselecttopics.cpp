@@ -72,6 +72,9 @@ DialogSelectTopics::DialogSelectTopics(
     // Remove every topic
     reset_to_configuration_();
 
+    // Set names in columns in select topics (not done in ui because Qt Designer does not support it)
+    ui->listRosTopics->setHorizontalHeaderLabels(QStringList() << tr("Topic Name") << tr("Data Type name"));
+
     ////////////
     // UNSUPPORTED
     ui->convert_booleans_check->setEnabled(false);
