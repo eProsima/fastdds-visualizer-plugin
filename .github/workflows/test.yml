@@ -141,10 +141,17 @@ jobs:
           cmake -Ax64 -T host=x64 -B build\plotjuggler PlotJuggler;
           cmake --build build\plotjuggler --config ${{ matrix.cmake-config }} --target install
 
+      # TODO remove after debug
+      - name: Check installation paths
+        shell: pwsh
+        run: >
+          Tree /f
+
       - name: Install Plotjuggler Fast-DDS- plugin
         shell: pwsh
         run: >
-          cmake -DCMAKE_CXX_FLAGS="/WX /EHsc" -B build\plotjuggler_fastdds `
+          cmake -DCMAKE_PREFIX_PATH='C:\Program Files;${{ github.workspace }}\install' `
+           -DCMAKE_CXX_FLAGS="/WX /EHsc" -B build\plotjuggler_fastdds `
            -A x64 -T host=x64 plotjuggler_fastdds;
           cmake --build build\plotjuggler_fastdds --config ${{ matrix.cmake-config }} --target install
 
