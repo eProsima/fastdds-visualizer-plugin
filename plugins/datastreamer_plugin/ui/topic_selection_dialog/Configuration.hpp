@@ -65,7 +65,7 @@ struct Configuration
     // Save Load configuration
     bool xmlSaveState(
             QDomDocument& doc,
-            QDomElement& plugin_elem) const;
+            QDomElement& parent_element) const;
     bool xmlLoadState(
             const QDomElement& parent_element);
 
