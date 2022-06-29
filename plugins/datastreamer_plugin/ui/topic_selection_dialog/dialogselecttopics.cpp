@@ -372,7 +372,9 @@ void DialogSelectTopics::add_xml_file_(
     listener_->on_xml_datatype_file_added(path);
 }
 
-void DialogSelectTopics::type_format_(const int row, bool registered)
+void DialogSelectTopics::type_format_(
+        const int row,
+        bool registered)
 {
     DEBUG("Changing item format in row " << row);
     if (registered)
@@ -385,7 +387,8 @@ void DialogSelectTopics::type_format_(const int row, bool registered)
     }
 }
 
-void DialogSelectTopics::registered_type_change_format_(const int row )
+void DialogSelectTopics::registered_type_change_format_(
+        const int row )
 {
     // Take items
     QTableWidgetItem* item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
@@ -400,7 +403,8 @@ void DialogSelectTopics::registered_type_change_format_(const int row )
     type_item->setForeground(Qt::black);
 }
 
-void DialogSelectTopics::unregistered_type_change_format_(const int row)
+void DialogSelectTopics::unregistered_type_change_format_(
+        const int row)
 {
     // Take items
     QTableWidgetItem* item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
