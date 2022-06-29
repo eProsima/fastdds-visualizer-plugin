@@ -72,6 +72,9 @@ DialogSelectTopics::DialogSelectTopics(
     // Remove every topic
     reset_to_configuration_();
 
+    // Set names in columns in select topics (not done in ui because Qt Designer does not support it)
+    ui->listDdsTopics->setHorizontalHeaderLabels(QStringList() << tr("Topic Name") << tr("Data Type name"));
+
     ////////////
     // UNSUPPORTED
     ui->convert_booleans_check->setEnabled(false);
@@ -211,62 +214,40 @@ void DialogSelectTopics::on_topic_discovery_slot(
     // Check if topic already exist
     bool already_in_list = false;
     // Look for every item in list
-    for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
+    for (int r = 0; r < ui->listDdsTopics->rowCount(); r++)
     {
-        QTableWidgetItem* item = ui->listRosTopics->item(r, 0);
+        QTableWidgetItem* item = ui->listDdsTopics->item(r, 0);
         // Check if this is the topic name
         if (item->text() == topic_name)
         {
-            // Get also type item to make it selectable
-            QTableWidgetItem* type_item = ui->listRosTopics->item(r, 1);
-
-            // If already_in_list already in list, update registered
             already_in_list = true;
-            if (!type_registered)
-            {
-                item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-                type_item->setFlags(type_item->flags() & ~Qt::ItemIsSelectable);
-            }
-            else
-            {
-                DEBUG("setting as registered " << r);
-                item->setFlags(item->flags() | Qt::ItemIsSelectable);
-                type_item->setFlags(type_item->flags() | Qt::ItemIsSelectable);
-            }
-            break;
+            type_format_(r, type_registered);
         }
     }
 
     // Add new topic to list if it wasnt already
     if (!already_in_list)
     {
-        int new_row = ui->listRosTopics->rowCount();
-        ui->listRosTopics->setRowCount(new_row + 1);
+        int new_row = ui->listDdsTopics->rowCount();
+        ui->listDdsTopics->setRowCount(new_row + 1);
 
-        ui->listRosTopics->setItem(new_row, TopicNameTableIndex_, new QTableWidgetItem(topic_name));
-        ui->listRosTopics->setItem(new_row, TypeNameTableIndex_, new QTableWidgetItem(type_name));
+        ui->listDdsTopics->setItem(new_row, TopicNameTableIndex_, new QTableWidgetItem(topic_name));
+        ui->listDdsTopics->setItem(new_row, TypeNameTableIndex_, new QTableWidgetItem(type_name));
         DEBUG("set item " << new_row << " 1");
 
         // In case it is not registered, make it unselectable
-        if (!type_registered)
-        {
-            auto item = ui->listRosTopics->item(new_row, 0);
-            item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-            auto item_type = ui->listRosTopics->item(new_row, 1);
-            item_type->setFlags(item_type->flags() & ~Qt::ItemIsSelectable);
-            DEBUG("type was not registered so flags taken");
-        }
+        type_format_(new_row, type_registered);
     }
 
     // If topic want in list yet, order it alphabetically
     if (!already_in_list)
     {
-        ui->listRosTopics->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-        ui->listRosTopics->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+        ui->listDdsTopics->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+        ui->listDdsTopics->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
         // TODO: this line causes a segfault when sorting topics, as the item with type dissapear
         // and when trying to acces it to change the selectable, it breaks with seg fault
-        // ui->listRosTopics->sortByColumn(0, Qt::AscendingOrder);
+        // ui->listDdsTopics->sortByColumn(0, Qt::AscendingOrder);
     }
 
     DEBUG("Finishing DialogSelectTopics::on_topic_discovery " <<
@@ -303,7 +284,7 @@ void DialogSelectTopics::check_domain_button_must_be_enable_()
 void DialogSelectTopics::clean_topics_list_()
 {
     DEBUG("Calling clean_topics_list_");
-    ui->listRosTopics->setRowCount(0);
+    ui->listDdsTopics->setRowCount(0);
 }
 
 void DialogSelectTopics::reset_to_configuration_()
@@ -356,9 +337,9 @@ void DialogSelectTopics::update_configuration_()
 
     // Get Topics
     configuration_.topics_selected.clear();
-    for (int r = 0; r < ui->listRosTopics->rowCount(); r++)
+    for (int r = 0; r < ui->listDdsTopics->rowCount(); r++)
     {
-        QTableWidgetItem* item = ui->listRosTopics->item(r, 0);
+        QTableWidgetItem* item = ui->listDdsTopics->item(r, TopicNameTableIndex_);
         // Check if this is the topic name
         if (item->isSelected())
         {
@@ -389,6 +370,53 @@ void DialogSelectTopics::add_xml_file_(
 
     // Call listener with file
     listener_->on_xml_datatype_file_added(path);
+}
+
+void DialogSelectTopics::type_format_(
+        const int row,
+        bool registered)
+{
+    DEBUG("Changing item format in row " << row);
+    if (registered)
+    {
+        registered_type_change_format_(row);
+    }
+    else
+    {
+        unregistered_type_change_format_(row);
+    }
+}
+
+void DialogSelectTopics::registered_type_change_format_(
+        const int row )
+{
+    // Take items
+    QTableWidgetItem* item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
+    QTableWidgetItem* type_item = ui->listDdsTopics->item(row, TypeNameTableIndex_);
+
+    // Set them as selectable
+    item->setFlags(item->flags() | Qt::ItemIsSelectable);
+    type_item->setFlags(item->flags() | Qt::ItemIsSelectable);
+
+    // Change color to black
+    item->setForeground(Qt::black);
+    type_item->setForeground(Qt::black);
+}
+
+void DialogSelectTopics::unregistered_type_change_format_(
+        const int row)
+{
+    // Take items
+    QTableWidgetItem* item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
+    QTableWidgetItem* type_item = ui->listDdsTopics->item(row, TypeNameTableIndex_);
+
+    // Set them as not selectable
+    item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+    type_item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+
+    // Change color to grey
+    item->setForeground(Qt::gray);
+    type_item->setForeground(Qt::gray);
 }
 
 } /* namespace ui */
