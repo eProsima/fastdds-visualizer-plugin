@@ -339,7 +339,7 @@ void DialogSelectTopics::update_configuration_()
     configuration_.topics_selected.clear();
     for (int r = 0; r < ui->listDdsTopics->rowCount(); r++)
     {
-        QTableWidgetItem* item = ui->listDdsTopics->item(r, 0);
+        QTableWidgetItem* item = ui->listDdsTopics->item(r, TopicNameTableIndex_);
         // Check if this is the topic name
         if (item->isSelected())
         {
@@ -388,8 +388,8 @@ void DialogSelectTopics::type_format_(const int row, bool registered)
 void DialogSelectTopics::registered_type_change_format_(const int row )
 {
     // Take items
-    QTableWidgetItem* item = ui->listDdsTopics->item(row, 0);
-    QTableWidgetItem* type_item = ui->listDdsTopics->item(row, 1);
+    QTableWidgetItem* item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
+    QTableWidgetItem* type_item = ui->listDdsTopics->item(row, TypeNameTableIndex_);
 
     // Set them as selectable
     item->setFlags(item->flags() | Qt::ItemIsSelectable);
@@ -403,8 +403,8 @@ void DialogSelectTopics::registered_type_change_format_(const int row )
 void DialogSelectTopics::unregistered_type_change_format_(const int row)
 {
     // Take items
-    QTableWidgetItem* item = ui->listDdsTopics->item(row, 0);
-    QTableWidgetItem* type_item = ui->listDdsTopics->item(row, 1);
+    QTableWidgetItem* item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
+    QTableWidgetItem* type_item = ui->listDdsTopics->item(row, TypeNameTableIndex_);
 
     // Set them as not selectable
     item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
