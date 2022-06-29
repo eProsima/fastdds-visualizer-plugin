@@ -70,7 +70,7 @@ void Configuration::save_default_settings(
         const QString& prefix) const
 {
     // Get default Qt settings
-    QSettings settings;
+    QSettings settings("eProsima", prefix);
 
     settings.setValue(prefix + MAX_ARRAY_SIZE_SETTINGS_TAG, data_type_configuration.max_array_size);
     settings.setValue(prefix + USE_HEADER_STAMP_SETTINGS_TAG, data_type_configuration.use_header_stamp);
@@ -83,7 +83,7 @@ void Configuration::load_default_settings(
         const QString& prefix)
 {
     // Get default Qt settings
-    QSettings settings;
+    QSettings settings("eProsima", prefix);
 
     data_type_configuration.max_array_size = settings.value(prefix + MAX_ARRAY_SIZE_SETTINGS_TAG, data_type_configuration.max_array_size).toInt();
     data_type_configuration.use_header_stamp = settings.value(prefix + USE_HEADER_STAMP_SETTINGS_TAG, data_type_configuration.use_header_stamp).toBool();

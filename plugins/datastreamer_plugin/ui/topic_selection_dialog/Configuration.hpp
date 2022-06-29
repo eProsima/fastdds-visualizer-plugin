@@ -33,13 +33,7 @@ namespace plotjuggler {
 namespace ui {
 
 /**
- * @brief This class handles every Fast DDS entity required.
- *
- * It create, manage and destroy every Fast DDS entity that the process requires to instantiate.
- * The discovery and user data received is transmitted through a UiListener object.
- *
- * FUTURE WORK:
- * Use a specific thread to call callbacks instead of using Fast DDS thread
+ * @brief This is a data structure to store the configuration of the plugin.
  */
 struct Configuration
 {
