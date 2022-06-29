@@ -26,6 +26,15 @@ namespace eprosima {
 namespace plotjuggler {
 namespace ui {
 
+Configuration::Configuration()
+{
+}
+
+Configuration::Configuration(const QString& prefix)
+{
+    load_default_settings(prefix);
+}
+
 ////////////////////
 // Save Load configuration
 bool Configuration::xmlSaveState(
