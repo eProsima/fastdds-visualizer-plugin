@@ -110,8 +110,8 @@ void get_introspection_type_names(
                     // Truncate array
                     DEBUG(
                         "Truncating array " << base_type_name <<
-                        " of size " << this_array_size <<
-                        " to size " << data_type_configuration.max_array_size);
+                            " of size " << this_array_size <<
+                            " to size " << data_type_configuration.max_array_size);
                     this_array_size = data_type_configuration.max_array_size;
                 }
                 // Could not be neither of them, it would be an inconsistency
