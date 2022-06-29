@@ -30,7 +30,8 @@ Configuration::Configuration()
 {
 }
 
-Configuration::Configuration(const QString& prefix)
+Configuration::Configuration(
+        const QString& prefix)
 {
     load_default_settings(prefix);
 }
@@ -94,9 +95,12 @@ void Configuration::load_default_settings(
     // Get default Qt settings
     QSettings settings("eProsima", prefix);
 
-    data_type_configuration.max_array_size = settings.value(prefix + MAX_ARRAY_SIZE_SETTINGS_TAG, data_type_configuration.max_array_size).toInt();
-    data_type_configuration.use_header_stamp = settings.value(prefix + USE_HEADER_STAMP_SETTINGS_TAG, data_type_configuration.use_header_stamp).toBool();
-    data_type_configuration.discard_large_arrays = settings.value(prefix + DISCARD_LARGE_ARRAYS_SETTINGS_TAG, data_type_configuration.discard_large_arrays).toBool();
+    data_type_configuration.max_array_size = settings.value(prefix + MAX_ARRAY_SIZE_SETTINGS_TAG,
+                    data_type_configuration.max_array_size).toInt();
+    data_type_configuration.use_header_stamp = settings.value(prefix + USE_HEADER_STAMP_SETTINGS_TAG,
+                    data_type_configuration.use_header_stamp).toBool();
+    data_type_configuration.discard_large_arrays = settings.value(prefix + DISCARD_LARGE_ARRAYS_SETTINGS_TAG,
+                    data_type_configuration.discard_large_arrays).toBool();
     xml_datatypes_files = settings.value(prefix + XML_DATATYPE_FILES_SETTINGS_TAG, xml_datatypes_files).toStringList();
     domain_id = settings.value(prefix + DOMAIN_ID_SETTINGS_TAG, domain_id).toInt();
 }

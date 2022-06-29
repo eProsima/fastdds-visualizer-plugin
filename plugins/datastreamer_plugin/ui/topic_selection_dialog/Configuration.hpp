@@ -41,10 +41,13 @@ struct Configuration
     Configuration();
 
     //! Load default configuration with specific prefix
-    Configuration(const QString& prefix);
+    Configuration(
+            const QString& prefix);
 
-    Configuration(const Configuration& other) = default;
-    Configuration& operator=(const Configuration& other) = default;
+    Configuration(
+            const Configuration& other) = default;
+    Configuration& operator =(
+            const Configuration& other) = default;
 
     ////////////////////
     // Topics
