@@ -23,6 +23,7 @@ Known features and bugs that will be fixed in future contributions
 - [-] implement a way that non type discovered topics are seen differently (blush/transparent) in topic list
 - [X] store xml files in configuration
 - [-] treat matrixes differently than vectors
+- [X] arrays indexes are not in a separate label
 
 ## Bugs
 

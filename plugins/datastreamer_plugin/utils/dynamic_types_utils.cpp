@@ -117,15 +117,15 @@ void get_introspection_type_names(
                 // Could not be neither of them, it would be an inconsistency
             }
 
-            for (unsigned int i = 0; i < this_array_size; i++)
+            for (MemberId member_id = 0; member_id < this_array_size; member_id++)
             {
                 std::vector<MemberId> new_members_tree(current_members_tree);
-                new_members_tree.push_back(i);
+                new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
 
                 get_introspection_type_names(
-                    base_type_name + separator + std::to_string(i),
+                    base_type_name + "[" + std::to_string(member_id) + "]",
                     internal_type,
                     data_type_configuration,
                     numeric_type_names,

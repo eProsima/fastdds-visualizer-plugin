@@ -35,15 +35,15 @@ bool Configuration::xmlSaveState(
     DEBUG("Saving XML configuration state");
 
     QDomElement max_elem = doc.createElement(MAX_ARRAY_SIZE_SETTINGS_TAG);
-    max_elem.setAttribute("value", QString::number(max_array_size));
+    max_elem.setAttribute("value", QString::number(data_type_configuration.max_array_size));
     parent_element.appendChild(max_elem);
 
     QDomElement stamp_elem = doc.createElement(USE_HEADER_STAMP_SETTINGS_TAG);
-    stamp_elem.setAttribute("value", use_header_stamp ? "true" : "false");
+    stamp_elem.setAttribute("value", data_type_configuration.use_header_stamp ? "true" : "false");
     parent_element.appendChild(stamp_elem);
 
     QDomElement discard_elem = doc.createElement(DISCARD_LARGE_ARRAYS_SETTINGS_TAG);
-    discard_elem.setAttribute("value", discard_large_arrays ? "true" : "false");
+    discard_elem.setAttribute("value", data_type_configuration.discard_large_arrays ? "true" : "false");
     parent_element.appendChild(discard_elem);
 
     return true;
@@ -55,13 +55,13 @@ bool Configuration::xmlLoadState(
     DEBUG("Loading XML configuration state");
 
     QDomElement max_elem = parent_element.firstChildElement(MAX_ARRAY_SIZE_SETTINGS_TAG);
-    max_array_size = max_elem.attribute("value").toInt();
+    data_type_configuration.max_array_size = max_elem.attribute("value").toInt();
 
     QDomElement stamp_elem = parent_element.firstChildElement(USE_HEADER_STAMP_SETTINGS_TAG);
-    use_header_stamp = (stamp_elem.attribute("value") == "true");
+    data_type_configuration.use_header_stamp = (stamp_elem.attribute("value") == "true");
 
     QDomElement discard_elem = parent_element.firstChildElement(DISCARD_LARGE_ARRAYS_SETTINGS_TAG);
-    discard_large_arrays = (discard_elem.attribute("value") == "true");
+    data_type_configuration.discard_large_arrays = (discard_elem.attribute("value") == "true");
 
     return true;
 }
