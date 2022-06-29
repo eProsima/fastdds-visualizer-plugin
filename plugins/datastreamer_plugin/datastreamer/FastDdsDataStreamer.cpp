@@ -63,7 +63,7 @@ bool FastDdsDataStreamer::start(
     this->connect_to_domain_(configuration_.domain_id);
 
     // Add every xml file stored already in configuration
-    for (auto& xml_file : configuration_.xml_datatypes_files)
+    for (const auto& xml_file : configuration_.xml_datatypes_files)
     {
         this->on_xml_datatype_file_added(utils::QString_to_string(xml_file));
     }

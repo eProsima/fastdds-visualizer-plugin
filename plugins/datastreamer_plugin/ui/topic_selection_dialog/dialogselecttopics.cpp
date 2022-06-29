@@ -327,8 +327,7 @@ void DialogSelectTopics::reset_to_configuration_()
     for (const auto& file : configuration_.xml_datatypes_files)
     {
         // Add every xml file in configuration
-        const auto item = new QListWidgetItem(file);
-        ui->xml_files_list->addItem(item);
+        ui->xml_files_list->addItem(file);
     }
 
     // Array config
