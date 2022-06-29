@@ -411,29 +411,42 @@ bool Participant::is_type_registered_in_participant_(
     {
         return true;
     }
-    else
+
+    // It may happen that type is registered in XML and not in Participant
+    // If so, register it in Participant
+    if (is_type_registered_in_xml_(type_name))
     {
-        // It may happen that type is registered in XML and not in Participant
-        // If so, register it in Participant
-        if (is_type_registered_in_xml_(type_name))
-        {
-            // Create TypeSupport and register it
-            eprosima::fastdds::dds::TypeSupport(
-                new eprosima::fastrtps::types::DynamicPubSubType(
-                    get_type_registered_(type_name))).register_type(participant_);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        // Create TypeSupport and register it
+        eprosima::fastdds::dds::TypeSupport(
+            new eprosima::fastrtps::types::DynamicPubSubType(
+                get_type_registered_(type_name))).register_type(participant_);
+        return true;
     }
+
+    // It could also be in TypeObjectFactory because it has been registered by other Participant (a previous one)
+    // and still be stored in the singleton
+    if (is_type_registered_in_factory_(type_name))
+    {
+        // Create TypeSupport and register it
+        eprosima::fastdds::dds::TypeSupport(
+            new eprosima::fastrtps::types::DynamicPubSubType(
+                get_type_registered_(type_name))).register_type(participant_);
+        return true;
+    }
+
+    return false;
 }
 
 bool Participant::is_type_registered_in_xml_(
         const std::string& type_name)
 {
     return nullptr != eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name);
+}
+
+bool Participant::is_type_registered_in_factory_(
+        const std::string& type_name)
+{
+    return nullptr !=  eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name, true);
 }
 
 eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(

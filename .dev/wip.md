@@ -1,7 +1,12 @@
 
+
 # WORK IN PROGRESS
 
 Known features and bugs that will be fixed in future contributions
+
+## Important Features
+
+- [-] support Windows
 
 ## Features
 
@@ -10,9 +15,12 @@ Known features and bugs that will be fixed in future contributions
 - [X] support Data Types XML files addition
 - [X] support store Configuration for future runs
 - [X] support array clamp/discard
-- [-] support string booleans to convert to numeric
 - [-] filter topics
 - [-] create group topics
+- [-] support string booleans to convert to numeric
+- [-] support Qt settings to load/save default settings
+- [-] support non bounded vector types
+- [-] support keyed topics by separating keys in different topics
 
 ## Improvements
 
@@ -30,6 +38,6 @@ Known features and bugs that will be fixed in future contributions
 - [-] when taken `flags()` from a topic in DialogTopics, sometimes it crashes because it does not found flags element
 - [-] allow complex (array of structs) Data Types
   - This is a Fast DDS bug
-- [-] discovering topic types does not work properly
-  - when a type belongs to two different topics, it does not work properly
-  - when publisher is already running, there are some times it does not work
+- [X] discovering topic types does not work properly
+  - [X] when a type belongs to two different topics, it does not work properly
+  - [X] when publisher is already running, there are some times it does not work
