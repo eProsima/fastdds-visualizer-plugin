@@ -88,7 +88,8 @@ void DialogSelectTopics::reset()
     emit reset_view_signal();
 }
 
-void DialogSelectTopics::reset_to_configuration_(const Configuration& configuration)
+void DialogSelectTopics::reset_to_configuration_(
+        const Configuration& configuration)
 {
     // Set new configuration as current and call reset
     configuration_ = configuration;

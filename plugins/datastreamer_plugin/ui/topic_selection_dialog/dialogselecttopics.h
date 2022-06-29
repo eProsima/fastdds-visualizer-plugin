@@ -55,7 +55,8 @@ public:
 
     void reset();
 
-    void reset_to_configuration_(const Configuration& configuration);
+    void reset_to_configuration_(
+            const Configuration& configuration);
 
     const Configuration& get_configuration() const;
 
