@@ -56,8 +56,17 @@ bool FastDdsDataStreamer::start(
         return true;
     }
 
+    // Reset dialogselecttopic to current configuration
+    select_topics_dialog_.reset_to_configuration_(configuration_);
+
     // Creating a default DomainParticipant in domain by default (configuration_)
-    this->connect_to_domain_(configuration_.domain_id_connected);
+    this->connect_to_domain_(configuration_.domain_id);
+
+    // Add every xml file stored already in configuration
+    for (const auto& xml_file : configuration_.xml_datatypes_files)
+    {
+        this->on_xml_datatype_file_added(utils::QString_to_string(xml_file));
+    }
 
     // Execute Dialog
     int dialog_result = select_topics_dialog_.exec();
@@ -133,6 +142,19 @@ bool FastDdsDataStreamer::isRunning() const
 const char* FastDdsDataStreamer::name() const
 {
     return PLUGIN_NAME_;
+}
+
+bool FastDdsDataStreamer::xmlSaveState(
+        QDomDocument& doc,
+        QDomElement& plugin_elem) const
+{
+    return configuration_.xmlSaveState(doc, plugin_elem);
+}
+
+bool FastDdsDataStreamer::xmlLoadState(
+        const QDomElement& parent_element)
+{
+    return configuration_.xmlLoadState(parent_element);
 }
 
 ////////////////////////////////////////////////////
@@ -230,6 +252,7 @@ void FastDdsDataStreamer::connect_to_domain_(
 
     // Connect to domain
     fastdds_handler_.connect_to_domain(domain_id);
+    select_topics_dialog_.connect_to_domain(domain_id);
 }
 
 } /* namespace datastreamer */

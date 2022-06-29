@@ -110,6 +110,7 @@ set (ALL_LIBRARY_SOURCES
         # UI files
         "ui/topic_selection_dialog/dialogselecttopics.cpp"
         "ui/topic_selection_dialog/dialogselecttopics.h"
+        "ui/topic_selection_dialog/Configuration.cpp"
         "ui/topic_selection_dialog/Configuration.hpp"
         "ui/topic_selection_dialog/UiListener.hpp"
         ${COMMON_UI_SRC}

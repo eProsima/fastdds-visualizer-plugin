@@ -81,6 +81,12 @@ public:
 
     const char* name() const override;
 
+    bool xmlSaveState(
+            QDomDocument& doc,
+            QDomElement& plugin_elem) const override;
+
+    bool xmlLoadState(
+            const QDomElement& parent_element) override;
 
     ////////////////////////////////////////////////////
     // FASTDDS LISTENER METHODS
