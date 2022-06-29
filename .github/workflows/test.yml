@@ -129,7 +129,7 @@ jobs:
       - name: Install Fast-DDS
         shell: pwsh
         run: >
-          git clone --branch feature/dynamic-types-dll https://github.com/eProsima/Fast-DDS.git;
+          git clone https://github.com/eProsima/Fast-DDS.git;
           cmake -DTHIRDPARTY=ON -DSECURITY=ON -DCOMPILE_EXAMPLES=OFF -DEPROSIMA_BUILD_TESTS=OFF `
             -DINTERNAL_DEBUG=ON -Ax64 -T host=x64 -B build\fastdds Fast-DDS;
           cmake --build build\fastdds --config ${{ matrix.cmake-config }} --target install
