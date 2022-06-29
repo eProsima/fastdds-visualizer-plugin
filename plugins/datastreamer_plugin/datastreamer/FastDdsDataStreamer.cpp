@@ -29,7 +29,7 @@ namespace datastreamer {
 
 FastDdsDataStreamer::FastDdsDataStreamer()
     : running_(false)
-    , configuration_()
+    , configuration_(QString(CONFIGURATION_SETTINGS_PREFIX_))
     , fastdds_handler_(this)
     , select_topics_dialog_(
         configuration_,
@@ -80,6 +80,8 @@ bool FastDdsDataStreamer::start(
 
     // Get configuration from dialog
     configuration_ = select_topics_dialog_.get_configuration();
+    // Store as default configuration
+    configuration_.save_default_settings(CONFIGURATION_SETTINGS_PREFIX_);
 
     // Topics selected
     const auto& topics = configuration_.topics_selected;  // Decorator variable to avoid calling internal member

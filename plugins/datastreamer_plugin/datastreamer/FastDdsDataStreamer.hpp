@@ -144,6 +144,8 @@ protected:
     ui::DialogSelectTopics select_topics_dialog_;
 
     bool running_;
+
+    constexpr static const char* CONFIGURATION_SETTINGS_PREFIX_ = "FastDDSDataStreamerPlotJugglerPlugin";
 };
 
 } /* namespace datastreamer */
