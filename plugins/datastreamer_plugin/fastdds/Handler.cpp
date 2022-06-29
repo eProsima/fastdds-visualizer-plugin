@@ -67,11 +67,12 @@ void Handler::register_type_from_xml(
 }
 
 void Handler::create_subscription(
-        const std::string& topic_name)
+        const std::string& topic_name,
+        const DataTypeConfiguration& data_type_configuration)
 {
     if (participant_)
     {
-        participant_->create_subscription(topic_name);
+        participant_->create_subscription(topic_name, data_type_configuration);
     }
 }
 

@@ -332,9 +332,9 @@ void DialogSelectTopics::reset_to_configuration_()
     }
 
     // Array config
-    ui->discard_radiobutton->setChecked(configuration_.discard_large_arrays);
-    ui->clamp_radiobutton->setChecked(configuration_.use_header_stamp);
-    ui->maximum_array_spin->setValue(configuration_.max_array_size);
+    ui->discard_radiobutton->setChecked(configuration_.data_type_configuration.discard_large_arrays);
+    ui->clamp_radiobutton->setChecked(configuration_.data_type_configuration.use_header_stamp);
+    ui->maximum_array_spin->setValue(configuration_.data_type_configuration.max_array_size);
     ui->convert_booleans_check->setChecked(configuration_.boolean_strings_to_number);
 }
 
@@ -347,10 +347,10 @@ void DialogSelectTopics::update_configuration_()
             static_cast<unsigned int>(domain_id_connected_);
 
     // Array
-    configuration_.max_array_size =
+    configuration_.data_type_configuration.max_array_size =
             static_cast<unsigned int>(ui->maximum_array_spin->value());
-    configuration_.use_header_stamp = ui->clamp_radiobutton->isChecked();
-    configuration_.discard_large_arrays = ui->discard_radiobutton->isChecked();
+    configuration_.data_type_configuration.use_header_stamp = ui->clamp_radiobutton->isChecked();
+    configuration_.data_type_configuration.discard_large_arrays = ui->discard_radiobutton->isChecked();
 
     configuration_.boolean_strings_to_number = ui->convert_booleans_check->isChecked();
 

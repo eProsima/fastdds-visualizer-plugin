@@ -41,7 +41,8 @@ ReaderHandler::ReaderHandler(
         eprosima::fastdds::dds::Topic* topic,
         eprosima::fastdds::dds::DataReader* datareader,
         eprosima::fastrtps::types::DynamicType_ptr type,
-        FastDdsListener* listener)
+        FastDdsListener* listener,
+        const DataTypeConfiguration& data_type_configuration)
     : topic_(topic)
     , reader_(datareader)
     , type_(type)
@@ -55,6 +56,7 @@ ReaderHandler::ReaderHandler(
     utils::get_introspection_type_names(
         topic_name(),
         type_,
+        data_type_configuration,
         numeric_data_info_,
         string_data_info_);
 

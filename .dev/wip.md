@@ -9,7 +9,7 @@ Known features and bugs that will be fixed in future contributions
   - This implies to manage an internal logic so the type is not registered twice. Else it fails.
 - [X] support Data Types XML files addition
 - [X] support store Configuration for future runs
-- [-] support array clamp/discard
+- [X] support array clamp/discard
 - [-] support string booleans to convert to numeric
 - [-] filter topics
 - [-] create group topics
@@ -23,6 +23,7 @@ Known features and bugs that will be fixed in future contributions
 - [-] implement a way that non type discovered topics are seen differently (blush/transparent) in topic list
 - [X] store xml files in configuration
 - [-] treat matrixes differently than vectors
+- [X] arrays indexes are not in a separate label
 
 ## Bugs
 

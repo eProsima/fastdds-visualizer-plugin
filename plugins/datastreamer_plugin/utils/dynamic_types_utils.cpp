@@ -51,6 +51,7 @@ std::vector<std::string> get_introspection_type_names(
 void get_introspection_type_names(
         const std::string& base_type_name,
         const DynamicType_ptr& type,
+        const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
         const std::vector<MemberId>& current_members_tree /* = {} */,
@@ -95,16 +96,38 @@ void get_introspection_type_names(
                     array_internal_kind(type);
             unsigned int this_array_size = array_size(type);
 
-            for (unsigned int i = 0; i < this_array_size; i++)
+            // Allow this array depending on data type configuration
+            if (this_array_size >= data_type_configuration.max_array_size)
+            {
+                if (data_type_configuration.discard_large_arrays)
+                {
+                    // Discard array
+                    DEBUG("Discarding array " << base_type_name << " of size " << this_array_size);
+                    break;
+                }
+                else
+                {
+                    // Truncate array
+                    DEBUG(
+                        "Truncating array " << base_type_name <<
+                            " of size " << this_array_size <<
+                            " to size " << data_type_configuration.max_array_size);
+                    this_array_size = data_type_configuration.max_array_size;
+                }
+                // Could not be neither of them, it would be an inconsistency
+            }
+
+            for (MemberId member_id = 0; member_id < this_array_size; member_id++)
             {
                 std::vector<MemberId> new_members_tree(current_members_tree);
-                new_members_tree.push_back(i);
+                new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
 
                 get_introspection_type_names(
-                    base_type_name + separator + std::to_string(i),
+                    base_type_name + "[" + std::to_string(member_id) + "]",
                     internal_type,
+                    data_type_configuration,
                     numeric_type_names,
                     string_type_names,
                     new_members_tree,
@@ -134,6 +157,7 @@ void get_introspection_type_names(
                 get_introspection_type_names(
                     base_type_name + separator + members.first,
                     members.second->get_descriptor()->get_type(),
+                    data_type_configuration,
                     numeric_type_names,
                     string_type_names,
                     new_members_tree,
