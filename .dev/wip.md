@@ -22,6 +22,7 @@ Known features and bugs that will be fixed in future contributions
 - [X] support Qt settings to load/save default settings
 - [-] support non bounded vector types
 - [-] support keyed topics by separating keys in different topics
+- [X] only show debug information when debug is enabled
 
 ## Improvements
 
