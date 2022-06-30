@@ -43,6 +43,8 @@ DialogSelectTopics::DialogSelectTopics(
     , configuration_(configuration)
     , listener_(listener)
     , domain_id_connected_(configuration.domain_id) // This is initialized here as it does not come from configuration
+    , select_all_topics_(QKeySequence(Qt::CTRL + Qt::Key_A), this)
+    , deselect_all_topics_(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this)
 {
     ui->setupUi(this);
 
@@ -66,6 +68,27 @@ DialogSelectTopics::DialogSelectTopics(
         &DialogSelectTopics::connection_to_domain_signal,
         this,
         &DialogSelectTopics::on_connection_to_domain_slot);
+
+    /////
+    // Set shortcuts
+
+    select_all_topics_.setContext(Qt::WindowShortcut);
+    deselect_all_topics_.setContext(Qt::WindowShortcut);
+
+    // In case selected is pressed, select all topics VISIBLE in the list
+    connect(&select_all_topics_, &QShortcut::activated, ui->listDdsTopics, [this]() {
+        for (int row = 0; row < ui->listDdsTopics->rowCount(); row++)
+        {
+            if (!ui->listDdsTopics->isRowHidden(row) && !ui->listDdsTopics->item(row, TopicNameTableIndex_)->isSelected())
+            {
+                ui->listDdsTopics->selectRow(row);
+            }
+        }
+    });
+
+    // In case deselected is pressed, deselect all topics in the list
+    connect(&deselect_all_topics_, &QShortcut::activated, ui->listDdsTopics, &QAbstractItemView::clearSelection);
+
 
     ////////////
     // Reset data with the current configuration

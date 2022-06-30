@@ -25,6 +25,7 @@
 #include <memory>
 
 #include <QDialog>
+#include <QShortcut>
 
 #include "Configuration.hpp"
 #include "UiListener.hpp"
@@ -151,6 +152,9 @@ protected:
 
     unsigned int domain_id_connected_;
     unsigned int domain_id_selected_;
+
+    QShortcut select_all_topics_;
+    QShortcut deselect_all_topics_;
 };
 
 } /* namespace ui */
