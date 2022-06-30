@@ -77,7 +77,7 @@ signals:
 
 private slots:
 
-    void on_lineEditFilter_editingFinished();
+    void on_lineEditFilter_textChanged(const QString& search_string);
 
     void on_convert_booleans_check_stateChanged(
             int arg1);

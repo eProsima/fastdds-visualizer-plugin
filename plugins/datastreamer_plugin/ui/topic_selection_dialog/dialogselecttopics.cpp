@@ -110,9 +110,34 @@ void DialogSelectTopics::connect_to_domain(
     emit connection_to_domain_signal(domain_id);
 }
 
-void DialogSelectTopics::on_lineEditFilter_editingFinished()
+void DialogSelectTopics::on_lineEditFilter_textChanged(const QString& search_string)
 {
     DEBUG("Calling on_lineEditFilter_editingFinished");
+
+    // Split filter string by spaces
+    QStringList spaced_items = search_string.split(' ');
+
+    // Loop over every item
+    for (int row = 0; row < ui->listDdsTopics->rowCount(); row++)
+    {
+        // Get item and its topic name
+        const auto item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
+        QString topic_name = item->text();
+        bool toHide = true;
+
+        // For every filter set, check if the topic name contains the filter
+        for (const auto& filter_name : spaced_items)
+        {
+            if (topic_name.contains(filter_name))
+            {
+                toHide = false;
+                break;
+            }
+        }
+
+        // If the topic name does not contain any of the filters, hide it
+        ui->listDdsTopics->setRowHidden(row, toHide);
+    }
 }
 
 void DialogSelectTopics::on_convert_booleans_check_stateChanged(
