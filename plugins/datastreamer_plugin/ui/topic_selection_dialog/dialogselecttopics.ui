@@ -406,6 +406,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="clean_xml_files_button">
+             <property name="text">
+              <string>Clean list</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_6">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>

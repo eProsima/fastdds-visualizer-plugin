@@ -27,6 +27,7 @@
 #include "dialogselecttopics.h"
 #include "ui_dialogselecttopics.h"
 #include "utils/utils.hpp"
+#include "utils/Exception.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -203,7 +204,7 @@ void DialogSelectTopics::on_include_files_button_clicked()
     }
 
     // Add it to this object
-    add_xml_file_(utils::QString_to_string(file_path));
+    add_xml_file_(file_path);
 }
 
 void DialogSelectTopics::on_include_dir_button_clicked()
@@ -222,14 +223,19 @@ void DialogSelectTopics::on_include_dir_button_clicked()
     }
 
     // Loop the directory searching for xml files
-    std::vector<std::string> xml_files =
-            utils::get_files_in_dir(utils::QString_to_string(dir_path), "xml", false);
+    QStringList xml_files =
+            utils::get_files_in_dir(dir_path, "xml", false);
 
     // For each file, add xml file to object
     for (const auto& file_path : xml_files)
     {
         add_xml_file_(file_path);
     }
+}
+
+void DialogSelectTopics::on_clean_xml_files_button_clicked()
+{
+    ui->xml_files_list->clear();
 }
 
 void DialogSelectTopics::on_buttonBox_rejected()
@@ -356,11 +362,25 @@ void DialogSelectTopics::reset_to_configuration_()
 
     // Add XML files
     // First erase every data in the list
-    ui->xml_files_list->clear();
     for (const auto& file : configuration_.xml_datatypes_files)
     {
         // Add every xml file in configuration
         ui->xml_files_list->addItem(file);
+    }
+
+    // Add every xml file stored already in configuration
+    ui->xml_files_list->clear();
+    for (const auto& xml_file : configuration_.xml_datatypes_files)
+    {
+        try
+        {
+            add_xml_file_(xml_file);
+        }
+        catch (const Exception& e)
+        {
+            // Error adding xml file, ignoring this file and it will not be added to the list
+            WARNING("Error loading xml file " << utils::QString_to_string(xml_file));
+        }
     }
 
     // Array config
@@ -399,6 +419,7 @@ void DialogSelectTopics::update_configuration_()
     }
 
     // Get XML files
+    configuration_.xml_datatypes_files.clear();
     for (int r = 0; r < ui->xml_files_list->count(); r++)
     {
         QListWidgetItem* item = ui->xml_files_list->item(r);
@@ -408,19 +429,20 @@ void DialogSelectTopics::update_configuration_()
 }
 
 void DialogSelectTopics::add_xml_file_(
-        const std::string& path)
+        const QString& path)
 {
     // Check it does not exist yet
     // TODO
 
-    DEBUG("Adding xml file: " << path);
-
-    // Add item to list
-    const auto item = new QListWidgetItem(utils::string_to_QString(path));
-    ui->xml_files_list->addItem(item);
+    DEBUG("Adding xml file: " << utils::QString_to_string(path));
 
     // Call listener with file
-    listener_->on_xml_datatype_file_added(path);
+    listener_->on_xml_datatype_file_added(utils::QString_to_string(path));
+
+    // Add item to list
+    // NOTE: add it to list after listener call, so if it fails it is not added
+    const auto item = new QListWidgetItem(path);
+    ui->xml_files_list->addItem(item);
 }
 
 void DialogSelectTopics::type_format_(

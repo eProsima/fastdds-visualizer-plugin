@@ -26,6 +26,7 @@
 #include <iostream>
 #include <locale>
 #include <QString>
+#include <QStringList>
 #include <regex>
 #include <string>
 
@@ -74,6 +75,11 @@ std::vector<std::string> get_files_in_dir(
 std::vector<std::string> get_files_in_dir_regex(
         const std::string& dir_path,
         const std::regex& regex_rule,
+        bool recursive = false);
+
+QStringList get_files_in_dir(
+        const QString& dir_path,
+        const std::string& file_extension = "xml",
         bool recursive = false);
 
 } /* namespace utils */

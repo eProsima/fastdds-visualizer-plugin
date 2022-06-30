@@ -108,6 +108,23 @@ std::vector<std::string> get_files_in_dir_regex(
     return result;
 }
 
+QStringList get_files_in_dir(
+        const QString& dir_path,
+        const std::string& file_extension /* = "xml" */,
+        bool recursive /* = false */)
+{
+    QStringList result;
+    for (const auto& file : get_files_in_dir(
+        QString_to_string(dir_path),
+        file_extension,
+        recursive))
+    {
+        result.append(string_to_QString(file));
+    }
+
+    return result;
+}
+
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */
