@@ -55,19 +55,19 @@ DialogSelectTopics::DialogSelectTopics(
         this,
         &DialogSelectTopics::topic_discovery_signal,
         this,
-        &DialogSelectTopics::on_topic_discovery_slot);
+        &DialogSelectTopics::on_topicDiscovery);
 
     connect(
         this,
         &DialogSelectTopics::reset_view_signal,
         this,
-        &DialogSelectTopics::on_reset_view_slot);
+        &DialogSelectTopics::on_resetView);
 
     connect(
         this,
         &DialogSelectTopics::connection_to_domain_signal,
         this,
-        &DialogSelectTopics::on_connection_to_domain_slot);
+        &DialogSelectTopics::on_connectionToDomain);
 
     /////
     // Set shortcuts
@@ -252,7 +252,7 @@ void DialogSelectTopics::on_domainid_spin_valueChanged(
     check_domain_button_must_be_enable_();
 }
 
-void DialogSelectTopics::on_topic_discovery_slot(
+void DialogSelectTopics::on_topicDiscovery(
         const QString& topic_name,
         const QString& type_name,
         bool type_registered)
@@ -305,14 +305,14 @@ void DialogSelectTopics::on_topic_discovery_slot(
             utils::QString_to_string(topic_name));
 }
 
-void DialogSelectTopics::on_reset_view_slot()
+void DialogSelectTopics::on_resetView()
 {
     DEBUG("Calling on_reset_view");
     clean_topics_list_();
     reset_to_configuration_();
 }
 
-void DialogSelectTopics::on_connection_to_domain_slot(
+void DialogSelectTopics::on_connectionToDomain(
         const uint32_t domain_id)
 {
     domain_id_connected_ = domain_id;
