@@ -15,10 +15,11 @@ Known features and bugs that will be fixed in future contributions
 - [X] support Data Types XML files addition
 - [X] support store Configuration for future runs
 - [X] support array clamp/discard
-- [-] filter topics
+- [X] filter topics
+- [X] select/deselect all topics
 - [-] create group topics
 - [-] support string booleans to convert to numeric
-- [-] support Qt settings to load/save default settings
+- [X] support Qt settings to load/save default settings
 - [-] support non bounded vector types
 - [-] support keyed topics by separating keys in different topics
 

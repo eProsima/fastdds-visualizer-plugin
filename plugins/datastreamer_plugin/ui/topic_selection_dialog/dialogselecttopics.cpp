@@ -43,6 +43,8 @@ DialogSelectTopics::DialogSelectTopics(
     , configuration_(configuration)
     , listener_(listener)
     , domain_id_connected_(configuration.domain_id) // This is initialized here as it does not come from configuration
+    , select_all_topics_(QKeySequence(Qt::CTRL + Qt::Key_A), this)
+    , deselect_all_topics_(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this)
 {
     ui->setupUi(this);
 
@@ -66,6 +68,29 @@ DialogSelectTopics::DialogSelectTopics(
         &DialogSelectTopics::connection_to_domain_signal,
         this,
         &DialogSelectTopics::on_connection_to_domain_slot);
+
+    /////
+    // Set shortcuts
+
+    select_all_topics_.setContext(Qt::WindowShortcut);
+    deselect_all_topics_.setContext(Qt::WindowShortcut);
+
+    // In case selected is pressed, select all topics VISIBLE in the list
+    connect(&select_all_topics_, &QShortcut::activated, ui->listDdsTopics, [this]()
+            {
+                for (int row = 0; row < ui->listDdsTopics->rowCount(); row++)
+                {
+                    if (!ui->listDdsTopics->isRowHidden(row) &&
+                    !ui->listDdsTopics->item(row, TopicNameTableIndex_)->isSelected())
+                    {
+                        ui->listDdsTopics->selectRow(row);
+                    }
+                }
+            });
+
+    // In case deselected is pressed, deselect all topics in the list
+    connect(&deselect_all_topics_, &QShortcut::activated, ui->listDdsTopics, &QAbstractItemView::clearSelection);
+
 
     ////////////
     // Reset data with the current configuration
@@ -110,9 +135,35 @@ void DialogSelectTopics::connect_to_domain(
     emit connection_to_domain_signal(domain_id);
 }
 
-void DialogSelectTopics::on_lineEditFilter_editingFinished()
+void DialogSelectTopics::on_lineEditFilter_textChanged(
+        const QString& search_string)
 {
     DEBUG("Calling on_lineEditFilter_editingFinished");
+
+    // Split filter string by spaces
+    QStringList spaced_items = search_string.split(' ');
+
+    // Loop over every item
+    for (int row = 0; row < ui->listDdsTopics->rowCount(); row++)
+    {
+        // Get item and its topic name
+        const auto item = ui->listDdsTopics->item(row, TopicNameTableIndex_);
+        QString topic_name = item->text();
+        bool toHide = true;
+
+        // For every filter set, check if the topic name contains the filter
+        for (const auto& filter_name : spaced_items)
+        {
+            if (topic_name.contains(filter_name))
+            {
+                toHide = false;
+                break;
+            }
+        }
+
+        // If the topic name does not contain any of the filters, hide it
+        ui->listDdsTopics->setRowHidden(row, toHide);
+    }
 }
 
 void DialogSelectTopics::on_convert_booleans_check_stateChanged(

@@ -25,6 +25,7 @@
 #include <memory>
 
 #include <QDialog>
+#include <QShortcut>
 
 #include "Configuration.hpp"
 #include "UiListener.hpp"
@@ -77,7 +78,8 @@ signals:
 
 private slots:
 
-    void on_lineEditFilter_editingFinished();
+    void on_lineEditFilter_textChanged(
+            const QString& search_string);
 
     void on_convert_booleans_check_stateChanged(
             int arg1);
@@ -151,6 +153,9 @@ protected:
 
     unsigned int domain_id_connected_;
     unsigned int domain_id_selected_;
+
+    QShortcut select_all_topics_;
+    QShortcut deselect_all_topics_;
 };
 
 } /* namespace ui */
