@@ -97,14 +97,14 @@ private slots:
 
     void on_buttonBox_rejected();
 
-    void on_reset_view_slot();
+    void on_resetView();
 
-    void on_topic_discovery_slot(
+    void on_topicDiscovery(
             const QString& topic_name,
             const QString& type_name,
             bool type_registered);
 
-    void on_connection_to_domain_slot(
+    void on_connectionToDomain(
             const uint32_t domain_id);
 
 protected:
