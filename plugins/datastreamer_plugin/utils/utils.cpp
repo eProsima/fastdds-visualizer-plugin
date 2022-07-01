@@ -115,9 +115,9 @@ QStringList get_files_in_dir(
 {
     QStringList result;
     for (const auto& file : get_files_in_dir(
-        QString_to_string(dir_path),
-        file_extension,
-        recursive))
+                QString_to_string(dir_path),
+                file_extension,
+                recursive))
     {
         result.append(string_to_QString(file));
     }
