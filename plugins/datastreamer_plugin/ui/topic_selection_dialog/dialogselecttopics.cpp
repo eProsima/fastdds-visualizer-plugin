@@ -76,15 +76,17 @@ DialogSelectTopics::DialogSelectTopics(
     deselect_all_topics_.setContext(Qt::WindowShortcut);
 
     // In case selected is pressed, select all topics VISIBLE in the list
-    connect(&select_all_topics_, &QShortcut::activated, ui->listDdsTopics, [this]() {
-        for (int row = 0; row < ui->listDdsTopics->rowCount(); row++)
-        {
-            if (!ui->listDdsTopics->isRowHidden(row) && !ui->listDdsTopics->item(row, TopicNameTableIndex_)->isSelected())
+    connect(&select_all_topics_, &QShortcut::activated, ui->listDdsTopics, [this]()
             {
-                ui->listDdsTopics->selectRow(row);
-            }
-        }
-    });
+                for (int row = 0; row < ui->listDdsTopics->rowCount(); row++)
+                {
+                    if (!ui->listDdsTopics->isRowHidden(row) &&
+                    !ui->listDdsTopics->item(row, TopicNameTableIndex_)->isSelected())
+                    {
+                        ui->listDdsTopics->selectRow(row);
+                    }
+                }
+            });
 
     // In case deselected is pressed, deselect all topics in the list
     connect(&deselect_all_topics_, &QShortcut::activated, ui->listDdsTopics, &QAbstractItemView::clearSelection);
@@ -133,7 +135,8 @@ void DialogSelectTopics::connect_to_domain(
     emit connection_to_domain_signal(domain_id);
 }
 
-void DialogSelectTopics::on_lineEditFilter_textChanged(const QString& search_string)
+void DialogSelectTopics::on_lineEditFilter_textChanged(
+        const QString& search_string)
 {
     DEBUG("Calling on_lineEditFilter_editingFinished");
 
