@@ -43,7 +43,7 @@ namespace utils {
 // debug code
     #define DEBUG(x) std::cout << " --- " << x << std::endl
     #define WARNING(x) std::cout << " !!! " << x << std::endl
-#endif
+#endif // ifdef NDEBUG
 
 std::string get_timestamp_string(
         const fastrtps::rtps::Time_t& timestamp);
