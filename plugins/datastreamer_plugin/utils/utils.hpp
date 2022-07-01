@@ -35,8 +35,15 @@ namespace eprosima {
 namespace plotjuggler {
 namespace utils {
 
-#define DEBUG(x) std::cout << " --- " << x << std::endl
-#define WARNING(x) std::cout << " !!! " << x << std::endl
+#ifdef NDEBUG
+// nondebug
+    #define DEBUG(x)
+    #define WARNING(x)
+#else // NDEBUG
+// debug code
+    #define DEBUG(x) std::cout << " --- " << x << std::endl
+    #define WARNING(x) std::cout << " !!! " << x << std::endl
+#endif // ifdef NDEBUG
 
 std::string get_timestamp_string(
         const fastrtps::rtps::Time_t& timestamp);
