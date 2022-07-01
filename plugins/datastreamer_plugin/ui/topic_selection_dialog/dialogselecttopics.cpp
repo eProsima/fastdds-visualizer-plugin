@@ -376,7 +376,7 @@ void DialogSelectTopics::reset_to_configuration_()
         {
             add_xml_file_(xml_file);
         }
-        catch (const Exception& e)
+        catch (const IncorrectParamException& e)
         {
             // Error adding xml file, ignoring this file and it will not be added to the list
             WARNING("Error loading xml file " << utils::QString_to_string(xml_file));
