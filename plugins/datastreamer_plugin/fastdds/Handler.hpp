@@ -102,6 +102,7 @@ protected:
 
     FastDdsListener* listener_;
 
+    std::set<std::string> xml_data_types_paths_added_;
 };
 
 } /* namespace fastdds */

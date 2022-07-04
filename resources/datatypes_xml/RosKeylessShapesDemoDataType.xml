@@ -1,0 +1,10 @@
+<types>
+    <type>
+        <struct name="shapes_demo_typesupport::idl::dds_::KeylessShapeType_">
+            <member name="color" type="string"/>
+            <member name="x" type="int32"/>
+            <member name="y" type="int32"/>
+            <member name="shapesize" type="int32"/>
+        </struct>
+    </type>
+</types>

@@ -22,6 +22,7 @@
 #include "FastDdsDataStreamer.hpp"
 #include "ui/topic_selection_dialog/dialogselecttopics.h"
 #include "utils/utils.hpp"
+#include "utils/Exception.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -56,17 +57,12 @@ bool FastDdsDataStreamer::start(
         return true;
     }
 
-    // Reset dialogselecttopic to current configuration
-    select_topics_dialog_.reset_to_configuration_(configuration_);
-
     // Creating a default DomainParticipant in domain by default (configuration_)
     this->connect_to_domain_(configuration_.domain_id);
 
-    // Add every xml file stored already in configuration
-    for (const auto& xml_file : configuration_.xml_datatypes_files)
-    {
-        this->on_xml_datatype_file_added(utils::QString_to_string(xml_file));
-    }
+    // Reset dialogselecttopic to current configuration
+    // NOTE: If this is done before connecting to domain, xml files will not be added
+    select_topics_dialog_.reset_to_configuration_(configuration_);
 
     // Execute Dialog
     int dialog_result = select_topics_dialog_.exec();
@@ -89,7 +85,7 @@ bool FastDdsDataStreamer::start(
     if (topics.empty())
     {
         DEBUG("No topics selected, exiting");
-        return false;
+        throw InitializationException("No topics selected.");
     }
 
     for (const auto& topic : topics)

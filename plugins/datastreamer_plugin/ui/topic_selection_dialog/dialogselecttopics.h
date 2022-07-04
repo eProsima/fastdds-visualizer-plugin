@@ -90,6 +90,8 @@ private slots:
 
     void on_include_dir_button_clicked();
 
+    void on_clean_xml_files_button_clicked();
+
     void on_domainid_spin_valueChanged(
             int arg1);
 
@@ -118,7 +120,7 @@ protected:
     void update_configuration_();
 
     void add_xml_file_(
-            const std::string& path);
+            const QString& path);
 
     void type_format_(
             const int row,
