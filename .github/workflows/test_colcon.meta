@@ -5,6 +5,8 @@
         {
             "cmake-args":
             [
+                "-DBUILD_DOCUMENTATION=ON",
+                "-DBUILD_TESTS=ON",
                 "-DCMAKE_CXX_FLAGS='-Werror'"
             ]
         }

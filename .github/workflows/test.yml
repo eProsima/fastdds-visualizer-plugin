@@ -73,6 +73,12 @@ jobs:
           package_name: plotjuggler-fastdds-plugins
         if: always()
 
+      - name: Upload documentation
+        uses: actions/upload-artifact@v1
+        with:
+          name: Documentation HTML
+          path: install/plotjuggler_fastdds/docs/plotjuggler_fastdds_docs/sphinx/html/
+
       - name: Upload Logs
         uses: actions/upload-artifact@v1
         with:
