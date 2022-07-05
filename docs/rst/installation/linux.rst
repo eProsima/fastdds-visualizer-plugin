@@ -2,9 +2,9 @@
 
 .. _installation_manual_linux:
 
-#########################
+##############################
 DDS Visualizer Plugin on Linux
-#########################
+##############################
 
 This section provides instructions on how to install the *eProsima DDS Visualizer Plugin*.
 This is available on the `eProsima <https://www.eprosima.com/>`_ website in the

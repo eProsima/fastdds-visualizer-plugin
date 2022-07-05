@@ -131,6 +131,7 @@ option(BUILD_DOCUMENTATION "Generate documentation" OFF)
 if(BUILD_DOCUMENTATION OR BUILD_DOCUMENTATION_TESTS)
     set(BUILD_DOCUMENTATION ON)
     add_subdirectory(docs)
+    message(STATUS "Adding docs")
 endif()
 
 

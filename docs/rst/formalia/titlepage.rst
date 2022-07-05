@@ -45,7 +45,9 @@ Structure of the documentation
 This documentation is organized into the sections below.
 
 * :ref:`Installation Manual <installation_manual_linux>`
-* :ref:`Getting Started <entities>`
-* :ref:`User Manual <initialize_monitoring>`
+* :ref:`Getting Started <start_tutorial>`
+
+.. TODO * :ref:`User Manual <initialize_monitoring>`
+
 * :ref:`Developer Manual <developer_manual_installation_sources_linux>`
 * :ref:`Release Notes <release_notes>`
