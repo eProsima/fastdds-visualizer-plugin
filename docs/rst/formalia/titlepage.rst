@@ -11,11 +11,8 @@
   :alt: eProsima
   :target: http://www.eprosima.com/
 
-*eProsima DDS Visualizer Plugin* is a graphical desktop application aimed at monitoring DDS environments deployed using
-the *eProsima Fast DDS* library.
-Thus, the user can monitor in real time the status of publication/subscription communications between DDS entities.
-
-.. (TODO)
+*eProsima DDS Visualizer Plugin* is a graphical desktop application providing real-time 2D charts to visualize
+topic-related data traffic information from *eProsima FastDDS* entities.
 
 ###############################
 Contacts and Commercial support
