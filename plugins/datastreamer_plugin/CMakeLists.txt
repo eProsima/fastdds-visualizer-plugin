@@ -75,7 +75,8 @@ add_definitions(-DQT_SHARED)
 # Get .ui files to autogenerate code
 set(
     QT_UI_SOURCES
-        "ui/topic_selection_dialog/dialogselecttopics.ui")
+        "ui/topic_selection_dialog/dialogselecttopics.ui"
+        "ui/domain_selection_dialog/dialogselectdomain.ui")
 
 QT5_WRAP_UI (
         COMMON_UI_SRC
@@ -113,6 +114,10 @@ set (ALL_LIBRARY_SOURCES
         "ui/topic_selection_dialog/Configuration.cpp"
         "ui/topic_selection_dialog/Configuration.hpp"
         "ui/topic_selection_dialog/UiListener.hpp"
+
+        "ui/domain_selection_dialog/dialogselectdomain.cpp"
+        "ui/domain_selection_dialog/dialogselectdomain.h"
+
         ${COMMON_UI_SRC}
    )
 

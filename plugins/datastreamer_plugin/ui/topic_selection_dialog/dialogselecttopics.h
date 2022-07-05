@@ -92,9 +92,6 @@ private slots:
 
     void on_clean_xml_files_button_clicked();
 
-    void on_domainid_spin_valueChanged(
-            int arg1);
-
     void on_buttonBox_accepted();
 
     void on_buttonBox_rejected();
@@ -110,8 +107,6 @@ private slots:
             const uint32_t domain_id);
 
 protected:
-
-    void check_domain_button_must_be_enable_();
 
     void clean_topics_list_();
 
@@ -154,7 +149,6 @@ protected:
     constexpr static const unsigned int TypeNameTableIndex_ = 1;
 
     unsigned int domain_id_connected_;
-    unsigned int domain_id_selected_;
 
     QShortcut select_all_topics_;
     QShortcut deselect_all_topics_;
