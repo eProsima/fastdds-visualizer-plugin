@@ -1,4 +1,4 @@
-.. eProsima Fast DDS Monitor documentation master file.
+.. eProsima DDS Visualizer Plugin documentation master file.
 
 .. include:: rst/formalia/titlepage.rst
 
@@ -33,8 +33,6 @@
    :numbered: 5
    :hidden:
 
-   /rst/getting_started/entities
-   /rst/getting_started/monitor
    /rst/getting_started/tutorial
 
 
