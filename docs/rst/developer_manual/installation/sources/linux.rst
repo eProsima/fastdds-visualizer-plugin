@@ -303,7 +303,7 @@ Run an application
 ==================
 
 To run the *eProsima DDS Visualizer Plugin* application, source the *Fast DDS* libraries
-and execute the executable file that has been installed in :code:`<install-path>/dds_visualizer/bin/dds_visualizer`:
+and execute `plotjuggler`.
 
 .. TODO #15077. Explain how to run plotjuggler and import this plugin
 
@@ -314,10 +314,8 @@ and execute the executable file that has been installed in :code:`<install-path>
 
 .. note::
 
-    Note that if the plugin does not load properly or app crashes check the environment variables
+    If the plugin does not load properly or app crashes, check that the environment variables
     in `install/setup.bash` have been properly exported.
-
-Be sure that this executable has execute permissions.
 
 .. External links
 
