@@ -47,20 +47,6 @@ set(${PROJECT_NAME}_DESCRIPTION
 message(STATUS "Configuring ${PROJECT_NAME_LARGE}")
 message(STATUS "Version: ${PROJECT_VERSION}")
 
-###############################################################################
-# Test
-###############################################################################
-option(BUILD_DOCUMENTATION_TESTS "Build DDS Visualizer Plugin documentation tests" OFF)
-
-if (BUILD_TESTS)
-    set(BUILD_DOCUMENTATION_TESTS ON)
-endif()
-
-
-if(BUILD_DOCUMENTATION_TESTS)
-    enable_testing()
-    include(CTest)
-endif()
 
 ####################################################################################################
 # Build documentation
@@ -107,8 +93,20 @@ set(CPACK_COMPONENT_monitor-sphinx_DESCRIPTION
     "eProsima DDS Visualizer Plugin documentation in ${DOCS_BUILDER} format")
 set(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} ${DOCS_BUILDER})
 
+
+###############################################################################
+# Test
+###############################################################################
+option(BUILD_DOCUMENTATION_TESTS "Build DDS Visualizer Plugin documentation tests" OFF)
+
+if (BUILD_TESTS)
+    set(BUILD_DOCUMENTATION_TESTS ON)
+endif()
+
 # Add tests if required
 if(BUILD_DOCUMENTATION_TESTS)
     message(STATUS "Adding documentation tests")
+    enable_testing()
+    include(CTest)
     add_subdirectory(test)
 endif()

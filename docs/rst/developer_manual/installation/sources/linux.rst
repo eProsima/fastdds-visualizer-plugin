@@ -142,8 +142,8 @@ just source this library when building the *DDS Visualizer Plugin* by using the 
 
     source <fastdds-installation-path>/install/setup.bash
 
-In other case, just download *Fast DDS* project from sources and build it together with *DDS Visualizer Plugin* using colcon
-as it is explained in section :ref:`colcon_installation`.
+In other case, just download *Fast DDS* project from sources and build it together with *DDS Visualizer Plugin*
+using colcon as it is explained in section :ref:`colcon_installation`.
 
 .. _qt_installation:
 
