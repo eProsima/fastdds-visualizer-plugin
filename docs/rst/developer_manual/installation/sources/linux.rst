@@ -181,14 +181,11 @@ Colcon installation
         Refer to section :ref:`eprosima_dependencies` in order to check how 
         to source *Fast DDS* and *PlotJuggler*, respectively.
 
-    In order to build the project, it must be specified the path to the Qt 5.15 installation path.
-    Using the standard Qt installation, this path should be similar to :code:`/home/<user>/Qt/5.15.2/gcc_64`.
-
 #.  Build the packages:
 
     .. code-block:: bash
 
-        colcon build --cmake-args -DQT_PATH=<qt-installation-path>
+        colcon build --cmake-args
 
 .. note::
 
@@ -275,8 +272,7 @@ Local installation
         cd DDS-Visualizer-Plugin/build
         cmake .. \
             -DCMAKE_INSTALL_PREFIX=~/DDS-Visualizer-Plugin/install \
-            -DCMAKE_PREFIX_PATH=~/DDS-Visualizer-Plugin/install \
-            -DQT_PATH=<qt-installation-path>
+            -DCMAKE_PREFIX_PATH=~/DDS-Visualizer-Plugin/install
         cmake --build . --target install
 
 
