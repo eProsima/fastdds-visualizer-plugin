@@ -35,7 +35,7 @@ DialogSelectDomain::DialogSelectDomain(
         const uint32_t current_domain_id,
         QWidget* parent /* = nullptr */)
     : QDialog(parent)
-    , ui(new Ui::DialogSelectDomain)
+    , ui(new Ui::DialogSelectDomain)  // This object is handled by Qt and it will be correctly deleted
     , current_domain_id_(current_domain_id)
     , selected_domain_id_(current_domain_id)
 {
