@@ -18,8 +18,7 @@ It is organized as follows:
 Dependencies installation
 =========================
 
-*DDS Visualizer Plugin* depends on *eProsima Fast DDS* library, Qt and
-certain Debian packages.
+*DDS Visualizer Plugin* depends on *eProsima Fast DDS* library, Qt, PlotJuggler, and certain Debian packages.
 This section describes the instructions for installing *eProsima Fast DDS* dependencies and requirements in a Linux
 environment from sources.
 The following packages will be installed:
@@ -87,7 +86,7 @@ By default, *eProsima DDS Visualizer Plugin* does not compile tests.
 It is possible to activate them with the opportune
 `CMake options <https://colcon.readthedocs.io/en/released/reference/verb/build.html#cmake-options>`_
 when calling colcon_ or CMake_.
-For more details, please refer to the :ref:`cmake_options` section.
+For more details, please refer to the :ref:`cmake_installation` section.
 For a detailed description of the Gtest installation process, please refer to the
 `Gtest Installation Guide <https://github.com/google/googletest>`_.
 
@@ -146,7 +145,6 @@ just source this library when building the *DDS Visualizer Plugin* by using the 
 In other case, just download *Fast DDS* project from sources and build it together with *DDS Visualizer Plugin* using colcon
 as it is explained in section :ref:`colcon_installation`.
 
-
 .. _qt_installation:
 
 Qt 5.15
@@ -177,12 +175,13 @@ Colcon installation
 
     .. note::
 
-        In case there is an already *Fast DDS* installation in the system it is not required to download and build
-        every dependency in the :code:`.repos` file.
+        In case there is an already *Fast DDS* and/or *PlotJuggler* installation in the system, it is 
+        not required to download and build every dependency in the :code:`.repos` file.
         It is just needed to download and build the *DDS Visualizer Plugin* project having sourced its dependencies.
-        Refer to section :ref:`eprosima_dependencies` in order to check how to source *Fast DDS*.
+        Refer to section :ref:`eprosima_dependencies` in order to check how 
+        to source *Fast DDS* and *PlotJuggler*, respectively.
 
-    In order to build the project, it must be specified the path to the Qt 5.15 :code:`gcc_64` installation path.
+    In order to build the project, it must be specified the path to the Qt 5.15 installation path.
     Using the standard Qt installation, this path should be similar to :code:`/home/<user>/Qt/5.15.2/gcc_64`.
 
 #.  Build the packages:
@@ -253,6 +252,19 @@ Local installation
             cmake .. -DCMAKE_INSTALL_PREFIX=~/DDS-Visualizer-Plugin/install -DCMAKE_PREFIX_PATH=~/DDS-Visualizer-Plugin/install
             cmake --build . --target install
 
+    * `PlotJuggler <https://github.com/facontidavide/PlotJuggler.git>`_
+
+        .. code-block:: bash
+
+            cd ~/DDS-Visualizer-Plugin
+            git clone https://github.com/facontidavide/PlotJuggler.git
+            mkdir PlotJuggler/build
+            cd PlotJuggler/build
+            cmake .. -DCMAKE_INSTALL_PREFIX=~/DDS-Visualizer-Plugin/install -DCMAKE_PREFIX_PATH=~/DDS-Visualizer-Plugin/install
+            cmake --build . --target install
+
+
+
 #.  Once all dependencies are installed, install *eProsima DDS Visualizer Plugin*:
 
     .. code-block:: bash
@@ -297,11 +309,17 @@ Run an application
 To run the *eProsima DDS Visualizer Plugin* application, source the *Fast DDS* libraries
 and execute the executable file that has been installed in :code:`<install-path>/dds_visualizer/bin/dds_visualizer`:
 
+.. TODO #15077. Explain how to run plotjuggler and import this plugin
+
 .. code-block:: bash
 
     # If built has been done using colcon, all projects could be sourced as follows
     source install/setup.bash
-    ./<install-path>/dds_visualizer/bin/dds_visualizer
+
+.. note::
+
+    Note that if the plugin does not load properly or app crashes check the environment variables
+    in `install/setup.bash` have been properly exported.
 
 Be sure that this executable has execute permissions.
 
