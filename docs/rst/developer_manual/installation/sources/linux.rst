@@ -303,14 +303,17 @@ Run an application
 ==================
 
 To run the *eProsima DDS Visualizer Plugin* application, source the *Fast DDS* libraries
-and execute `plotjuggler`.
-
-.. TODO #15077. Explain how to run plotjuggler and import this plugin
+and execute `plotjuggler`:
 
 .. code-block:: bash
 
     # If built has been done using colcon, all projects could be sourced as follows
     source install/setup.bash
+    # Finally run plotjuggler
+    plotjuggler
+
+
+.. TODO #15077. Explain how to run plotjuggler and import this plugin
 
 .. note::
 
