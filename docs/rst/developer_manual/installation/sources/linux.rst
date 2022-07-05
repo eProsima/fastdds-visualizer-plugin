@@ -175,10 +175,10 @@ Colcon installation
 
     .. note::
 
-        In case there is an already *Fast DDS* and/or *PlotJuggler* installation in the system, it is 
+        In case there is an already *Fast DDS* and/or *PlotJuggler* installation in the system, it is
         not required to download and build every dependency in the :code:`.repos` file.
         It is just needed to download and build the *DDS Visualizer Plugin* project having sourced its dependencies.
-        Refer to section :ref:`eprosima_dependencies` in order to check how 
+        Refer to section :ref:`eprosima_dependencies` in order to check how
         to source *Fast DDS* and *PlotJuggler*, respectively.
 
 #.  Build the packages:
