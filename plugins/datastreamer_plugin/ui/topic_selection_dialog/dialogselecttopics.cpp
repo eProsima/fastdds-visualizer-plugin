@@ -26,6 +26,7 @@
 
 #include "dialogselecttopics.h"
 #include "ui_dialogselecttopics.h"
+#include "ui/domain_selection_dialog/dialogselectdomain.h"
 #include "utils/utils.hpp"
 #include "utils/Exception.hpp"
 
@@ -177,13 +178,30 @@ void DialogSelectTopics::on_change_domain_button_clicked()
 {
     DEBUG("Calling on_change_domain_button_clicked");
 
-    // Change domain connected
-    domain_id_selected_ =
-            static_cast<unsigned int>(ui->domainid_spin->value());
+    // Start a new dialog to select a domain
+    DialogSelectDomain* change_domain_dialog = new DialogSelectDomain(domain_id_connected_, this);
+    int dialog_result = change_domain_dialog->exec();
 
-    // Call listener to connect to domain
-    listener_->on_domain_connection(
-        static_cast<unsigned int>(domain_id_selected_));
+    // If the user selected a domain, connect to it
+    if (dialog_result == QDialog::Accepted)
+    {
+        // Get the domain id
+        const uint32_t domain_id = change_domain_dialog->get_selected_domain_id();
+        DEBUG("New domain id selected: " << domain_id);
+
+        // NOTE: This domain_id could not be the same as the one connected (if the dialog is correct)
+        // Nevertheless lets check it
+        if (domain_id != domain_id_connected_)
+        {
+            // Call listener to connect to domain
+            listener_->on_domain_connection(
+                static_cast<unsigned int>(domain_id));
+        }
+    }
+    // In case the dialog is cancelled, do nothing
+
+    // Delete the dialog
+    delete change_domain_dialog;
 }
 
 void DialogSelectTopics::on_include_files_button_clicked()
@@ -247,15 +265,6 @@ void DialogSelectTopics::on_buttonBox_accepted()
 {
     DEBUG("Calling on_buttonBox_accepted");
     update_configuration_();
-}
-
-void DialogSelectTopics::on_domainid_spin_valueChanged(
-        int arg1)
-{
-    DEBUG("Calling on_domainid_spin_valueChanged");
-
-    // Check if button of connection must be enabled
-    check_domain_button_must_be_enable_();
 }
 
 void DialogSelectTopics::on_topicDiscovery(
@@ -325,17 +334,6 @@ void DialogSelectTopics::on_connectionToDomain(
 
     ui->current_domain_label->setText(
         QString::number(domain_id_connected_));
-
-    check_domain_button_must_be_enable_();
-}
-
-void DialogSelectTopics::check_domain_button_must_be_enable_()
-{
-    DEBUG("Calling check_domain_button_must_be_enable_");
-
-    // Set enable disable of the button
-    ui->change_domain_button->setEnabled(
-        domain_id_connected_ != ui->domainid_spin->value());
 }
 
 void DialogSelectTopics::clean_topics_list_()
@@ -353,12 +351,7 @@ void DialogSelectTopics::reset_to_configuration_()
 
     // FastDDS configuration
     // Set current domain
-    domain_id_selected_ = configuration_.domain_id;
-
-    ui->domainid_spin->setValue(domain_id_selected_);
-    ui->current_domain_label->setText(
-        QString::number(domain_id_connected_));
-    check_domain_button_must_be_enable_();
+    on_connectionToDomain(configuration_.domain_id);
 
     // Add XML files
     // First erase every data in the list

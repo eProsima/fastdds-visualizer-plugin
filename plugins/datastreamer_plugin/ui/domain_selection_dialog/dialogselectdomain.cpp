@@ -25,6 +25,7 @@
 
 #include "dialogselectdomain.h"
 #include "ui_dialogselectdomain.h"
+#include "utils/utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -51,12 +52,12 @@ uint32_t DialogSelectDomain::get_selected_domain_id() const
     return selected_domain_id_;
 }
 
-void DialogSelectDomain::on_buttonBox_rejected()
+void DialogSelectDomain::on_buttonBoxDomainDialog_rejected()
 {
     // Do nothing
 }
 
-void DialogSelectDomain::on_buttonBox_accepted()
+void DialogSelectDomain::on_buttonBoxDomainDialog_accepted()
 {
     selected_domain_id_ = ui->domainSpinBox->value();
 }
@@ -69,6 +70,7 @@ void DialogSelectDomain::on_domainSpinBox_valueChanged(
 
 void DialogSelectDomain::check_accept_enable_()
 {
+    DEBUG("Checking accept enable in DialogSelectDomain");
     // Only make accept button enabled if domain is different from current domain
     if (ui->domainSpinBox->value() != current_domain_id_)
     {

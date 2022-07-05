@@ -53,9 +53,9 @@ private slots:
     void on_domainSpinBox_valueChanged(
             int arg1);
 
-    void on_buttonBox_accepted();
+    void on_buttonBoxDomainDialog_accepted();
 
-    void on_buttonBox_rejected();
+    void on_buttonBoxDomainDialog_rejected();
 
 protected:
 
