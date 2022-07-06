@@ -17,8 +17,7 @@ This section explains the different configuration options.
 Topic Selector
 ==============
 
-.. todo::
-    Add screenshot of Topic Selector marking tab
+.. figure:: /rst/figures/configuration_topic_selector_edited_circle.png
 
 In order for |ddsvisualizer| to receive data from a DDS topic, it is required to select the DDS topics.
 In each of the topics selected, the |ddsvisualizer| will create a *DataReader* and receive the data,
@@ -43,8 +42,7 @@ Refer to the following section :ref:`dynamic_data_types_sec` for more informatio
   This is because the internal |fastdds| application could not create a *DataReader* in those topics, because
   it will not be able to know the data type it is reading.
 
-.. todo::
-    Add screenshot of Topic Selector with at least 3 topics. 1 selected, 1 unselected and 1 disabled
+.. figure:: /rst/figures/configuration_topic_selector_edited_letters.png
 
 Select all topics
 ^^^^^^^^^^^^^^^^^
@@ -59,15 +57,13 @@ There is a filter in the upper right corner of the tab that allows to filter top
 Writing plain text in there will hide those topics that do not contain such text in their names.
 Be aware that those topics that are hidden will still be selected, if they were before filtering.
 
-.. todo::
-    Add screenshot of Topic Selector marking filter bar
+.. figure:: /rst/figures/configuration_topic_selector_filter.png
 
 
 DDS Configuration
 =================
 
-.. todo::
-    Add screenshot of DDS Configuration marking tab
+.. figure:: /rst/figures/configuration_dds_conf_edited.png
 
 In this tab is configured the internal *Domain Participant* of the |ddsvisualizer|.
 
@@ -79,8 +75,7 @@ To select the
 of the internal |fastdds| *Domain Participant*, press :code:`Change Domain` button.
 This pops up a new Dialog to choose a new *Domain Id*.
 
-.. todo::
-    Add screenshot of Change DomainId dialog
+.. figure:: /rst/figures/configuration_change_domain.png
 
 XML Data Types
 --------------
@@ -97,8 +92,7 @@ Advance Options
 
 This section is meant to configure advance options regarding internal values of data series.
 
-.. todo::
-    Add screenshot of Advance Options marked
+.. figure:: /rst/figures/configuration_advanced_options_edited.png
 
 Maximum array size
 ------------------
