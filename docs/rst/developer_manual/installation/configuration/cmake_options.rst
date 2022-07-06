@@ -27,7 +27,7 @@ CMake options
           to ``Debug`` enables debugging and console logging.
         - ``Debug`` |br|
           ``Release``
-        - -
+        - ``Release``
 
     *   - :class:`BUILD_TESTS`
         - Build the |ddsvisualizer| application |br|
