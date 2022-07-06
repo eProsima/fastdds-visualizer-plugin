@@ -59,6 +59,7 @@
    :hidden:
 
    /rst/developer_manual/installation/sources/linux
+   /rst/developer_manual/installation/configuration/cmake_options
 
 
 .. _index_suite:
