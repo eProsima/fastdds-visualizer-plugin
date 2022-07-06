@@ -10,9 +10,17 @@ DDS Visualizer Plugin Docker image
 eProsima distributes a Docker image of |ddsvisualizer| with Ubuntu 20.04 as base image.
 This image launches the |plotjuggler| application with the |ddsvisualizer| already installed and sourced.
 
+#.  This Docker image was built for Ubuntu 20.04 (Focal Fossa).
+
+    To run this container you need Docker installed. From a terminal run
+
+    .. code-block:: bash
+
+        $ sudo apt install docker.io
+
 #.  Download the compressed Docker image in ``.tar`` format from the
     `eProsima Downloads website <https://www.eprosima.com/index.php/downloads-all>`_.
-    It is strongly recommended to download the image corresponding to the latest version of |ddsrouter|.
+    It is strongly recommended to download the image corresponding to the latest version of |ddsvisualizer|.
 
     |br|
 
@@ -26,7 +34,7 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
 
         load ubuntu-ddsvisualizer:<version>.tar
 
-    where ``version`` is the downloaded version of |ddsrouter|.
+    where ``version`` is the downloaded version of |ddsvisualizer|.
 
     |br|
 
@@ -34,7 +42,18 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
 
     .. code-block:: bash
 
-        docker --net=host ubuntu-ddsvisualizer:<version>
+        xhost local:root
+        docker \
+            --net=host \
+            --privileged -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
+            ubuntu-ddsvisualizer:<version>
 
     After executing the previous command you should be able to see the application running.
     Check the following section :ref:`user_manual_start` to learn how to start the |ddsvisualizer|.
+
+
+Fast DDS Suite
+==============
+
+eProsima distributes a Docker image with several features and applications regarding dds, including the |ddsvisualizer|.
+Check section :ref:`dds_suite` to learn how to download and use the |suite|.

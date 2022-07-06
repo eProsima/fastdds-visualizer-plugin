@@ -61,15 +61,15 @@
    /rst/developer_manual/installation/sources/linux
 
 
-.. _index_docker:
+.. _index_suite:
 
 .. toctree::
-   :caption: Docker Image
+   :caption: Fast DDS Suite
    :maxdepth: 2
    :numbered: 5
    :hidden:
 
-   /rst/docker/docker
+   /rst/dds_suite/dds_suite
 
 
 .. _index_notes:
