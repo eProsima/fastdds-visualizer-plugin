@@ -18,11 +18,15 @@ platform. It can be downloaded from `eProsima's downloads page <https://eprosima
 
         $ sudo apt install docker.io
 
+    |br|
+
+
 #.  Download the compressed Docker image in ``.tar`` format from the
     `eProsima Downloads website <https://www.eprosima.com/index.php/downloads-all>`_.
     It is strongly recommended to download the image corresponding to the latest version of |suite|.
 
     |br|
+
 
 #.  Extract the image by executing the following command:
 
@@ -32,11 +36,12 @@ platform. It can be downloaded from `eProsima's downloads page <https://eprosima
 
     .. code-block:: bash
 
-        load ubuntu-fastdds-suite:<version>.tar
+        docker load -i ubuntu-fastdds-suite:<version>.tar
 
     where ``version`` is the downloaded version of |suite|.
 
     |br|
+
 
 #.  Run the Docker container executing the following command:
 

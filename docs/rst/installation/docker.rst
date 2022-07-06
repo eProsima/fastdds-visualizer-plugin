@@ -16,13 +16,17 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
 
     .. code-block:: bash
 
-        $ sudo apt install docker.io
+        sudo apt install docker.io
+
+    |br|
+
 
 #.  Download the compressed Docker image in ``.tar`` format from the
     `eProsima Downloads website <https://www.eprosima.com/index.php/downloads-all>`_.
     It is strongly recommended to download the image corresponding to the latest version of |ddsvisualizer|.
 
     |br|
+
 
 #.  Extract the image by executing the following command:
 
@@ -32,11 +36,12 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
 
     .. code-block:: bash
 
-        load ubuntu-ddsvisualizer:<version>.tar
+        docker load -i ubuntu-ddsvisualizer:<version>.tar
 
     where ``version`` is the downloaded version of |ddsvisualizer|.
 
     |br|
+
 
 #.  Run the Docker container executing the following command:
 
