@@ -18,13 +18,13 @@ Automatically discover Data Type
 
 In order for |ddsvisualizer| to discover automatically the data type of a topic,
 the |fastdds| publisher that may interact with the application must be configured to send this information.
-There are two main configurations that has to be taken into account:
+There are two main configurations that have to be considered:
 
 
 Generate DataType
 =================
 
-In order for Fast DDS to be able to retrieve the data type description, it must have the TypeInformation.
+In order for |fastdds| to be able to retrieve the data type description, it must have the TypeInformation.
 In case that the |fastdds| application is already using the *Dynamic Types* API, this TypeInformation will be
 already available for the :code:`DomainParticipant`.
 
@@ -32,7 +32,7 @@ Otherwise, if the data type is generated via
 `Fast DDS Gen <https://fast-dds.docs.eprosima.com/en/latest/fastddsgen/introduction/introduction.html>`_,
 it is required to generate it with option :code:`-typeobject`.
 This generates two auxiliar cpp files that include the type information of the data type.
-If doing so, the data must be registered in the |fastdds| application before creating the publisher,
+Then, the data must be registered in the |fastdds| application before creating the publisher,
 using the function provided in :code:`<DataTypeName>TypeObject.hpp` file :code:`register<DataTypeName>Types()`.
 
 .. code-block:: cpp
@@ -65,7 +65,7 @@ XML Data Type
 *************
 
 If the automatic discovery of the data type is not possible, an XML file with the data type description could be loaded,
-so the internal |ddsvisualizer| is able to know the data type, and so, to subscribe to the topic.
+so the internal |ddsvisualizer| is able to know the data type to subscribe to the topic.
 This XML should be added as a DDS configuration in the following tab when starting the plugin.
 
 .. todo:
@@ -109,4 +109,4 @@ Some XML files with data type description examples could be found in the
 
 .. warning::
 
-    Dynamic Types in Fast DDS does not support complex data structures of kind: :code:`sequence<struct>`.
+    Dynamic Types in Fast DDS do not support complex data structures of kind: :code:`sequence<struct>`.
