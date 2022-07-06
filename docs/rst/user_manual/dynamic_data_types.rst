@@ -31,7 +31,7 @@ already available for the :code:`DomainParticipant`.
 Otherwise, if the data type is generated via
 `Fast DDS Gen <https://fast-dds.docs.eprosima.com/en/latest/fastddsgen/introduction/introduction.html>`_,
 it is required to generate it with option :code:`-typeobject`.
-This generates two auxiliar cpp files that include the type information of the data type.
+This generates two auxiliary :code:`cpp` files that include the type information of the data type.
 Then, the data must be registered in the |fastdds| application before creating the publisher,
 using the function provided in :code:`<DataTypeName>TypeObject.hpp` file :code:`register<DataTypeName>Types()`.
 
