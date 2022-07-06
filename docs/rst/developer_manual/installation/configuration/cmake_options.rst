@@ -21,29 +21,33 @@ CMake options
         - Description
         - Possible values
         - Default
+
     *   - :class:`CMAKE_BUILD_TYPE`
-        - Type of build (optional). Setting :class:`CMAKE_BUILD_TYPE`
-          to ``Debug`` enables console logging.
+        - Type of build (optional). Setting :class:`CMAKE_BUILD_TYPE` |br|
+          to ``Debug`` enables debugging and console logging.
         - ``Debug`` |br|
           ``Release``
         - -
+
     *   - :class:`BUILD_TESTS`
-        - Build the *DDS Visualizer Plugin* application and documentation |br|
-          tests. Setting :class:`BUILD_TESTS` to ``ON`` sets |br|
+        - Build the |ddsvisualizer| application |br|
+          and documentation tests. Setting :class:`BUILD_TESTS` to ``ON`` sets |br|
           :class:`BUILD_DOCUMENTATION_TESTS` to ``ON``.
         - ``OFF`` |br|
           ``ON``
         - ``OFF``
+
     *   - :class:`BUILD_DOCUMENTATION_TESTS`
-        - Build the *DDS Visualizer Plugin* documentation tests. It is |br|
-          set to ``ON`` if :class:`BUILD_TESTS` is set to ``ON``. |br|
+        - Build the |ddsvisualizer| documentation tests. |br|
+          It is set to ``ON`` if :class:`BUILD_TESTS` is set to ``ON``.
         - ``OFF`` |br|
           ``ON``
         - ``OFF``
+
     *   - :class:`BUILD_DOCUMENTATION`
-        - Build the *DDS Visualizer Plugin* documentation. It is |br|
-          set to ``ON`` if :class:`BUILD_TESTS_DOCUMENTATION` is set |br|
-          to ``ON``.
+        - Build the |ddsvisualizer| documentation. |br|
+          It is set to ``ON`` if :class:`BUILD_TESTS_DOCUMENTATION` |br|
+          is set to ``ON``.
         - ``OFF`` |br|
           ``ON``
         - ``OFF``

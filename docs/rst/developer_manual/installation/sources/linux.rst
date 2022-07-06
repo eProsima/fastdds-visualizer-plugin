@@ -189,7 +189,7 @@ Colcon installation
 
         colcon build --cmake-args
 
-#.  Then run post-installation script :code:`setup.bash`, so that :code:`plotjuggler` is visible::
+#.  Then run post-installation script :code:`setup.bash`, so that :code:`plotjuggler` is visible:
 
     .. code-block:: bash
 
