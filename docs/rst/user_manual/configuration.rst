@@ -6,7 +6,7 @@
 DDS Visualizer Plugin Configuration
 ###################################
 
-Once the plugin is started, a new dialog will open where choosing the configuration for the internal |fastdds|
+Once the plugin is started, a new menu appears to configure the internal |fastdds|
 *Domain Participant*.
 This section explains the different configuration options.
 
@@ -27,10 +27,10 @@ The following capture shows the *topic selector* dialog.
 Select topics
 -------------
 
-In this tab will automatically appear every
+In this tab it is shown every
 `DDS Topic <https://fast-dds.docs.eprosima.com/en/latest/fastdds/dds_layer/topic/topic.html>`_
 that is discovered by the internal *Domain Participant* in the current *Domain Id*.
-With each topic name, it appears its data type name.
+Each topic name has its related data type name.
 This is the data type of the data that will be published within this topic.
 Be aware that some data types may not be known by the internal |fastdds| application, and must be discovered via
 Dynamic Types.
@@ -54,8 +54,8 @@ Filter topics
 -------------
 
 There is a filter in the upper right corner of the tab that allows to filter topics by name.
-Writing plain text in there will hide those topics that do not contain such text in their names.
-Be aware that those topics that are hidden will still be selected, if they were before filtering.
+Writing plain text in this text box will hide those topics that do not contain such text in their names.
+Be aware that those topics selected before filtering applies will still be selected even if hidden.
 
 .. figure:: /rst/figures/configuration_topic_selector_filter.png
 
@@ -80,7 +80,7 @@ This pops up a new Dialog to choose a new *Domain Id*.
 XML Data Types
 --------------
 
-In order to explicitly specify a Data Type for a topic, XML files with data type descriptions could be uploaded.
+In order to explicitly specify a Data Type for a topic, XML files with data type descriptions could be imported.
 Using the buttons :code:`Include File` or :code:`Include Directory` the user can select an XML file or all
 the XML files in a directory, and they will be parsed by |fastdds| and their data types will be known for
 the application hereinafter.
@@ -97,10 +97,11 @@ This section is meant to configure advance options regarding internal values of 
 Maximum array size
 ------------------
 
-There is a typical use case where an image is trying to be displayed as a time series of integers.
+In some use cases, an image could be tried to display as a time series of many integer values,
+which could make the application unresponsive when working with big images.
 Due to very big amount of values, this could make the application highly unresponsive.
-In order to avoid so, there is a maximum size of arrays, set in this section.
-There are two possibilities to follow when a data with an array bigger than that value is found:
+In order to avoid this, an array size limit can be set in this section.
+When array data is bigger than this limit, two options can be chosen:
 
 * :code:`discard`: this data will be discarded.
 * :code:`clamp`: there will only be shown the first *N* values of the array, being *N* the maximum array size.
