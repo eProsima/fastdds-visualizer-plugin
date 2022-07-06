@@ -12,6 +12,8 @@ to be able to introspect the data type and read the internal data.
 If the application does not know the data type, it will not be able to connect to such topic.
 There are two ways of retrieving the data type information to the application:
 
+.. _user_manual__dynamic_data_types__automatic_data_type:
+
 ********************************
 Automatically discover Data Type
 ********************************
