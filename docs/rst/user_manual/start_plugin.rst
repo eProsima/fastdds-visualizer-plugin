@@ -13,7 +13,7 @@ select in combo box in *Streaming* section in left panel the plugin *Fast DDS Da
 
 .. note::
 
-    If this plugin does not automatically appears in the combo box, it means the plugin has not been correctly loaded.
+    If this plugin does not automatically appear in the combo box, it means the plugin has not been correctly loaded.
     Check section :ref:`source_installation_source_plugin` to learn how to add the plugin to the application.
     Be sure that |fastdds| libraries are sourced.
 

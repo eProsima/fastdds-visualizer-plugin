@@ -329,9 +329,9 @@ Then, to execute |ddsvisualizer| run the |plotjuggler| executable.
 Source Plugin
 -------------
 
-In case the |ddsvisualizer| binary compiled :code:`libplotjuggler_fastdds_datastream_plugin.so` os not in the same
+In case the |ddsvisualizer| binary compiled :code:`libplotjuggler_fastdds_datastream_plugin.so` is not in the same
 folder than the |plotjuggler| executable :code:`plotjuggler`, the plugin will not be automatically loaded.
-For this propose, the user must add the binary path in the application.
+For this purpose, the user must add the binary path in the application.
 Once running the |plotjuggler| executable, go to *App -> Preferences -> Plugins* and add the folder path that contains
 the binary of the plugin :code:`libplotjuggler_fastdds_datastream_plugin.so`.
 In case of colcon installation, this folder is :code:`<workspace_path>/install/plotjuggler_fastdds/bin`.
