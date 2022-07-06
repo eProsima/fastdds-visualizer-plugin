@@ -121,6 +121,8 @@ option(BUILD_DOCUMENTATION_TESTS "Build Fast DDS Monitor documentation tests" OF
 
 if (BUILD_TESTS)
     set(BUILD_DOCUMENTATION_TESTS ON)
+    enable_testing()
+    include(CTest)
 endif()
 
 
@@ -129,9 +131,9 @@ endif()
 ###############################################################################
 option(BUILD_DOCUMENTATION "Generate documentation" OFF)
 if(BUILD_DOCUMENTATION OR BUILD_DOCUMENTATION_TESTS)
+    message(STATUS "Adding docs")
     set(BUILD_DOCUMENTATION ON)
     add_subdirectory(docs)
-    message(STATUS "Adding docs")
 endif()
 
 
