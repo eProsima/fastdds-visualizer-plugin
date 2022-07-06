@@ -24,5 +24,6 @@ subpanel
 subpanels
 Todo
 unix
+unselected
 walkthrough
 wget

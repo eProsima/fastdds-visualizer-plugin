@@ -45,6 +45,7 @@
    :hidden:
 
    /rst/user_manual/dynamic_data_types
+   /rst/user_manual/configuration
 
 
 .. _index_developer_manual:
