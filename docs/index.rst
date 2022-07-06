@@ -23,6 +23,7 @@
 
    Windows </rst/installation/windows.rst>
    Linux </rst/installation/linux.rst>
+   Docker </rst/installation/docker.rst>
 
 
 .. _index_getting_started:
