@@ -189,6 +189,12 @@ Colcon installation
 
         colcon build --cmake-args
 
+#.  Then run post-installation script :code:`setup.bash`, so that :code:`plotjuggler` is visible:
+
+    .. code-block:: bash
+
+        source ~/DDS-Visualizer-Plugin/install/setup.bash
+
 .. note::
 
     Being based on CMake_, it is possible to pass the CMake configuration options to the :code:`colcon build`
@@ -270,19 +276,30 @@ Local installation
 
         cd ~/DDS-Visualizer-Plugin
         git clone https://github.com/eProsima/plotjuggler-fastdds-plugins.git
-        mkdir DDS-Visualizer-Plugin/build
-        cd DDS-Visualizer-Plugin/build
+        mkdir plotjuggler-fastdds-plugins/build
+        cd plotjuggler-fastdds-plugins/build
         cmake .. \
             -DCMAKE_INSTALL_PREFIX=~/DDS-Visualizer-Plugin/install \
             -DCMAKE_PREFIX_PATH=~/DDS-Visualizer-Plugin/install
         cmake --build . --target install
 
+    .. note::
 
-.. note::
+        By default, *eProsima DDS Visualizer Plugin* does not compile tests.
+        However, they can be activated by downloading and installing `Gtest <https://github.com/google/googletest>`_
+        and building with CMake option ``-DBUILD_TESTS=ON``.
 
-    By default, *eProsima DDS Visualizer Plugin* does not compile tests.
-    However, they can be activated by downloading and installing `Gtest <https://github.com/google/googletest>`_
-    and building with CMake option ``-DBUILD_TESTS=ON``.
+
+#.  Finally, extend :code:`LD_LIBRARY_PATH` and :code:`PATH` environment variables:
+
+    .. code-block:: bash
+
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/DDS-Visualizer-Plugin/install/lib
+        export PATH=$PATH:~/DDS-Visualizer-Plugin/install/bin
+
+    .. note::
+
+        Consider adding these lines to your :code:`~/.bashrc` for permanent effect.
 
 
 .. _global_installation_sl:
@@ -305,22 +322,22 @@ following:
 Run an application
 ==================
 
-To run the *eProsima DDS Visualizer Plugin* application, libraries must be in the path.
-If installation has been done using colcon, source the *Fast DDS* libraries from :code:`setup.bash`:
+To run the *eProsima DDS Visualizer Plugin* application, do not forget to source
+the *Fast DDS* libraries if installed from *colcon*, or extend :code:`LD_LIBRARY_PATH`
+and :code:`PATH` environment variables if *CMake* installation was used.
+Then execute `plotjuggler`:
 
 .. code-block:: bash
 
     # If built has been done using colcon, all projects could be sourced as follows
     source install/setup.bash
 
-Then, to execute |ddsvisualizer| run the |plotjuggler| executable.
+    # If built has been done using cmake directly, extend following environment variables
+    # with your installation lib/ and bin/ paths:
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/DDS-Visualizer-Plugin/install/lib
+    export PATH=$PATH:~/DDS-Visualizer-Plugin/install/bin
 
-.. code-block:: bash
-
-    # Run executable from installation path
-    ./install/plotjuggler/bin/plotjuggler
-
-    # Or use alias command
+    # Finally run plotjuggler
     plotjuggler
 
 
