@@ -334,7 +334,11 @@ folder than the |plotjuggler| executable :code:`plotjuggler`, the plugin will no
 For this propose, the user must add the binary path in the application.
 Once running the |plotjuggler| executable, go to *App -> Preferences -> Plugins* and add the folder path that contains
 the binary of the plugin :code:`libplotjuggler_fastdds_datastream_plugin.so`.
-In case of colcon installation, this folder will be :code:`<workspace_path>/install/plotjuggler_fastdds/bin`.
+In case of colcon installation, this folder is :code:`<workspace_path>/install/plotjuggler_fastdds/bin`.
+
+**To load new plugins added, the application must be restarted.**
+New plugins added will be stored within the Qt configuration,
+and will be automatically loaded every time the application is started.
 
 .. note::
 
