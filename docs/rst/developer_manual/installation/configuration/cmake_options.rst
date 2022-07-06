@@ -7,10 +7,10 @@
 CMake options
 #############
 
-*eProsima DDS Visualizer Plugin* provides several CMake options to build the documentation and tests.
+|ddsvisualizer| provides several CMake options to build the documentation and tests.
 
 .. warning::
-    These options are only for developers who installed the *DDS Visualizer Plugin* following 
+    These options are only for developers who installed the |ddsvisualizer| following
     the compilation steps described in :ref:`developer_manual_installation_sources_linux`.
 
 .. list-table::
@@ -20,6 +20,12 @@ CMake options
         - Description
         - Possible values
         - Default
+    *   - :class:`CMAKE_BUILD_TYPE`
+        - Type of cmake build (optional). Setting :class:`CMAKE_BUILD_TYPE`
+          to ``Debug`` enables console logging.
+        - ``Debug`` |br|
+          ``Release``
+        - -
     *   - :class:`BUILD_TESTS`
         - Build the *DDS Visualizer Plugin* application and documentation |br|
           tests. Setting :class:`BUILD_TESTS` to ``ON`` sets |br|
