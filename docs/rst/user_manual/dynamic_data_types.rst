@@ -60,6 +60,8 @@ Even when it is configured by default, make sure the :code:`auto_fill_type_infor
 :code:`TypeSupport` is :code:`true`.
 
 
+.. _user_manual__dynamic_data_types__xml_data_type:
+
 *************
 XML Data Type
 *************
