@@ -1,3 +1,5 @@
+.. include:: ../../../exports/alias.include
+
 .. _developer_manual_installation_sources_linux:
 
 ###############################
@@ -297,30 +299,52 @@ following:
 
     -DCMAKE_INSTALL_PREFIX=/usr/local/ -DBUILD_SHARED_LIBS=ON
 
-.. _run_app_colcon_sl:
+
+.. _linux_run_app:
 
 Run an application
 ==================
 
-To run the *eProsima DDS Visualizer Plugin* application, source the *Fast DDS* libraries
-and execute `plotjuggler`:
+To run the *eProsima DDS Visualizer Plugin* application, libraries must be in the path.
+If installation has been done using colcon, source the *Fast DDS* libraries from :code:`setup.bash`:
 
 .. code-block:: bash
 
     # If built has been done using colcon, all projects could be sourced as follows
     source install/setup.bash
-    # Finally run plotjuggler
+
+Then, to execute |ddsvisualizer| run the |plotjuggler| executable.
+
+.. code-block:: bash
+
+    # Run executable from installation path
+    ./install/plotjuggler/bin/plotjuggler
+
+    # Or use alias command
     plotjuggler
 
 
-.. TODO #15077. Explain how to run plotjuggler and import this plugin
+.. _source_installation_source_plugin:
+
+Source Plugin
+-------------
+
+In case the |ddsvisualizer| binary compiled :code:`libplotjuggler_fastdds_datastream_plugin.so` os not in the same
+folder than the |plotjuggler| executable :code:`plotjuggler`, the plugin will not be automatically loaded.
+For this propose, the user must add the binary path in the application.
+Once running the |plotjuggler| executable, go to *App -> Preferences -> Plugins* and add the folder path that contains
+the binary of the plugin :code:`libplotjuggler_fastdds_datastream_plugin.so`.
+In case of colcon installation, this folder will be :code:`<workspace_path>/install/plotjuggler_fastdds/bin`.
 
 .. note::
 
-    If the plugin does not load properly or app crashes, check that the environment variables
-    in `install/setup.bash` have been properly exported.
+    If the plugin does not load properly or app crashes, check that the |fastdds| libraries have been correctly
+    exported to the path.
+    Check :ref:`linux_run_app` steps.
 
-.. External links
+
+Useful Links
+============
 
 .. _colcon: https://colcon.readthedocs.io/en/released/
 .. _CMake: https://cmake.org
