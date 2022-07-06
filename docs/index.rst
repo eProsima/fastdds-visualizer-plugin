@@ -44,8 +44,9 @@
    :numbered: 5
    :hidden:
 
-   /rst/user_manual/dynamic_data_types
+   /rst/user_manual/start_plugin
    /rst/user_manual/configuration
+   /rst/user_manual/dynamic_data_types
 
 
 .. _index_developer_manual:

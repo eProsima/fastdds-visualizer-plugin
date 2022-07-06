@@ -9,10 +9,7 @@ DDS Visualizer Plugin Configuration
 Once the plugin is started, a new menu appears to configure the internal |fastdds|
 *Domain Participant*.
 This section explains the different configuration options.
-
-.. todo::
-    Add a link to the start plugin
-
+Check section :ref:`user_manual_start` to learn how to start the plugin.
 
 Topic Selector
 ==============
