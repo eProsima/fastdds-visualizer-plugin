@@ -10,6 +10,7 @@ CMake options
 |ddsvisualizer| provides several CMake options to build the documentation and tests.
 
 .. warning::
+
     These options are only for developers who installed the |ddsvisualizer| following
     the compilation steps described in :ref:`developer_manual_installation_sources_linux`.
 
@@ -21,7 +22,7 @@ CMake options
         - Possible values
         - Default
     *   - :class:`CMAKE_BUILD_TYPE`
-        - Type of cmake build (optional). Setting :class:`CMAKE_BUILD_TYPE`
+        - Type of build (optional). Setting :class:`CMAKE_BUILD_TYPE`
           to ``Debug`` enables console logging.
         - ``Debug`` |br|
           ``Release``
