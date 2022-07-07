@@ -2,19 +2,19 @@
 
 .. _installation_manual_windows:
 
-################################
-DDS Visualizer Plugin on Windows
-################################
+#####################################
+Fast DDS Visualizer Plugin on Windows
+#####################################
 
-This section provides instructions on how to install the *DDS Visualizer Plugin* application.
+This section provides instructions on how to install the |ddsvisualizer| application.
 This is available on the `eProsima <https://www.eprosima.com/>`_ website in the
 `Downloads <https://www.eprosima.com/index.php/downloads-all>`_ section.
 
-In the list of eProsima official releases, search for *eProsima DDS Visualizer Plugin* and go to the available files of
+In the list of eProsima official releases, search for |ddsvisualizer| and go to the available files of
 the latest version available. Then click on the **Download now** button of the Windows installer
-(*eProsima DDS Visualizer Plugin x.x.x - Win (32 & 64)*).
+(``PlotJuggler eProsima Edition x.x.x - Win (32 & 64)`` where ``X.X.X`` is the version of the application.).
 
-Now locate the downloaded file and run the installer. The *DDS Visualizer Plugin* installer window should open as shown
+Now locate the downloaded file and run the installer. The |ddsvisualizer| installer window should open as shown
 in the following image.
 
 .. .. figure:: /rst/figures/windows_installer.png
@@ -23,7 +23,7 @@ in the following image.
 
 Follow the installation steps until the installation process is complete.
 A window as the one shown below should be visible on screen after installation, from which you may directly run the
-*DDS Visualizer Plugin* application.
+|ddsvisualizer| application.
 
 .. .. figure:: /rst/figures/windows_installer_run.png
 ..     :align: center
