@@ -23,7 +23,7 @@ Shapes of different types and colors move around the screen, while publishing th
 Prerequisites
 ^^^^^^^^^^^^^
 
-First of all, you need to follow the steps outlined in the :ref:`Installation Manual <installation_manual_linux>` for
+First of all, you need to follow the steps outlined in the :ref:`Installation Manual <installation_manual_windows>` for
 the installation of *eProsima DDS Visualizer Plugin* and all its dependencies.
 In addition, please refer to *ShapesDemo* `Installation Manual <https://eprosima-shapes-demo.readthedocs.io/en/latest/installation/windows_binaries.html>`_
 and install this application before getting started. Version ``2.7.0`` or above is required in this tutorial.
@@ -107,5 +107,5 @@ Next steps
 ^^^^^^^^^^
 
 We hope this example served as a useful resource for getting a grasp on the basics of *eProsima DDS Visualizer Plugin*.
-Feel free to explore the :ref:`User Manual <dynamic_data_types_sec>` section to learn more about its various features
-and configuration options.
+Feel free to explore the :ref:`User Manual <user_manual_start>` section to learn more about its various features and
+configuration options.
