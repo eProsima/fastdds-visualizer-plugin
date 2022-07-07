@@ -13,7 +13,8 @@
 
 *eProsima Fast DDS Visualizer Plugin* is a plugin for the *PlotJuggler* application.
 PlotJuggler is a graphical desktop application providing visualizations features
-of data series, time series, X-Y plots, as well as data management features, such as
+of data series, time series, X-Y plots.
+It also adds data management features, such as
 data import and export, custom and built-in data manipulation functions,
 data series merges, etc.
 Also, this software support many different layouts, with dynamic, rich and user-friendly customization.
@@ -21,29 +22,26 @@ Also, this software support many different layouts, with dynamic, rich and user-
 *Fast DDS Visualizer Plugin* allows users to visualize topic-related data from a DDS network.
 The user can select several topics from the discovered topics running in the DDS network.
 These topics will be divided by values using data type introspection,
-and each value could be visualized and managed separately, allowing the user to quickly visualize 
-in different ways the detailed data content that is being 
+and each value could be visualized and managed separately, allowing the user to quickly visualize
+in different ways the detailed data content that is being
 exchanged in the network.
 
 *eProsima Fast DDS Visualizer Plugin* supports the following features:
 
-#. *Data type introspection*: by using *Fast DDS Dynamic Types*,
+#.  **Data type introspection**: by using *Fast DDS Dynamic Types*,
     this plugin allows to discover the data type of the topic,
     and to visualize the data content using the corresponding data type.
-
-#. *DDS Configurations*: Different configurations can be set to choose the *Domain Id* and to
+#.  **DDS Configurations**: Different configurations can be set to choose the *Domain Id* and to
     select specific *DDS Topics* to be visualized.
-
-#. *All PlotJuggler features*: This plugin composes nicely with all the PlotJuggler features,
+#.  **All PlotJuggler features**: This plugin composes nicely with all the PlotJuggler features,
     so that users can create rich graphs from sophisticated data manipulations.
 
 .. raw:: html
 
     <video width=100% height=auto autoplay loop controls>
-        <source src="../../_static/usage_example.mp4">
+        <source src="_static/usage_example.mp4">
         Your browser does not support the video tag.
     </video>
-
 
 
 ###############################
