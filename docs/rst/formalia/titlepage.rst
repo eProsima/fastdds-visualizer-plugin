@@ -11,10 +11,30 @@
   :alt: eProsima
   :target: http://www.eprosima.com/
 
-|ddsvisualizer| is a graphical desktop application providing real-time 2D charts to visualize
-topic-related data traffic information from *eProsima Fast DDS* entities.
-This application provides visualizations of time series and X-Y plots with topic-related DDS data, showing the
-user a quick and rich representation of the detailed data content that is being exchanged in the network.
+*eProsima Fast DDS Visualizer Plugin* is a plugin for the *PlotJuggler* application.
+PlotJuggler is a graphical desktop application providing visualizations features 
+of data series, time series, X-Y plots, as well as data management features as 
+data import and export, custom and built-in data manipulation functions,
+data series merges, etc.
+As well, this software support many different layouts, with dynamic and user-friendly customization.
+
+*Fast DDS Visualizer Plugin* allows users to visualize topic-related data from a DDS network.
+The user can select several topics from the discovered topics running in the DDS network.
+These topics will be divided by values using data type introspection,
+and each value could be visualized and managed separately,
+showing the user a quick and rich representation of the detailed data content that is being exchanged in the network.
+
+*eProsima Fast DDS Visualizer Plugin* supports the following features:
+
+#. *Data type introspection*: by using *Fast DDS Dynamic Types*,
+    the plugin allows to discover the data type of the topic,
+    and to visualize the data content using the corresponding data type.
+
+#. *DDS Configuration*: Different DDS configurations are allowed as choosing the *Domain Id* and selecting
+    the *DDS Topics* to be visualized.
+
+#. *All PlotJuggler features*: This plugin makes it possible to use the huge amount of features that PlotJuggler
+    offers to visualize and manage data from a DDS network.
 
 .. raw:: html
 
@@ -54,6 +74,6 @@ This documentation is organized into the sections below.
 
 * :ref:`Installation Manual <installation_manual_linux>`
 * :ref:`Getting Started <start_tutorial>`
-* :ref:`User Manual <user_manual_start_plugin>`
+* :ref:`User Manual <user_manual_start>`
 * :ref:`Developer Manual <developer_manual_installation_sources_linux>`
 * :ref:`Release Notes <release_notes>`
