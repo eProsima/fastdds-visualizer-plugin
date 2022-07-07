@@ -27,23 +27,23 @@ jobs:
           - ubuntu-22.04
 
     steps:
-      - name: Sync eProsima/plotjuggler-fastdds-plugins repository
+      - name: Sync eProsima/fastdds-visualizer-plugin repository
         uses: actions/checkout@v2
         with:
-          path: src/plotjuggler-fastdds-plugins
+          path: src/fastdds-visualizer-plugin
 
       - name: Install apt packages
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-apt-packages
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-apt-packages
 
       - name: Install GTest
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-gtest-linux
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-gtest-linux
 
       - name: Install Python packages
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-python-packages
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-python-packages
 
       - name: Fetch required repositories
         run: |
-          vcs import src < src/plotjuggler-fastdds-plugins/.github/workflows/requirements.repos
+          vcs import src < src/fastdds-visualizer-plugin/.github/workflows/requirements.repos
 
       - name: Update colcon mixin
         run: |
@@ -61,16 +61,16 @@ jobs:
 
       - name: Build workspace
         run: |
-          cat src/plotjuggler-fastdds-plugins/.github/workflows/test_colcon.meta
+          cat src/fastdds-visualizer-plugin/.github/workflows/test_colcon.meta
           colcon build \
             --event-handlers=console_direct+ \
-            --metas src/plotjuggler-fastdds-plugins/.github/workflows/test_colcon.meta \
+            --metas src/fastdds-visualizer-plugin/.github/workflows/test_colcon.meta \
             --mixin coverage-gcc asan-gcc
 
       - name: Run tests
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/run-test-ubuntu
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/run-test-ubuntu
         with:
-          package_name: plotjuggler-fastdds-plugins
+          package_name: fastdds-visualizer-plugin
         if: always()
 
       - name: Upload Logs
@@ -87,23 +87,23 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Sync eProsima/plotjuggler-fastdds-plugins repository
+      - name: Sync eProsima/fastdds-visualizer-plugin repository
         uses: actions/checkout@v2
         with:
-          path: src/plotjuggler-fastdds-plugins
+          path: src/fastdds-visualizer-plugin
 
       - name: Install apt packages
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-apt-packages
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-apt-packages
 
       - name: Install GTest
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-gtest-linux
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-gtest-linux
 
       - name: Install Python packages
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-python-packages
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-python-packages
 
       - name: Fetch required repositories
         run: |
-          vcs import src < src/plotjuggler-fastdds-plugins/.github/workflows/requirements.repos
+          vcs import src < src/fastdds-visualizer-plugin/.github/workflows/requirements.repos
 
       - name: Update colcon mixin
         run: |
@@ -121,23 +121,23 @@ jobs:
 
       - name: Build workspace
         run: |
-          cat src/plotjuggler-fastdds-plugins/.github/workflows/test_documentation.meta
+          cat src/fastdds-visualizer-plugin/.github/workflows/test_documentation.meta
           colcon build \
             --event-handlers=console_direct+ \
-            --metas src/plotjuggler-fastdds-plugins/.github/workflows/test_documentation.meta \
+            --metas src/fastdds-visualizer-plugin/.github/workflows/test_documentation.meta \
             --mixin coverage-gcc asan-gcc
 
       - name: Run tests
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/run-test-ubuntu
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/run-test-ubuntu
         with:
-          package_name: plotjuggler_fastdds
+          package_name: fastdds_visualizer_plugin
         if: always()
 
       - name: Upload documentation
         uses: actions/upload-artifact@v1
         with:
           name: Documentation HTML
-          path: install/plotjuggler_fastdds/docs/plotjuggler_fastdds_docs/sphinx/html/
+          path: install/fastdds_visualizer_plugin/docs/fastdds_visualizer_plugin_docs/sphinx/html/
 
       - name: Upload Logs
         uses: actions/upload-artifact@v1
@@ -164,10 +164,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          path: plotjuggler_fastdds
+          path: fastdds_visualizer_plugin
 
       - name: Install OpenSSL
-        uses: ./plotjuggler_fastdds/.github/actions/install-openssl-windows
+        uses: ./fastdds_visualizer_plugin/.github/actions/install-openssl-windows
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.13.0
@@ -213,13 +213,13 @@ jobs:
         run: >
           Tree /f
 
-      - name: Install Plotjuggler Fast-DDS- plugin
+      - name: Install Fast DDS Visualizer Plugin
         shell: pwsh
         run: >
           cmake -DCMAKE_PREFIX_PATH='C:\Program Files;${{ github.workspace }}\install' `
-           -DCMAKE_CXX_FLAGS="/WX /EHsc" -B build\plotjuggler_fastdds `
-           -A x64 -T host=x64 plotjuggler_fastdds;
-          cmake --build build\plotjuggler_fastdds --config ${{ matrix.cmake-config }} --target install
+           -DCMAKE_CXX_FLAGS="/WX /EHsc" -B build\fastdds_visualizer_plugin `
+           -A x64 -T host=x64 fastdds_visualizer_plugin;
+          cmake --build build\fastdds_visualizer_plugin --config ${{ matrix.cmake-config }} --target install
 
 
   # This job is used to test the format and linter of the new code added to repository
@@ -227,21 +227,21 @@ jobs:
   uncrustify:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync eProsima/plotjuggler-fastdds-plugins repository
+      - name: Sync eProsima/fastdds-visualizer-plugin repository
         uses: actions/checkout@v2
         with:
-          path: src/plotjuggler-fastdds-plugins
+          path: src/fastdds-visualizer-plugin
 
       - name: Fetch all branches and tags
         run: |
-          cd src/plotjuggler-fastdds-plugins
+          cd src/fastdds-visualizer-plugin
           git fetch --prune --unshallow
 
       - name: Install apt packages
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-apt-packages
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-apt-packages
 
       - name: Install Python packages
-        uses: ./src/plotjuggler-fastdds-plugins/.github/actions/install-python-packages
+        uses: ./src/fastdds-visualizer-plugin/.github/actions/install-python-packages
 
       - name: Install uncrustify
         run: |
@@ -271,12 +271,12 @@ jobs:
 
       - name: Get difference
         run: |
-          cd src/plotjuggler-fastdds-plugins
+          cd src/fastdds-visualizer-plugin
           echo "MODIFIED_FILES=$(git diff --name-only origin/${GITHUB_BASE_REF} origin/${GITHUB_HEAD_REF} | grep -e '\.h' -e '\.hpp' -e '\.cpp' -e '\.ipp' | tr '\n' ' ')" >> $GITHUB_ENV
 
       - name: Check difference
         run: |
-          cd src/plotjuggler-fastdds-plugins
+          cd src/fastdds-visualizer-plugin
           if [[ -z "${MODIFIED_FILES}" ]]
           then
             touch empty.hpp
@@ -286,7 +286,7 @@ jobs:
       - name: Check style
         run: |
           source install/local_setup.bash
-          cd src/plotjuggler-fastdds-plugins
+          cd src/fastdds-visualizer-plugin
           ament_uncrustify \
             -c ../../uncrustify.cfg \
             --language CPP \

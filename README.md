@@ -1,13 +1,10 @@
-# Fast DDS plugins for PlotJuggler
+# Fast DDS Visualizer Plugin
 
-PlotJuggler works great with ROS, but it is not itself a "ROS" application.
-
-ROS is supported through external plugins that can be found in this [repository](https://github.com/PlotJuggler/plotjuggler-ros-plugins/).
+> :warning: **TODO**
 
 ## Existing Plugins
 
-- DataStream for Dynamic Types.
-
+- Fast DDS Visualizer Plugin DataStream.
 
 ## Install from source using Colcon
 
@@ -29,10 +26,10 @@ It is not needed to install Fast DDS, as it will be installed within this worksp
 Create a colcon workspace and clone the repositories:
 
 ```bash
-mkdir -p ~/plotjuggler_fastdds/src
-cd ~/plotjuggler_fastdds
-wget https://raw.githubusercontent.com/eProsima/plotjuggler-fastdds-plugins/main/plotjuggler_fastdds.repos
-vcs import src < plotjuggler_fastdds.repos
+mkdir -p ~/fastdds_visualizer_plugin/src
+cd ~/fastdds_visualizer_plugin
+wget https://raw.githubusercontent.com/eProsima/fastdds-visualizer-plugin/main/fastdds_visualizer_plugin.repos
+vcs import src < fastdds_visualizer_plugin.repos
 ```
 
 ### Compile using colcon
@@ -45,8 +42,8 @@ colcon build
 
 In order to use this plugin, execute the PlotJuggler application (`./install/plotjuggler/bin/plotjuggler/`).
 Once in the application, go to the menu _App -> Preferences -> Plugins_ and add the location of the library
-`plotjuggler_fastdds`, installed by this project in `INSTALL_PREFIX_PATH/bin`.
-In case of colcon built, the path is `./install/plotjuggler_fastdds/bin/`.
+`fastdds_visualizer_plugin`, installed by this project in `INSTALL_PREFIX_PATH/bin`.
+In case of colcon built, the path is `./install/fastdds_visualizer_plugin/bin/`.
 
 ### Dynamic Types
 

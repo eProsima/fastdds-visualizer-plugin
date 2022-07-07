@@ -47,7 +47,7 @@ class FastDdsDataStreamer :
 {
     //! Macros for Qt Plugin and Object
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "facontidavide.PlotJuggler3.FastDDSDataStreamer")
+    Q_PLUGIN_METADATA(IID "facontidavide.PlotJuggler3.FastDDSVisualizerPlugin")
     Q_INTERFACES(PJ::DataStreamer)
 
 public:
@@ -121,7 +121,7 @@ public:
     // STATIC METHODS AND PUBLIC MEMBERS
     ////////////////////////////////////////////////////
 
-    constexpr static const char* PLUGIN_NAME_ = "Fast DDS DataStreamer PlotJuggler Plugin";
+    constexpr static const char* PLUGIN_NAME_ = "Fast DDS Visualizer Plugin";
 
 protected:
 
@@ -145,7 +145,7 @@ protected:
 
     bool running_;
 
-    constexpr static const char* CONFIGURATION_SETTINGS_PREFIX_ = "FastDDSDataStreamerPlotJugglerPlugin";
+    constexpr static const char* CONFIGURATION_SETTINGS_PREFIX_ = "FastDDSVisualizerPlugin";
 };
 
 } /* namespace datastreamer */

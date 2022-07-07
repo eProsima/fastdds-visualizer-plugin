@@ -20,7 +20,7 @@ repositories:
         url: https://github.com/facontidavide/PlotJuggler.git
         version: main
 
-    plotjuggler_fastdds:
+    fastdds_visualizer_plugin:
         type: git
-        url: https://github.com/eProsima/plotjuggler-fastdds-plugins.git
+        url: https://github.com/eProsima/fastdds-visualizer-plugin.git
         version: main

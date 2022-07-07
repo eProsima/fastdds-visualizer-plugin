@@ -26,7 +26,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 ###############################################################################
 # Project
 ###############################################################################
-project(plotjuggler_fastdds_datastream_plugin)
+project(fastdds_visualizer_plugin_datastream_plugin)
 
 
 ###############################################################################
