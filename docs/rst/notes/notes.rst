@@ -1,3 +1,5 @@
+.. include:: ../exports/alias.include
+
 .. _release_notes:
 
 ##############
@@ -6,19 +8,21 @@ Version v0.0.0
 
 This is the first release of eProsima |ddsvisualizer|.
 
-This release includes several **features** regarding the configuraton and visualization of DDS data from |fastdds|.
+This release includes the *Fast DDS Visualizer Plugin*, a **new Plugin** for the |plotjuggler| application,
+supporting the configuration and visualization of DDS data powered by |fastdds|.
+
 
 This release includes the following **User Interface features**:
 
-* New |ddsvisualizer| selectable *DataStream* plugin for |plotjuggler|.
+* New |ddsvisualizer| *DataStream* plugin for |plotjuggler|.
 * Dialogs and menus to configure |ddsvisualizer|.
 
 
 This release includes the following **Configuration features**:
 
-* Select a Domain Id to discover and subscribe topics.
+* Select a Domain Id to discover and subscribe to topics.
 * Load XML files with data type descriptions.
-* Array clamp or discard regarding the size.
+* Array clamp or discard with respect to its size.
 * Select DDS topics whenever the data type is known.
 
 

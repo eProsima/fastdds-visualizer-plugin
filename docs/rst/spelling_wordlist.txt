@@ -9,6 +9,7 @@ DataReader
 datawriter
 DataWriter
 Debian
+dialogs
 eProsima
 gtest
 localhost
