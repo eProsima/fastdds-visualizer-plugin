@@ -1,6 +1,6 @@
 .. eProsima DDS Visualizer Plugin documentation master file.
 
-.. include:: rst/formalia/titlepage.rst
+.. include:: titlepage.rst
 
 
 .. _index_introduction:
@@ -10,7 +10,7 @@
    :maxdepth: 2
    :hidden:
 
-   /rst/formalia/titlepage
+   /titlepage
 
 
 .. _index_installation:
