@@ -172,8 +172,8 @@ Colcon installation
 
         mkdir -p ~/DDS-Visualizer-Plugin/src
         cd ~/DDS-Visualizer-Plugin
-        wget https://raw.githubusercontent.com/eProsima/plotjuggler-fastdds-plugins/main/plotjuggler_fastdds.repos
-        vcs import src < plotjuggler_fastdds.repos
+        wget https://raw.githubusercontent.com/eProsima/fastdds-visualizer-plugin/main/fastdds_visualizer_plugin.repos
+        vcs import src < fastdds_visualizer_plugin.repos
 
     .. note::
 
@@ -275,9 +275,9 @@ Local installation
     .. code-block:: bash
 
         cd ~/DDS-Visualizer-Plugin
-        git clone https://github.com/eProsima/plotjuggler-fastdds-plugins.git
-        mkdir plotjuggler-fastdds-plugins/build
-        cd plotjuggler-fastdds-plugins/build
+        git clone https://github.com/eProsima/fastdds-visualizer-plugin.git
+        mkdir fastdds-visualizer-plugin/build
+        cd fastdds-visualizer-plugin/build
         cmake .. \
             -DCMAKE_INSTALL_PREFIX=~/DDS-Visualizer-Plugin/install \
             -DCMAKE_PREFIX_PATH=~/DDS-Visualizer-Plugin/install
@@ -346,12 +346,12 @@ Then execute `plotjuggler`:
 Source Plugin
 -------------
 
-In case the |ddsvisualizer| binary compiled :code:`libplotjuggler_fastdds_datastream_plugin.so` is not in the same
+In case the |ddsvisualizer| binary compiled :code:`libfastdds_visualizer_plugin_datastream_plugin.so` is not in the same
 folder than the |plotjuggler| executable :code:`plotjuggler`, the plugin will not be automatically loaded.
 For this purpose, the user must add the binary path in the application.
 Once running the |plotjuggler| executable, go to *App -> Preferences -> Plugins* and add the folder path that contains
-the binary of the plugin :code:`libplotjuggler_fastdds_datastream_plugin.so`.
-In case of colcon installation, this folder is :code:`<workspace_path>/install/plotjuggler_fastdds/bin`.
+the binary of the plugin :code:`libfastdds_visualizer_plugin_datastream_plugin.so`.
+In case of colcon installation, this folder is :code:`<workspace_path>/install/fastdds_visualizer_plugin/bin`.
 
 **To load new plugins added, the application must be restarted.**
 New plugins added will be stored within the Qt configuration,

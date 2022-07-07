@@ -1,7 +1,7 @@
 {
     "names":
     {
-        "plotjuggler_fastdds":
+        "fastdds_visualizer_plugin":
         {
             "cmake-args":
             [

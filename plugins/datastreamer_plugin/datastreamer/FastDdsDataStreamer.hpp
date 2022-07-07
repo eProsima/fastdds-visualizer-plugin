@@ -1,19 +1,19 @@
 // Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
-// This file is part of eProsima Fast DDS Monitor.
+// This file is part of eProsima Fast DDS Visualizer Plugin.
 //
-// eProsima Fast DDS Monitor is free software: you can redistribute it and/or modify
+// eProsima Fast DDS Visualizer Plugin is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// eProsima Fast DDS Monitor is distributed in the hope that it will be useful,
+// eProsima Fast DDS Visualizer Plugin is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with eProsima Fast DDS Monitor. If not, see <https://www.gnu.org/licenses/>.
+// along with eProsima Fast DDS Visualizer Plugin. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * @file FastDdsDataStreamer.hpp
@@ -47,7 +47,7 @@ class FastDdsDataStreamer :
 {
     //! Macros for Qt Plugin and Object
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "facontidavide.PlotJuggler3.FastDDSDataStreamer")
+    Q_PLUGIN_METADATA(IID "facontidavide.PlotJuggler3.FastDDSVisualizerPlugin")
     Q_INTERFACES(PJ::DataStreamer)
 
 public:
@@ -121,7 +121,7 @@ public:
     // STATIC METHODS AND PUBLIC MEMBERS
     ////////////////////////////////////////////////////
 
-    constexpr static const char* PLUGIN_NAME_ = "Fast DDS DataStreamer PlotJuggler Plugin";
+    constexpr static const char* PLUGIN_NAME_ = "Fast DDS Visualizer Plugin";
 
 protected:
 
@@ -145,7 +145,7 @@ protected:
 
     bool running_;
 
-    constexpr static const char* CONFIGURATION_SETTINGS_PREFIX_ = "FastDDSDataStreamerPlotJugglerPlugin";
+    constexpr static const char* CONFIGURATION_SETTINGS_PREFIX_ = "FastDDSVisualizerPlugin";
 };
 
 } /* namespace datastreamer */

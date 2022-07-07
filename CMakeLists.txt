@@ -1,22 +1,22 @@
 # Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 #
-# This file is part of eProsima PlotJuggler Fast DDS Plugins.
+# This file is part of eProsima Fast DDS Visualizer Plugin.
 #
-# eProsima PlotJuggler Fast DDS Plugins is free software: you can redistribute it and/or modify
+# eProsima Fast DDS Visualizer Plugin is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# eProsima PlotJuggler Fast DDS Plugins is distributed in the hope that it will be useful,
+# eProsima Fast DDS Visualizer Plugin is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with eProsima PlotJuggler Fast DDS Plugins. If not, see <https://www.gnu.org/licenses/>.
+# along with eProsima Fast DDS Visualizer Plugin. If not, see <https://www.gnu.org/licenses/>.
 
 ###############################################################################
-# CMake build rules for PlotJuggler Fast DDS Plugins
+# CMake build rules for Fast DDS Visualizer Plugin
 ###############################################################################
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(VERSION 3.5...3.13)
@@ -48,14 +48,14 @@ set(PRODUCT_VERSION_STR ${PRODUCT_MAJOR_VERSION}.${PRODUCT_MINOR_VERSION}.${PROD
 ###############################################################################
 # Project
 ###############################################################################
-project(plotjuggler_fastdds)
+project(fastdds_visualizer_plugin)
 
 set(PROJECT_VERSION_MAJOR "${PRODUCT_MAJOR_VERSION}")
 set(PROJECT_VERSION_MINOR "${PRODUCT_MINOR_VERSION}")
 set(PROJECT_VERSION_PATCH "${PRODUCT_PATCH_VERSION}")
 set(PROJECT_VERSION "${PRODUCT_VERSION_STR}")
 
-set(PROJECT_NAME_LARGE "PlotJuggler Fast DDS plugin")
+set(PROJECT_NAME_LARGE "Fast DDS Visualizer Plugin")
 string(TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
 set(PROJECT_DESCRIPTION_SUMMARY "Plugin using Fast DDS library to subscribe to DDS data and plot it in plotjuggler")
 set(PROJECT_DESCRIPTION
