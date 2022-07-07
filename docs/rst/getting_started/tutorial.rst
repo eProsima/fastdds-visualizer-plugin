@@ -27,11 +27,12 @@ First of all, you need to follow the steps outlined in the :ref:`Installation Ma
 the installation of *eProsima DDS Visualizer Plugin* and all its dependencies.
 In addition, please refer to *ShapesDemo* `Installation Manual <https://eprosima-shapes-demo.readthedocs.io/en/latest/installation/windows_binaries.html>`_
 and install this application before getting started. Version ``2.7.0`` or above is required in this tutorial.
-Both of them, along with other *eProsima* tools and products, are preinstalled in *Fast DDS Suite*, so consider using
+
+Both of them, along with other *eProsima* tools and products, are preinstalled in **Fast DDS Suite**, so consider using
 :ref:`DDS Visualizer Plugin within Fast DDS Suite <dds_suite>` as it already presents all the elements required to
 follow this example.
-It may also be useful, though not required, to have a look at *Plotjuggler*'s introductory tutorials available at their
-official `website <https://github.com/facontidavide/PlotJuggler#tutorials>`_.
+It may also be useful, though not required, to have a look at *Plotjuggler*'s introductory tutorials available in this
+section :ref:`user_manual_tutorials`.
 
 
 Launch ShapesDemo application
