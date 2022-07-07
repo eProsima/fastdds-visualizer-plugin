@@ -3,11 +3,11 @@
 
 .. _docker:
 
-##################################
-DDS Visualizer Plugin Docker image
-##################################
+#########################################
+PlotJuggler eProsima Edition Docker image
+#########################################
 
-eProsima distributes a Docker image of |ddsvisualizer| with Ubuntu 20.04 as base image.
+eProsima distributes a Docker image of the |ddsvisualizer| with Ubuntu 20.04 as base image.
 This image launches the |plotjuggler| application with the |ddsvisualizer| already installed and sourced.
 
 #.  This Docker image was built for Ubuntu 20.04 (Focal Fossa).
@@ -21,8 +21,7 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
     |br|
 
 
-#.  Download the compressed Docker image in ``.tar`` format from the
-    `eProsima Downloads website <https://www.eprosima.com/index.php/downloads-all>`_.
+#.  Download the compressed Docker image in ``.tar`` format from the |edownloads|.
     It is strongly recommended to download the image corresponding to the latest version of |ddsvisualizer|.
 
     |br|
@@ -36,7 +35,7 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
 
     .. code-block:: bash
 
-        docker load -i ubuntu-ddsvisualizer:<version>.tar
+        docker load -i ubuntu-plotjuggler-eprosima-edition:<version>.tar
 
     where ``version`` is the downloaded version of |ddsvisualizer|.
 
@@ -51,7 +50,7 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
         docker \
             --net=host \
             --privileged -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
-            ubuntu-ddsvisualizer:<version>
+            ubuntu-plotjuggler-eprosima-edition:<version>
 
     After executing the previous command you should be able to see the application running.
     Check the following section :ref:`user_manual_start` to learn how to start the |ddsvisualizer|.
@@ -60,5 +59,5 @@ This image launches the |plotjuggler| application with the |ddsvisualizer| alrea
 Fast DDS Suite
 ==============
 
-eProsima distributes a Docker image with several features and applications regarding dds, including the |ddsvisualizer|.
+eProsima distributes a Docker image with several features and applications regarding dds, including the |eplotjuggler|.
 Check section :ref:`dds_suite` to learn how to download and use the |suite|.

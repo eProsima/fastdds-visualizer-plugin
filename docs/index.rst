@@ -1,4 +1,4 @@
-.. eProsima DDS Visualizer Plugin documentation master file.
+.. eProsima Fast DDS Visualizer Plugin documentation master file.
 
 .. include:: titlepage.rst
 

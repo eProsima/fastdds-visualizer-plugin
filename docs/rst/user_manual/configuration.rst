@@ -2,9 +2,9 @@
 
 .. _user_manual_configuration:
 
-###################################
-DDS Visualizer Plugin Configuration
-###################################
+########################################
+Fast DDS Visualizer Plugin Configuration
+########################################
 
 Once the plugin is started, a new menu appears to configure the internal |fastdds|
 *Domain Participant*.

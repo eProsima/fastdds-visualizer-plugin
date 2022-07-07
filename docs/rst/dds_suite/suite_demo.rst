@@ -4,14 +4,14 @@
 
 .. _fast_dds_suite_dds_visualizer:
 
-DDS Visualizer Plugin
-=====================
+PlotJuggler eProsima Edition
+============================
 
 To launch the |ddsvisualizer|, from a terminal run
 
 .. code-block:: bash
 
- $ dds_visualization
+ $ plotjuggler
 
 
 Other eProsima applications

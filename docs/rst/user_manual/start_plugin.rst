@@ -2,9 +2,9 @@
 
 .. _user_manual_start:
 
-###########################
-Start DDS Visualizer Plugin
-###########################
+################################
+Start Fast DDS Visualizer Plugin
+################################
 
 In order to start the |ddsvisualizer| in the |plotjuggler| application,
 select in combo box in *Streaming* section in left panel the plugin *Fast DDS DataStreamer Plugin*.
