@@ -90,7 +90,7 @@ install(DIRECTORY ${DOCS_OUTPUT_HTML_DIR}
     PATTERN ".buildinfo" EXCLUDE)
 set(CPACK_COMPONENT_monitor-sphinx_DISPLAY_NAME "Fast DDS Visualizer Plugin Sphinx")
 set(CPACK_COMPONENT_monitor-sphinx_DESCRIPTION
-    "eProsima Fast Fast DDS Visualizer Plugin documentation in ${DOCS_BUILDER} format")
+    "eProsima Fast DDS Visualizer Plugin documentation in ${DOCS_BUILDER} format")
 set(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} ${DOCS_BUILDER})
 
 

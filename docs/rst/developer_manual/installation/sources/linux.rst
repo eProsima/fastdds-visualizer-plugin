@@ -21,7 +21,7 @@ Dependencies installation
 =========================
 
 |eplotjuggler| depends on |efastdds| library, Qt, |plotjuggler|, and certain Debian packages.
-This section describes the instructions for installing |efastdds| dependencies and requirements in a Linux
+This section describes the instructions for installing |eplotjuggler| dependencies and requirements in a Linux
 environment from sources.
 The following packages will be installed:
 
@@ -39,7 +39,7 @@ Afterwards, the user can choose whether to follow either the :ref:`colcon <colco
 Requirements
 ------------
 
-The installation of |efastdds| in a Linux environment from binaries requires the following tools to be
+The installation of |eplotjuggler| in a Linux environment from binaries requires the following tools to be
 installed in the system:
 
 * :ref:`cmake_gcc_pip_wget_git_sl`
@@ -52,7 +52,7 @@ installed in the system:
 CMake, g++, pip, wget and git
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These packages provide the tools required to install |efastdds| and its dependencies from command line.
+These packages provide the tools required to install |eplotjuggler| and its dependencies from command line.
 Install CMake_, `g++ <https://gcc.gnu.org/>`_, pip_, wget_ and git_ using the package manager of the appropriate
 Linux distribution. For example, on Ubuntu use the command:
 
@@ -307,7 +307,7 @@ Local installation
 Global installation
 -------------------
 
-To install |efastdds| system-wide instead of locally, remove all the flags that
+To install |eplotjuggler| system-wide instead of locally, remove all the flags that
 appear in the configuration steps of :code:`Fast-CDR`, :code:`Fast-DDS`, and
 :code:`DDS-Visualizer-Plugin`, and change the first in the configuration step of :code:`foonathan_memory_vendor` to the
 following:

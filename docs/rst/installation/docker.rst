@@ -7,7 +7,7 @@
 PlotJuggler eProsima Edition Docker image
 #########################################
 
-eProsima distributes a Docker image of the |ddsvisualizer| with Ubuntu 20.04 as base image.
+eProsima distributes a Docker image of |eplotjuggler| with Ubuntu 20.04 as base image.
 This image launches the |plotjuggler| application with the |ddsvisualizer| already installed and sourced.
 
 #.  This Docker image was built for Ubuntu 20.04 (Focal Fossa).
