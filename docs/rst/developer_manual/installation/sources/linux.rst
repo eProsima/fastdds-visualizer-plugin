@@ -6,7 +6,7 @@
 Linux installation from sources
 ###############################
 
-The instructions for installing the *eProsima DDS Visualizer Plugin application* from sources and the required
+The instructions for installing the |eplotjuggler| from sources and the required
 `Qt` installation are provided in this page.
 It is organized as follows:
 
@@ -20,8 +20,8 @@ It is organized as follows:
 Dependencies installation
 =========================
 
-*DDS Visualizer Plugin* depends on *eProsima Fast DDS* library, Qt, PlotJuggler, and certain Debian packages.
-This section describes the instructions for installing *eProsima Fast DDS* dependencies and requirements in a Linux
+|eplotjuggler| depends on |efastdds| library, Qt, |plotjuggler|, and certain Debian packages.
+This section describes the instructions for installing |efastdds| dependencies and requirements in a Linux
 environment from sources.
 The following packages will be installed:
 
@@ -39,7 +39,7 @@ Afterwards, the user can choose whether to follow either the :ref:`colcon <colco
 Requirements
 ------------
 
-The installation of *eProsima Fast DDS* in a Linux environment from binaries requires the following tools to be
+The installation of |efastdds| in a Linux environment from binaries requires the following tools to be
 installed in the system:
 
 * :ref:`cmake_gcc_pip_wget_git_sl`
@@ -52,7 +52,7 @@ installed in the system:
 CMake, g++, pip, wget and git
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These packages provide the tools required to install *eProsima Fast DDS* and its dependencies from command line.
+These packages provide the tools required to install |efastdds| and its dependencies from command line.
 Install CMake_, `g++ <https://gcc.gnu.org/>`_, pip_, wget_ and git_ using the package manager of the appropriate
 Linux distribution. For example, on Ubuntu use the command:
 
@@ -84,7 +84,7 @@ Gtest
 ^^^^^
 
 Gtest is a unit testing library for C++.
-By default, *eProsima DDS Visualizer Plugin* does not compile tests.
+By default, |eplotjuggler| does not compile tests.
 It is possible to activate them with the opportune
 `CMake options <https://colcon.readthedocs.io/en/released/reference/verb/build.html#cmake-options>`_
 when calling colcon_ or CMake_.
@@ -97,7 +97,7 @@ For a detailed description of the Gtest installation process, please refer to th
 Dependencies
 ------------
 
-*eProsima DDS Visualizer Plugin* has the following dependencies, when installed from sources in a Linux environment:
+|eplotjuggler| has the following dependencies, when installed from sources in a Linux environment:
 
 * :ref:`asiotinyxml2_sl`
 * :ref:`openssl_sl`
@@ -137,14 +137,14 @@ For example, on Ubuntu use the command:
 eProsima dependencies
 ^^^^^^^^^^^^^^^^^^^^^
 
-If it already exists in the system an installation of *Fast DDS* library with version greater than `2.7.0`,
-just source this library when building the *DDS Visualizer Plugin* by using the command:
+If it already exists in the system an installation of |fastdds| library,
+just source this library when building the |eplotjuggler| by using the command:
 
 .. code-block:: bash
 
     source <fastdds-installation-path>/install/setup.bash
 
-In other case, just download *Fast DDS* project from sources and build it together with *DDS Visualizer Plugin*
+In other case, just download |fastdds| project from sources and build it together with |eplotjuggler|
 using colcon as it is explained in section :ref:`colcon_installation`.
 
 .. _qt_installation:
@@ -152,7 +152,7 @@ using colcon as it is explained in section :ref:`colcon_installation`.
 Qt 5.15
 ^^^^^^^
 
-Qt 5.15 is needed in order to build *DDS Visualizer Plugin*.
+Qt 5.15 is needed in order to build |eplotjuggler|.
 To install this Qt version, refer to `Qt Downloads <https://www.qt.io/download>`_ website.
 
 .. note::
@@ -166,7 +166,7 @@ Colcon installation
 ===================
 
 #.  Create a :code:`DDS-Visualizer-Plugin` directory and download the :code:`.repos` file that will be used to install
-    *eProsima DDS Visualizer Plugin* and its dependencies:
+    |eplotjuggler| and its dependencies:
 
     .. code-block:: bash
 
@@ -177,11 +177,11 @@ Colcon installation
 
     .. note::
 
-        In case there is an already *Fast DDS* and/or *PlotJuggler* installation in the system, it is
+        In case there is an already |fastdds| and/or *PlotJuggler* installation in the system, it is
         not required to download and build every dependency in the :code:`.repos` file.
-        It is just needed to download and build the *DDS Visualizer Plugin* project having sourced its dependencies.
+        It is just needed to download and build the |eplotjuggler| project having sourced its dependencies.
         Refer to section :ref:`eprosima_dependencies` in order to check how
-        to source *Fast DDS* and *PlotJuggler*, respectively.
+        to source |fastdds| and *PlotJuggler*, respectively.
 
 #.  Build the packages:
 
@@ -208,7 +208,7 @@ Colcon installation
 CMake installation
 ==================
 
-This section explains how to compile *eProsima DDS Visualizer Plugin* with CMake_, either
+This section explains how to compile |eplotjuggler| with CMake_, either
 :ref:`locally <local_installation_sl>` or :ref:`globally <global_installation_sl>`.
 
 .. _local_installation_sl:
@@ -216,7 +216,7 @@ This section explains how to compile *eProsima DDS Visualizer Plugin* with CMake
 Local installation
 ------------------
 
-#.  Create a :code:`Fast-DDS` directory where to download and build *eProsima DDS Visualizer Plugin* and its dependencies:
+#.  Create a :code:`Fast-DDS` directory where to download and build |eplotjuggler| and its dependencies:
 
     .. code-block:: bash
 
@@ -270,7 +270,7 @@ Local installation
 
 
 
-#.  Once all dependencies are installed, install *eProsima DDS Visualizer Plugin*:
+#.  Once all dependencies are installed, install |eplotjuggler|:
 
     .. code-block:: bash
 
@@ -285,7 +285,7 @@ Local installation
 
     .. note::
 
-        By default, *eProsima DDS Visualizer Plugin* does not compile tests.
+        By default, |eplotjuggler| does not compile tests.
         However, they can be activated by downloading and installing `Gtest <https://github.com/google/googletest>`_
         and building with CMake option ``-DBUILD_TESTS=ON``.
 
@@ -307,7 +307,7 @@ Local installation
 Global installation
 -------------------
 
-To install *eProsima Fast DDS* system-wide instead of locally, remove all the flags that
+To install |efastdds| system-wide instead of locally, remove all the flags that
 appear in the configuration steps of :code:`Fast-CDR`, :code:`Fast-DDS`, and
 :code:`DDS-Visualizer-Plugin`, and change the first in the configuration step of :code:`foonathan_memory_vendor` to the
 following:
@@ -322,8 +322,8 @@ following:
 Run an application
 ==================
 
-To run the *eProsima DDS Visualizer Plugin* application, do not forget to source
-the *Fast DDS* libraries if installed from *colcon*, or extend :code:`LD_LIBRARY_PATH`
+To run the |eplotjuggler| application, do not forget to source
+the |fastdds| libraries if installed from *colcon*, or extend :code:`LD_LIBRARY_PATH`
 and :code:`PATH` environment variables if *CMake* installation was used.
 Then execute `plotjuggler`:
 
@@ -346,10 +346,10 @@ Then execute `plotjuggler`:
 Source Plugin
 -------------
 
-In case the |ddsvisualizer| binary compiled :code:`libfastdds_visualizer_plugin_datastream_plugin.so` is not in the same
-folder than the |plotjuggler| executable :code:`plotjuggler`, the plugin will not be automatically loaded.
+In case the |eplotjuggler| binary compiled :code:`libfastdds_visualizer_plugin_datastream_plugin.so` is not in the same
+folder than the |eplotjuggler| executable :code:`plotjuggler`, the plugin will not be automatically loaded.
 For this purpose, the user must add the binary path in the application.
-Once running the |plotjuggler| executable, go to *App -> Preferences -> Plugins* and add the folder path that contains
+Once running the |eplotjuggler| executable, go to *App -> Preferences -> Plugins* and add the folder path that contains
 the binary of the plugin :code:`libfastdds_visualizer_plugin_datastream_plugin.so`.
 In case of colcon installation, this folder is :code:`<workspace_path>/install/fastdds_visualizer_plugin/bin`.
 

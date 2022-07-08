@@ -6,7 +6,7 @@
 Example of usage
 ################
 
-This example will show how to monitor a DDS network using *eProsima DDS Visualizer Plugin*, by leveraging some of the
+This example will show how to monitor a DDS network using |eddsvisualizer|, by leveraging some of the
 features and configuration options this add-on has to offer.
 
 We will make use of `ShapesDemo <https://www.eprosima.com/index.php/products-all/eprosima-shapes-demo>`_, a tool
@@ -24,7 +24,7 @@ Prerequisites
 ^^^^^^^^^^^^^
 
 First of all, you need to follow the steps outlined in the :ref:`Installation Manual <installation_manual_windows>` for
-the installation of *eProsima DDS Visualizer Plugin* and all its dependencies.
+the installation of |eplotjuggler| and all its dependencies.
 In addition, please refer to *ShapesDemo* `Installation Manual <https://eprosima-shapes-demo.readthedocs.io/en/latest/installation/windows_binaries.html>`_
 and install this application before getting started. Version ``2.7.0`` or above is required in this tutorial.
 
@@ -107,6 +107,6 @@ Again, flip the y axis to visualize the movement of the square shape, now closel
 Next steps
 ^^^^^^^^^^
 
-We hope this example served as a useful resource for getting a grasp on the basics of *eProsima DDS Visualizer Plugin*.
+We hope this example served as a useful resource for getting a grasp on the basics of |eddsvisualizer|.
 Feel free to explore the :ref:`User Manual <user_manual_start>` section to learn more about its various features and
 configuration options.

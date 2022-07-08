@@ -3,12 +3,13 @@
 
 .. _dds_suite:
 
-###########################################
-DDS Visualizer Plugin within Fast DDS Suite
-###########################################
+##################################################
+PlotJuggler eProsima Edition within Fast DDS Suite
+##################################################
 
-eProsima provides the eProsima |suite| Docker image for those who want a quick demonstration of Fast DDS running on an Ubuntu
-platform. It can be downloaded from `eProsima's downloads page <https://eprosima.com/index.php/downloads-all>`_.
+eProsima provides the |esuite| Docker image for those who want a quick demonstration of Fast DDS running on an Ubuntu
+platform.
+It can be downloaded from |edownloads|.
 
 #.  This Docker image was built for Ubuntu 20.04 (Focal Fossa).
 
@@ -21,8 +22,7 @@ platform. It can be downloaded from `eProsima's downloads page <https://eprosima
     |br|
 
 
-#.  Download the compressed Docker image in ``.tar`` format from the
-    `eProsima Downloads website <https://www.eprosima.com/index.php/downloads-all>`_.
+#.  Download the compressed Docker image in ``.tar`` format from the |edownloads|.
     It is strongly recommended to download the image corresponding to the latest version of |suite|.
 
     |br|

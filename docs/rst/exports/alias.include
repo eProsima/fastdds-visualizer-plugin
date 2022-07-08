@@ -1,6 +1,13 @@
-.. |FastDDSDocs| replace:: `Fast DDS Documentation <https://fast-dds.docs.eprosima.com/en/v2.3.0/>`__
-.. |DDSSpecification| replace:: `DDS specification <https://www.omg.org/spec/DDS/1.4/About-DDS/>`__
-.. |ddsvisualizer| replace:: *DDS Visualizer Plugin*
-.. |fastdds| replace:: *Fast DDS*
-.. |plotjuggler| replace:: *PlotJuggler*
-.. |suite| replace:: *Fast DDS Suite*
+.. |FastDDSDocs|        replace:: `Fast DDS Documentation <https://fast-dds.docs.eprosima.com/en/v2.3.0/>`__
+.. |DDSSpecification|   replace:: `DDS specification <https://www.omg.org/spec/DDS/1.4/About-DDS/>`__
+.. |edownloads|         replace:: `eProsima's downloads page <https://eprosima.com/index.php/downloads-all>`__
+
+.. |ddsvisualizer|      replace:: *Fast DDS Visualizer Plugin*
+.. |fastdds|            replace:: *Fast DDS*
+.. |plotjuggler|        replace:: *PlotJuggler*
+.. |suite|              replace:: *Fast DDS Suite*
+
+.. |eddsvisualizer|     replace:: *eProsima Fast DDS Visualizer Plugin*
+.. |efastdds|           replace:: *eProsima Fast DDS*
+.. |eplotjuggler|       replace:: *PlotJuggler eProsima Edition*
+.. |esuite|             replace:: *eProsima Fast DDS Suite*

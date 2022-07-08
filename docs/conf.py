@@ -169,7 +169,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'DDS Visualizer Plugin'
+project = u'Fast DDS Visualizer Plugin'
 copyright = u'2021, eProsima'
 author = u'eProsima'
 
@@ -397,7 +397,7 @@ latex_elements = {
 latex_documents = [
     (master_doc,
      'dds_visualizer_plugin.tex',
-     u'DDS Visualizer Plugin Documentation',
+     u'Fast DDS Visualizer Plugin Documentation',
      u'eProsima',
      'manual'),
 ]
@@ -441,8 +441,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc,
-     'DDS Visualizer Plugin',
-     u'DDS Visualizer Plugin Documentation',
+     'Fast DDS Visualizer Plugin',
+     u'Fast DDS Visualizer Plugin Documentation',
      [author],
      1)
 ]
@@ -459,11 +459,11 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc,
-     'DDS Visualizer Plugin',
-     u'DDS Visualizer Plugin Documentation',
+     'Fast DDS Visualizer Plugin',
+     u'Fast DDS Visualizer Plugin Documentation',
      author,
-     'DDS Visualizer Plugin',
-     'Documentation of eProsima DDS Visualizer Plugin',
+     'Fast DDS Visualizer Plugin',
+     'Documentation of eProsima Fast DDS Visualizer Plugin',
      'Miscellaneous'),
 ]
 
