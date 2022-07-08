@@ -3,7 +3,7 @@
 .. _release_notes:
 
 ##############
-Version v0.0.0
+Version v1.0.0
 ##############
 
 This is the first release of eProsima |ddsvisualizer|.
