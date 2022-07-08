@@ -11,7 +11,7 @@ This is available on |edownloads|.
 
 There are two mechanisms for running the application.
 
-- Through the | installer.
+- Through the |eplotjuggler| installer.
 - Using the *AppImage* format, which is a portable format of the application software.
 
 *Fast DDS Visualizer Plugin* installer
