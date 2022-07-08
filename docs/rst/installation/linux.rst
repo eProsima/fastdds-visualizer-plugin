@@ -22,8 +22,8 @@ The first option is to install the |ddsvisualizer| application together with all
 To do so, first run the ``eProsima_PlotJuggler-eProsima-Edition-<version>-Linux.run`` executable
 and follow the instructions it provides to install the program in a directory on the system.
 
-.. .. figure:: /rst/figures/
-..     :align: center
+.. figure:: /rst/figures/linux_installer.png
+    :align: center
 
 *Fast DDS Visualizer Plugin* portable format
 ============================================
