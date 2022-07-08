@@ -1,12 +1,12 @@
 # Fast DDS Visualizer Plugin
 
 *eProsima Fast DDS Visualizer Plugin* is a plugin for the *PlotJuggler* application.
-PlotJuggler is a graphical desktop application providing visualizations features
+PlotJuggler is a graphical desktop application providing visualization features
 of data series, time series, X-Y plots.
 It also adds data management features, such as
 data import and export, custom and built-in data manipulation functions,
 data series merges, etc.
-Also, this software support many different layouts, with dynamic, rich and user-friendly customization.
+Also, this software supports many different layouts, with dynamic, rich and user-friendly customization.
 
 *Fast DDS Visualizer Plugin* allows users to visualize topic-related data from a DDS network.
 The user can select several topics from the discovered topics running in the DDS network.
