@@ -39,7 +39,7 @@ exchanged in the network.
 .. raw:: html
 
     <video width=100% height=auto autoplay loop controls>
-        <source src="_static/usage_example.mp4">
+        <source src="../_static/usage_example.mp4">
         Your browser does not support the video tag.
     </video>
 
