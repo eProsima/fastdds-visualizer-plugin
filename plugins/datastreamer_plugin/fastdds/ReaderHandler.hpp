@@ -23,6 +23,7 @@
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_READERHANDLER_HPP_
 
 #include <atomic>
+#include <mutex>
 
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
@@ -128,7 +129,7 @@ public:
     eprosima::fastrtps::types::DynamicType_ptr type_;
 
     //! Data Type element
-    eprosima::fastrtps::types::DynamicData_ptr data_;
+    eprosima::fastrtps::types::DynamicData* data_;
 
     std::atomic<bool> stop_;
 
@@ -137,6 +138,8 @@ public:
 
     utils::TypeIntrospectionNumericStruct numeric_data_;
     utils::TypeIntrospectionStringStruct string_data_;
+
+    std::mutex mtx_data_available_;
 
 };
 

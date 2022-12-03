@@ -110,7 +110,7 @@ void get_introspection_type_names(
  */
 void get_introspection_numeric_data(
         const TypeIntrospectionCollection& numeric_type_names,
-        const DynamicData_ptr& data,
+        DynamicData* data,
         TypeIntrospectionNumericStruct& numeric_data_result);
 
 /**
@@ -118,7 +118,7 @@ void get_introspection_numeric_data(
  */
 void get_introspection_string_data(
         const TypeIntrospectionCollection& string_type_names,
-        const DynamicData_ptr& data,
+        DynamicData* data,
         TypeIntrospectionStringStruct& string_data_result);
 
 /**
