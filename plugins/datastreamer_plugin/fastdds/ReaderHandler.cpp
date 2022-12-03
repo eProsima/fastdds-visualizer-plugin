@@ -130,6 +130,7 @@ void ReaderHandler::on_data_available(
                 numeric_data_info_,
                 data_,
                 numeric_data_);
+
             utils::get_introspection_string_data(
                 string_data_info_,
                 data_,
