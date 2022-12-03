@@ -65,7 +65,7 @@ std::vector<std::string> get_introspection_type_names(
  * If \c type is a basic type, it adds its label, that is \c base_type_name to the
  * \c TypeIntrospectionCollection that it belongs, depending if it is numeric or text kind.
  * Along with the label, it is added the vector of parents as member Ids and kinds.
- * Those are useful to allow to acces this specific field from a \c DynamicData_ptr .
+ * Those are useful to allow to acces this specific field from a \c DynamicData* .
  *
  * If \c type is not a basic type (array or struct) this function is called for each value
  * updating \c base_type_name for each recursive call.
@@ -110,7 +110,7 @@ void get_introspection_type_names(
  */
 void get_introspection_numeric_data(
         const TypeIntrospectionCollection& numeric_type_names,
-        const DynamicData_ptr& data,
+        DynamicData* data,
         TypeIntrospectionNumericStruct& numeric_data_result);
 
 /**
@@ -118,7 +118,7 @@ void get_introspection_numeric_data(
  */
 void get_introspection_string_data(
         const TypeIntrospectionCollection& string_type_names,
-        const DynamicData_ptr& data,
+        DynamicData* data,
         TypeIntrospectionStringStruct& string_data_result);
 
 /**
@@ -132,10 +132,10 @@ void get_introspection_string_data(
  * @param members_tree [in]
  * @param kind [in]
  * @param array_indexes [in]
- * @return DynamicData_ptr
+ * @return DynamicData*
  */
-DynamicData_ptr get_parent_data_of_member(
-        const DynamicData_ptr& data,
+DynamicData* get_parent_data_of_member(
+        DynamicData* data,
         const std::vector<MemberId>& members,
         const std::vector<TypeKind>& kinds,
         unsigned int array_index = 0);
@@ -149,7 +149,7 @@ DynamicData_ptr get_parent_data_of_member(
  * @return numeric data of the member casted to double
  */
 double get_numeric_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind);
 
@@ -162,7 +162,7 @@ double get_numeric_type_from_data(
  * @return string data of the member casted to string
  */
 std::string get_string_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind);
 

@@ -58,10 +58,10 @@ void get_introspection_type_names(
         const std::vector<TypeKind>& current_kinds_tree /* = {} */,
         const std::string& separator /* = "/" */)
 {
-    DEBUG("Getting types for type member " << base_type_name);
-
     // Get type kind and store it as kind tree
     TypeKind kind = type->get_kind();
+
+    DEBUG("Getting types for type member " << base_type_name << " of kind " + std::to_string(kind));
 
     switch (kind)
     {
@@ -180,7 +180,7 @@ void get_introspection_type_names(
 
 void get_introspection_numeric_data(
         const TypeIntrospectionCollection& numeric_type_names,
-        const DynamicData_ptr& data,
+        DynamicData* data,
         TypeIntrospectionNumericStruct& numeric_data_result)
 {
     DEBUG("Getting numeric data");
@@ -206,7 +206,7 @@ void get_introspection_numeric_data(
                 std::get<TypeKind>(member_type_info);
 
         // Get Data parent that has the member we are looking for
-        const auto& parent_data = get_parent_data_of_member(
+        auto parent_data = get_parent_data_of_member(
             data,
             members,
             kinds);
@@ -220,7 +220,7 @@ void get_introspection_numeric_data(
 
 void get_introspection_string_data(
         const TypeIntrospectionCollection& string_type_names,
-        const eprosima::fastrtps::types::DynamicData_ptr& data,
+        DynamicData* data,
         TypeIntrospectionStringStruct& string_data_result)
 {
     DEBUG("Getting string data");
@@ -246,7 +246,7 @@ void get_introspection_string_data(
                 std::get<TypeKind>(member_type_info);
 
         // Get Data parent that has the member we are looking for
-        const auto& parent_data = get_parent_data_of_member(
+        auto parent_data = get_parent_data_of_member(
             data,
             members,
             kinds);
@@ -258,12 +258,14 @@ void get_introspection_string_data(
     }
 }
 
-DynamicData_ptr get_parent_data_of_member(
-        const DynamicData_ptr& data,
+DynamicData* get_parent_data_of_member(
+        DynamicData* data,
         const std::vector<MemberId>& members_tree,
         const std::vector<TypeKind>& kind_tree,
         unsigned int array_indexes /* = 0 */)
 {
+
+    DEBUG("Getting parent data of type " << std::to_string(kind_tree[array_indexes]));
 
     if (array_indexes == members_tree.size() - 1)
     {
@@ -285,7 +287,7 @@ DynamicData_ptr get_parent_data_of_member(
                 data->get_complex_value(&child_data, member_id);
 
                 return get_parent_data_of_member(
-                    DynamicData_ptr(child_data),
+                    child_data,
                     members_tree,
                     kind_tree,
                     array_indexes + 1);
@@ -306,11 +308,11 @@ DynamicData_ptr get_parent_data_of_member(
 }
 
 double get_numeric_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind)
 {
-    DEBUG("Getting numeric data of kind " << kind << " in member " << member);
+    DEBUG("Getting numeric data of kind " << std::to_string(kind) << " in member " << member);
 
     switch (kind)
     {
@@ -354,7 +356,7 @@ double get_numeric_type_from_data(
 }
 
 std::string get_string_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind)
 {
