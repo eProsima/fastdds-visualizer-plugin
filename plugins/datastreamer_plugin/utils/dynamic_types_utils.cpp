@@ -92,8 +92,7 @@ void get_introspection_type_names(
 
         case fastrtps::types::TK_ARRAY:
         {
-            DynamicType_ptr internal_type =
-                    array_internal_kind(type);
+            DynamicType_ptr internal_type = array_internal_kind(type);
             unsigned int this_array_size = array_size(type);
 
             // Allow this array depending on data type configuration
@@ -284,7 +283,9 @@ DynamicData* get_parent_data_of_member(
             {
                 // Access to the data inside the structure
                 DynamicData* child_data;
-                data->get_complex_value(&child_data, member_id);
+                // data->get_complex_value(&child_data, member_id);
+                child_data = data->loan_value(member_id);
+                data->return_loaned_value(child_data);
 
                 return get_parent_data_of_member(
                     child_data,
