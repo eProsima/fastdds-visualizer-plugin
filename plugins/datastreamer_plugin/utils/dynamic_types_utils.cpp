@@ -206,8 +206,8 @@ void get_introspection_numeric_data(
                 std::get<TypeKind>(member_type_info);
 
         // Get Data parent that has the member we are looking for
-        const auto& parent_data = get_parent_data_of_member(
-            data,
+        DynamicData* parent_data = get_parent_data_of_member(
+            data.get(),
             members,
             kinds);
 
@@ -246,8 +246,8 @@ void get_introspection_string_data(
                 std::get<TypeKind>(member_type_info);
 
         // Get Data parent that has the member we are looking for
-        const auto& parent_data = get_parent_data_of_member(
-            data,
+        DynamicData* parent_data = get_parent_data_of_member(
+            data.get(),
             members,
             kinds);
 
@@ -258,8 +258,8 @@ void get_introspection_string_data(
     }
 }
 
-DynamicData_ptr get_parent_data_of_member(
-        const DynamicData_ptr& data,
+DynamicData* get_parent_data_of_member(
+        DynamicData* data,
         const std::vector<MemberId>& members_tree,
         const std::vector<TypeKind>& kind_tree,
         unsigned int array_indexes /* = 0 */)
@@ -285,7 +285,7 @@ DynamicData_ptr get_parent_data_of_member(
                 data->get_complex_value(&child_data, member_id);
 
                 return get_parent_data_of_member(
-                    DynamicData_ptr(child_data),
+                    child_data,
                     members_tree,
                     kind_tree,
                     array_indexes + 1);
@@ -306,7 +306,7 @@ DynamicData_ptr get_parent_data_of_member(
 }
 
 double get_numeric_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind)
 {
@@ -354,7 +354,7 @@ double get_numeric_type_from_data(
 }
 
 std::string get_string_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind)
 {

@@ -132,10 +132,10 @@ void get_introspection_string_data(
  * @param members_tree [in]
  * @param kind [in]
  * @param array_indexes [in]
- * @return DynamicData_ptr
+ * @return DynamicData*
  */
-DynamicData_ptr get_parent_data_of_member(
-        const DynamicData_ptr& data,
+DynamicData* get_parent_data_of_member(
+        DynamicData* data,
         const std::vector<MemberId>& members,
         const std::vector<TypeKind>& kinds,
         unsigned int array_index = 0);
@@ -149,7 +149,7 @@ DynamicData_ptr get_parent_data_of_member(
  * @return numeric data of the member casted to double
  */
 double get_numeric_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind);
 
@@ -162,7 +162,7 @@ double get_numeric_type_from_data(
  * @return string data of the member casted to string
  */
 std::string get_string_type_from_data(
-        const DynamicData_ptr& data,
+        DynamicData* data,
         const MemberId& member,
         const TypeKind& kind);
 
