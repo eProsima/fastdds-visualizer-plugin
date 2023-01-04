@@ -283,7 +283,8 @@ DynamicData* get_parent_data_of_member(
             {
                 // Access to the data inside the structure
                 DynamicData* child_data;
-                // data->get_complex_value(&child_data, member_id);
+                // Get data pointer to the child_data
+                // The loan and return is a workaround to avoid creating a unecessary copy of the data
                 child_data = data->loan_value(member_id);
                 data->return_loaned_value(child_data);
 
@@ -361,7 +362,8 @@ std::string get_string_type_from_data(
         const MemberId& member,
         const TypeKind& kind)
 {
-    DEBUG("Getting string data of kind " << kind << " in member " << member);
+    DEBUG("Getting string data of kind " << std::to_string(kind) << " in member " << member);
+
     switch (kind)
     {
         case fastrtps::types::TK_CHAR8:

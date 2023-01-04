@@ -48,7 +48,6 @@ ReaderHandler::ReaderHandler(
     , type_(type)
     , listener_(listener)
     , stop_(false)
-    , mtx_data_available_()
 {
     // Create data so it is not required to create it each time and avoid reallocation if possible
     data_ = eprosima::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type_);
@@ -89,6 +88,9 @@ ReaderHandler::~ReaderHandler()
 {
     // Stop the reader
     stop();
+
+    // Delete created data 
+    eprosima::fastrtps::types::DynamicDataFactory::get_instance()->delete_data(data_);
 }
 
 ////////////////////////////////////////////////////
@@ -109,8 +111,6 @@ void ReaderHandler::stop()
 void ReaderHandler::on_data_available(
         eprosima::fastdds::dds::DataReader* reader)
 {
-    std::lock_guard<std::mutex> lock(mtx_data_available_);
-
     eprosima::fastdds::dds::SampleInfo info;
     eprosima::fastrtps::types::ReturnCode_t read_ret =
             eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK;

@@ -23,7 +23,6 @@
 #define _EPROSIMA_PLOTJUGGLERFASTDDSPLUGIN_PLUGINS_DATASTREAMERPLUGIN_FASTDDS_READERHANDLER_HPP_
 
 #include <atomic>
-#include <mutex>
 
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
@@ -138,9 +137,6 @@ public:
 
     utils::TypeIntrospectionNumericStruct numeric_data_;
     utils::TypeIntrospectionStringStruct string_data_;
-
-    std::mutex mtx_data_available_;
-
 };
 
 } /* namespace fastdds */
