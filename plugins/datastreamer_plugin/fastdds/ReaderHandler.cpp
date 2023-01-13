@@ -88,6 +88,9 @@ ReaderHandler::~ReaderHandler()
 {
     // Stop the reader
     stop();
+
+    // Delete created data 
+    eprosima::fastrtps::types::DynamicDataFactory::get_instance()->delete_data(data_);
 }
 
 ////////////////////////////////////////////////////
@@ -116,7 +119,7 @@ void ReaderHandler::on_data_available(
     while (!stop_ && read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK)
     {
         // Read next data
-        read_ret = reader->take_next_sample(data_.get(), &info);
+        read_ret = reader->take_next_sample(data_, &info);
 
         // If data has been read
         if (read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK &&
@@ -130,6 +133,7 @@ void ReaderHandler::on_data_available(
                 numeric_data_info_,
                 data_,
                 numeric_data_);
+
             utils::get_introspection_string_data(
                 string_data_info_,
                 data_,
