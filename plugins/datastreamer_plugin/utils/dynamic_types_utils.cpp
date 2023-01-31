@@ -280,6 +280,7 @@ DynamicData* get_parent_data_of_member(
         switch (kind)
         {
             case fastrtps::types::TK_STRUCTURE:
+            case fastrtps::types::TK_ARRAY:
             {
                 // Access to the data inside the structure
                 DynamicData* child_data;
@@ -294,11 +295,7 @@ DynamicData* get_parent_data_of_member(
                     kind_tree,
                     array_indexes + 1);
             }
-            case fastrtps::types::TK_ARRAY:
-            {
-                // TODO (this is not so important as a type with a complex array will die before
-                // arriving here)
-            }
+
             // TODO
             default:
                 // TODO add exception

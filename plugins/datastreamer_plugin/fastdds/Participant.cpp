@@ -266,15 +266,6 @@ void Participant::on_type_discovery(
         const fastrtps::types::TypeObject* object,
         fastrtps::types::DynamicType_ptr dyn_type)
 {
-    if (!dyn_type)
-    {
-        // Fast DDS may call this callback with a nullptr in dyn_type because of reasons. Avoid break.
-        WARNING("on_type_discovery callback called with nullptr dyn type");
-        return;
-    }
-
-    DEBUG("TypeObject discovered: " << dyn_type->get_name() << " for topic: " << topic.to_string());
-
     // TOOD study this
     // In case of complex data types, registering here means that the data type will be incorrectly registered
     // because the internal data will be received and registered faster than lookup service, which produces an error
@@ -285,6 +276,15 @@ void Participant::on_type_discovery(
     // erroneous, so it can be checked wether this type has already been registered. Be careful because it should
     // not only check it has been registered but it has been discovered by the Service, that may be in process of
     // registering when this callback arrives
+
+    // if (!dyn_type)
+    // {
+    //     // Fast DDS may call this callback with a nullptr in dyn_type because of reasons. Avoid break.
+    //     WARNING("on_type_discovery callback called with nullptr dyn type");
+    //     return;
+    // }
+
+    // DEBUG("TypeObject discovered: " << dyn_type->get_name() << " for topic: " << topic.to_string());
 
     // Create TypeSupport and register it
     // eprosima::fastdds::dds::TypeSupport(
