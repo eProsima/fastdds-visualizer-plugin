@@ -97,23 +97,7 @@ bool FastDdsDataStreamer::start(
     }
 
     // Get all series from topics and create them
-    // NUMERIC
-    std::vector<types::DatumLabel> numeric_series = fastdds_handler_.numeric_data_series_names();
-    for (const auto& series : numeric_series)
-    {
-        // Create a series
-        DEBUG("Creating numeric series: " << series);
-        dataMap().addNumeric(series);
-    }
-
-    // STRING
-    std::vector<types::DatumLabel> string_series = fastdds_handler_.string_data_series_names();
-    for (const auto& series : string_series)
-    {
-        // Create a series
-        DEBUG("Creating string series: " << series);
-        dataMap().addStringSeries(series);
-    }
+    create_series_();
 
     running_ = true;
     return true;
@@ -160,6 +144,20 @@ bool FastDdsDataStreamer::xmlLoadState(
 ////////////////////////////////////////////////////
 // FASTDDS LISTENER METHODS
 ////////////////////////////////////////////////////
+
+void FastDdsDataStreamer::on_data_available()
+{
+    DEBUG("FastDdsDataStreamer on_data_available");
+
+    // Locking DataStream
+    std::lock_guard<std::mutex> lock(mutex());
+
+    // Clear data created from previous sample
+    dataMap().clear();
+
+    // Create series from new received sample
+    create_series_();
+}
 
 void FastDdsDataStreamer::on_double_data_read(
         const std::vector<std::pair<std::string, double>>& data_per_topic_value,
@@ -253,6 +251,28 @@ void FastDdsDataStreamer::connect_to_domain_(
     // Connect to domain
     fastdds_handler_.connect_to_domain(domain_id);
     select_topics_dialog_.connect_to_domain(domain_id);
+}
+
+void FastDdsDataStreamer::create_series_()
+{
+    // Get all series from topics and create them
+    // NUMERIC
+    std::vector<types::DatumLabel> numeric_series = fastdds_handler_.numeric_data_series_names();
+    for (const auto& series : numeric_series)
+    {
+        // Create a series
+        DEBUG("Creating numeric series: " << series);
+        dataMap().addNumeric(series);
+    }
+
+    // STRING
+    std::vector<types::DatumLabel> string_series = fastdds_handler_.string_data_series_names();
+    for (const auto& series : string_series)
+    {
+        // Create a series
+        DEBUG("Creating string series: " << series);
+        dataMap().addStringSeries(series);
+    }
 }
 
 } /* namespace datastreamer */

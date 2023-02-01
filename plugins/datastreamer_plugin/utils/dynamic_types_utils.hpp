@@ -87,6 +87,7 @@ void get_introspection_type_names(
         const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
+        DynamicData* data = nullptr,
         const std::vector<MemberId>& current_members_tree = {},
         const std::vector<TypeKind>& current_kinds_tree = {},
         const std::string& separator = "/");
@@ -172,10 +173,13 @@ bool is_kind_numeric(
 bool is_kind_string(
         const TypeKind& kind);
 
-DynamicType_ptr array_internal_kind(
+DynamicType_ptr type_internal_kind(
         const DynamicType_ptr& dyn_type);
 
 unsigned int array_size(
+        const DynamicType_ptr& dyn_type);
+
+bool is_type_static(
         const DynamicType_ptr& dyn_type);
 
 } /* namespace utils */
