@@ -54,6 +54,7 @@ void get_introspection_type_names(
         const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
+        DynamicData* data /* = nullptr */,
         const std::vector<MemberId>& current_members_tree /* = {} */,
         const std::vector<TypeKind>& current_kinds_tree /* = {} */,
         const std::string& separator /* = "/" */)
@@ -91,37 +92,53 @@ void get_introspection_type_names(
             break;
 
         case fastrtps::types::TK_ARRAY:
+        case fastrtps::types::TK_SEQUENCE:
         {
-            DynamicType_ptr internal_type = array_internal_kind(type);
-            unsigned int this_array_size = array_size(type);
+            DynamicType_ptr internal_type = type_internal_kind(type);
 
-            // Allow this array depending on data type configuration
-            if (this_array_size >= data_type_configuration.max_array_size)
+            std::string kind_str;
+            unsigned int size;
+            if (kind == fastrtps::types::TK_ARRAY)
+            {
+                kind_str = "array";
+                size = array_size(type);
+            }
+            else if (kind == fastrtps::types::TK_SEQUENCE)
+            {
+                kind_str = "sequence";
+                assert(data != nullptr);
+                size = data->get_item_count();
+            }
+
+            // Allow this array/sequence depending on data type configuration
+            if (size >= data_type_configuration.max_array_size)
             {
                 if (data_type_configuration.discard_large_arrays)
                 {
-                    // Discard array
-                    DEBUG("Discarding array " << base_type_name << " of size " << this_array_size);
+                    // Discard array/sequence
+                    DEBUG("Discarding " << kind_str << " " << base_type_name << " of size " << size);
                     break;
                 }
                 else
                 {
                     // Truncate array
                     DEBUG(
-                        "Truncating array " << base_type_name <<
-                            " of size " << this_array_size <<
+                        "Truncating " << kind_str << " " << base_type_name <<
+                            " of size " << size <<
                             " to size " << data_type_configuration.max_array_size);
-                    this_array_size = data_type_configuration.max_array_size;
+                    size = data_type_configuration.max_array_size;
                 }
                 // Could not be neither of them, it would be an inconsistency
             }
 
-            for (MemberId member_id = 0; member_id < this_array_size; member_id++)
+            for (MemberId member_id = 0; member_id < size; member_id++)
             {
                 std::vector<MemberId> new_members_tree(current_members_tree);
                 new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
+
+                DynamicData* member_data = data ? data->loan_value(member_id) : nullptr;
 
                 get_introspection_type_names(
                     base_type_name + "[" + std::to_string(member_id) + "]",
@@ -129,9 +146,15 @@ void get_introspection_type_names(
                     data_type_configuration,
                     numeric_type_names,
                     string_type_names,
+                    member_data,
                     new_members_tree,
                     new_kinds_tree,
                     separator);
+
+                if (member_data)
+                {
+                    data->return_loaned_value(member_data);
+                }
             }
             break;
         }
@@ -153,22 +176,29 @@ void get_introspection_type_names(
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
 
+                DynamicData* member_data = data ? data->loan_value(members.second->get_id()) : nullptr;
+
                 get_introspection_type_names(
                     base_type_name + separator + members.first,
                     members.second->get_descriptor()->get_type(),
                     data_type_configuration,
                     numeric_type_names,
                     string_type_names,
+                    member_data,
                     new_members_tree,
                     new_kinds_tree,
                     separator);
+
+                if (member_data)
+                {
+                    data->return_loaned_value(member_data);
+                }
             }
             break;
         }
 
         case fastrtps::types::TK_BITSET:
         case fastrtps::types::TK_UNION:
-        case fastrtps::types::TK_SEQUENCE:
         case fastrtps::types::TK_MAP:
         case fastrtps::types::TK_NONE:
         default:
@@ -281,11 +311,12 @@ DynamicData* get_parent_data_of_member(
         {
             case fastrtps::types::TK_STRUCTURE:
             case fastrtps::types::TK_ARRAY:
+            case fastrtps::types::TK_SEQUENCE:
             {
                 // Access to the data inside the structure
                 DynamicData* child_data;
                 // Get data pointer to the child_data
-                // The loan and return is a workaround to avoid creating a unecessary copy of the data
+                // The loan and return is a workaround to avoid creating an unnecessary copy of the data
                 child_data = data->loan_value(member_id);
                 data->return_loaned_value(child_data);
 
@@ -424,7 +455,7 @@ bool is_kind_string(
     }
 }
 
-DynamicType_ptr array_internal_kind(
+DynamicType_ptr type_internal_kind(
         const DynamicType_ptr& dyn_type)
 {
     return dyn_type->get_descriptor()->get_element_type();
@@ -434,6 +465,61 @@ unsigned int array_size(
         const DynamicType_ptr& dyn_type)
 {
     return dyn_type->get_descriptor()->get_total_bounds();
+}
+
+bool is_type_static(
+        const DynamicType_ptr& dyn_type)
+{
+    // Get type kind and store it as kind tree
+    TypeKind kind = dyn_type->get_kind();
+
+    switch (kind)
+    {
+        case fastrtps::types::TK_BOOLEAN:
+        case fastrtps::types::TK_BYTE:
+        case fastrtps::types::TK_INT16:
+        case fastrtps::types::TK_INT32:
+        case fastrtps::types::TK_INT64:
+        case fastrtps::types::TK_UINT16:
+        case fastrtps::types::TK_UINT32:
+        case fastrtps::types::TK_UINT64:
+        case fastrtps::types::TK_FLOAT32:
+        case fastrtps::types::TK_FLOAT64:
+        case fastrtps::types::TK_FLOAT128:
+        case fastrtps::types::TK_CHAR8:
+        case fastrtps::types::TK_CHAR16:
+        case fastrtps::types::TK_STRING8:
+        case fastrtps::types::TK_STRING16:
+        case fastrtps::types::TK_ENUM:
+        case fastrtps::types::TK_BITSET:
+        case fastrtps::types::TK_BITMASK:
+        case fastrtps::types::TK_UNION:
+        case fastrtps::types::TK_ARRAY:
+            return true;
+
+        case fastrtps::types::TK_SEQUENCE:
+        case fastrtps::types::TK_MAP:
+            return false;
+
+        case fastrtps::types::TK_STRUCTURE:
+        {
+            // Using the Dynamic type, retrieve the name of the fields and its descriptions
+            std::map<std::string, DynamicTypeMember*> members_by_name;
+            dyn_type->get_all_members_by_name(members_by_name);
+
+            bool ret = true;
+            for (const auto& members : members_by_name)
+            {
+                ret = ret & is_type_static(members.second->get_descriptor()->get_type());
+            }
+            return ret;
+        }
+
+        case fastrtps::types::TK_NONE:
+        default:
+            WARNING(kind << " DataKind Not supported");
+            throw std::runtime_error("Unsupported Dynamic Types kind");
+    }
 }
 
 } /* namespace utils */

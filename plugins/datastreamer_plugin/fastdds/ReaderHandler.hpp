@@ -93,6 +93,14 @@ public:
 
 
     ////////////////////////////////////////////////////
+    // AUXILIAR METHODS
+    ////////////////////////////////////////////////////
+
+    void create_data_structures_(
+            eprosima::fastrtps::types::DynamicData* data = nullptr);
+
+
+    ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
     ////////////////////////////////////////////////////
 
@@ -127,6 +135,9 @@ public:
     //! Type Informantion
     eprosima::fastrtps::types::DynamicType_ptr type_;
 
+    //! Whether it is composed of variable sized types (e.g. sequences)
+    bool static_type_;
+
     //! Data Type element
     eprosima::fastrtps::types::DynamicData* data_;
 
@@ -137,6 +148,8 @@ public:
 
     utils::TypeIntrospectionNumericStruct numeric_data_;
     utils::TypeIntrospectionStringStruct string_data_;
+
+    DataTypeConfiguration data_type_configuration_;
 };
 
 } /* namespace fastdds */

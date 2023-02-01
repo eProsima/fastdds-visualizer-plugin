@@ -92,6 +92,8 @@ public:
     // FASTDDS LISTENER METHODS
     ////////////////////////////////////////////////////
 
+    virtual void on_data_available() override;
+
     virtual void on_double_data_read(
             const std::vector<types::NumericDatum>& data_per_topic_value,
             double timestamp) override;
@@ -131,6 +133,8 @@ protected:
 
     void connect_to_domain_(
             unsigned int domain_id);
+
+    void create_series_();
 
 
     ////////////////////////////////////////////////////
