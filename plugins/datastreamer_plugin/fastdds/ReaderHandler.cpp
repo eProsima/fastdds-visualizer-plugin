@@ -20,9 +20,7 @@
  */
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastrtps/xmlparser/XMLProfileManager.h>
-#include <fastrtps/types/DynamicDataHelper.hpp>
-#include <fastrtps/types/DynamicDataFactory.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicDataFactory.hpp>
 
 #include "ReaderHandler.hpp"
 #include "utils/utils.hpp"
@@ -38,9 +36,9 @@ namespace fastdds {
 ////////////////////////////////////////////////////
 
 ReaderHandler::ReaderHandler(
-        eprosima::fastdds::dds::Topic* topic,
-        eprosima::fastdds::dds::DataReader* datareader,
-        eprosima::fastrtps::types::DynamicType_ptr type,
+        Topic* topic,
+        DataReader* datareader,
+        DynamicType::_ref_type type,
         FastDdsListener* listener,
         const DataTypeConfiguration& data_type_configuration)
     : topic_(topic)
@@ -50,7 +48,7 @@ ReaderHandler::ReaderHandler(
     , stop_(false)
 {
     // Create data so it is not required to create it each time and avoid reallocation if possible
-    data_ = eprosima::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type_);
+    data_ = DynamicDataFactory::get_instance()->create_data(type_);
 
     // Create the static structures to store the data introspection information AND the data itself
     utils::get_introspection_type_names(
@@ -90,7 +88,7 @@ ReaderHandler::~ReaderHandler()
     stop();
 
     // Delete created data 
-    eprosima::fastrtps::types::DynamicDataFactory::get_instance()->delete_data(data_);
+    DynamicDataFactory::get_instance()->delete_data(data_);
 }
 
 ////////////////////////////////////////////////////
@@ -109,21 +107,20 @@ void ReaderHandler::stop()
 ////////////////////////////////////////////////////
 
 void ReaderHandler::on_data_available(
-        eprosima::fastdds::dds::DataReader* reader)
+        DataReader* reader)
 {
-    eprosima::fastdds::dds::SampleInfo info;
-    eprosima::fastrtps::types::ReturnCode_t read_ret =
-            eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK;
+    SampleInfo info;
+    ReturnCode_t read_ret = RETCODE_OK;
 
     // Read Data from reader while there is data available and not should stop
-    while (!stop_ && read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK)
+    while (!stop_ && read_ret == RETCODE_OK)
     {
         // Read next data
-        read_ret = reader->take_next_sample(data_, &info);
+        read_ret = reader->take_next_sample(&data_, &info);
 
         // If data has been read
-        if (read_ret == eprosima::fastrtps::types::ReturnCode_t::RETCODE_OK &&
-                info.instance_state == eprosima::fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE)
+        if (read_ret == RETCODE_OK &&
+                info.instance_state == InstanceStateKind::ALIVE_INSTANCE_STATE)
         {
             // Get timestamp
             double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);

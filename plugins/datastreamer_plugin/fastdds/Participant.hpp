@@ -34,6 +34,10 @@
 #include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 #include <fastdds/dds/subscriber/qos/SubscriberQos.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
 
 #include "FastDdsListener.hpp"
 #include "ReaderHandler.hpp"
@@ -43,21 +47,23 @@ namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
 
+using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
 class ReaderHandlerDeleter
 {
 public:
 
     ReaderHandlerDeleter(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            eprosima::fastdds::dds::Subscriber* subscriber);
+            DomainParticipant* participant,
+            Subscriber* subscriber);
 
     void operator ()(
             ReaderHandler* ptr) const;
 
 protected:
 
-    eprosima::fastdds::dds::DomainParticipant* participant_;
-    eprosima::fastdds::dds::Subscriber* subscriber_;
+    DomainParticipant* participant_;
+    Subscriber* subscriber_;
 };
 
 using ReaderHandlerReference = std::unique_ptr<ReaderHandler, ReaderHandlerDeleter>;
@@ -71,7 +77,7 @@ using ReaderHandlerReference = std::unique_ptr<ReaderHandler, ReaderHandlerDelet
  * FUTURE WORK:
  * Use a specific thread to call callbacks instead of using Fast DDS thread
  */
-class Participant : public eprosima::fastdds::dds::DomainParticipantListener
+class Participant : public DomainParticipantListener
 {
 public:
 
@@ -80,7 +86,7 @@ public:
     ////////////////////////////////////////////////////
 
     Participant(
-            eprosima::fastdds::dds::DomainId_t domain_id,
+            DomainId_t domain_id,
             std::shared_ptr<TopicDataBase> discovery_database,
             FastDdsListener* listener);
 
@@ -91,8 +97,8 @@ public:
     // INTERACTION METHODS
     ////////////////////////////////////////////////////
 
-    bool register_type_from_xml(
-            const std::string& xml_path);
+//     bool register_type_from_xml(
+//             const std::string& xml_path);
 
     void create_subscription(
             const std::string& topic_name,
@@ -103,24 +109,11 @@ public:
     // LISTENER [ DOMAIN PARTICIPANT ] METHODS
     ////////////////////////////////////////////////////
 
-    void on_publisher_discovery(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
-
-    void on_type_information_received(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const fastrtps::string_255 topic_name,
-            const fastrtps::string_255 type_name,
-            const fastrtps::types::TypeInformation& type_information) override;
-
-    void on_type_discovery(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const fastrtps::rtps::SampleIdentity& request_sample_id,
-            const fastrtps::string_255& topic,
-            const fastrtps::types::TypeIdentifier* identifier,
-            const fastrtps::types::TypeObject* object,
-            fastrtps::types::DynamicType_ptr dyn_type) override;
-
+    void on_data_writer_discovery(
+            DomainParticipant* participant,
+            WriterDiscoveryStatus reason,
+            const PublicationBuiltinTopicData& info,
+            bool& should_be_ignored) override;
 
     ////////////////////////////////////////////////////
     // RETRIEVE INFORMATION METHODS
@@ -138,39 +131,20 @@ protected:
 
     void on_topic_discovery_(
             const std::string& topic_name,
-            const std::string& type_name);
-
-
-    ////////////////////////////////////////////////////
-    // AUXILIAR METHODS
-    ////////////////////////////////////////////////////
-
-    void refresh_types_registered_();
-
-    bool is_type_registered_in_participant_(
-            const std::string& type_name);
-
-    bool is_type_registered_in_xml_(
-            const std::string& type_name);
-
-    bool is_type_registered_in_factory_(
-            const std::string& type_name);
-
-    eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(
-            const std::string& type_name);
-
+            const std::string& type_name,
+            const DataTypeId& type_id);
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
     ////////////////////////////////////////////////////
 
-    static eprosima::fastdds::dds::DomainParticipantQos default_participant_qos_();
+    static DomainParticipantQos default_participant_qos_();
 
-    static eprosima::fastdds::dds::SubscriberQos default_subscriber_qos_();
+    static SubscriberQos default_subscriber_qos_();
 
-    static eprosima::fastdds::dds::TopicQos default_topic_qos_();
+    static TopicQos default_topic_qos_();
 
-    static eprosima::fastdds::dds::DataReaderQos default_datareader_qos_();
+    static DataReaderQos default_datareader_qos_();
 
     /**
      * @brief Get default mask
@@ -182,7 +156,7 @@ protected:
      *
      * @return eprosima::fastdds::dds::StatusMask with callbacks needed
      */
-    static eprosima::fastdds::dds::StatusMask default_listener_mask_();
+    static StatusMask default_listener_mask_();
 
 
     ////////////////////////////////////////////////////
@@ -199,9 +173,9 @@ protected:
     ////////////////////////////////////////////////////
 
     //! Internal DomainParticipant reference
-    eprosima::fastdds::dds::DomainParticipant* participant_;
+    DomainParticipant* participant_;
     //! Internal Subscriber reference (only one for every DataReader)
-    eprosima::fastdds::dds::Subscriber* subscriber_;
+    Subscriber* subscriber_;
 
     /**
      * Collection created in Participant indexed by topic name that contains

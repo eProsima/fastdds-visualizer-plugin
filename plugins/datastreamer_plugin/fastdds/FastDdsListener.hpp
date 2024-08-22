@@ -61,13 +61,11 @@ public:
 
     virtual void on_topic_discovery(
             const std::string& topic_name,
-            const std::string& type_name,
-            bool type_registered)
+            const std::string& type_name)
     {
         DEBUG("Calling on_topic_discovery");
         static_cast<void>(topic_name);
         static_cast<void>(type_name);
-        static_cast<void>(type_registered);
     }
 
 };

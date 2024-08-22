@@ -102,8 +102,7 @@ public:
 
     virtual void on_topic_discovery(
             const std::string& topic_name,
-            const std::string& type_name,
-            bool type_registered) override;
+            const std::string& type_name) override;
 
 
     ////////////////////////////////////////////////////

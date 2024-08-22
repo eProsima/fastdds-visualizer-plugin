@@ -34,7 +34,7 @@ project(fastdds_visualizer_plugin_datastream_plugin)
 ###############################################################################
 # Load eProsima packages
 find_package(fastcdr REQUIRED)
-find_package(fastrtps REQUIRED)
+find_package(fastdds REQUIRED)
 
 # Load Qt requirements
 find_package(Qt5 REQUIRED COMPONENTS
@@ -145,7 +145,7 @@ target_link_libraries(
     ${PROJECT_NAME}
         ${QT_LINK_LIBRARIES}
         ${plotjuggler_LIBRARIES}
-        fastrtps
+        fastdds
     )
 
 

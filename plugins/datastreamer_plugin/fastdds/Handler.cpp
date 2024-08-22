@@ -62,23 +62,23 @@ void Handler::connect_to_domain(
     participant_ = std::make_unique<Participant>(domain, discovery_database_, listener_);
 }
 
-void Handler::register_type_from_xml(
-        const std::string& xml_path)
-{
-    if (participant_)
-    {
-        // Only register xml if it has not been done before
-        if (xml_data_types_paths_added_.find(xml_path) == xml_data_types_paths_added_.end())
-        {
-            participant_->register_type_from_xml(xml_path);
-            xml_data_types_paths_added_.insert(xml_path);
-        }
-    }
-    else
-    {
-        WARNING("Trying to add xml from a non-connected handler");
-    }
-}
+// void Handler::register_type_from_xml(
+//         const std::string& xml_path)
+// {
+//     if (participant_)
+//     {
+//         // Only register xml if it has not been done before
+//         if (xml_data_types_paths_added_.find(xml_path) == xml_data_types_paths_added_.end())
+//         {
+//             participant_->register_type_from_xml(xml_path);
+//             xml_data_types_paths_added_.insert(xml_path);
+//         }
+//     }
+//     else
+//     {
+//         WARNING("Trying to add xml from a non-connected handler");
+//     }
+// }
 
 void Handler::create_subscription(
         const std::string& topic_name,

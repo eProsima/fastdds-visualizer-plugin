@@ -40,7 +40,8 @@ namespace fastdds {
  * @brief TODO
  *
  */
-struct ReaderHandler : public eprosima::fastdds::dds::DataReaderListener
+using namespace eprosima::fastdds::dds;
+struct ReaderHandler : public DataReaderListener
 {
 public:
 
@@ -49,9 +50,9 @@ public:
     ////////////////////////////////////////////////////
 
     ReaderHandler(
-            eprosima::fastdds::dds::Topic* topic,
-            eprosima::fastdds::dds::DataReader* datareader,
-            eprosima::fastrtps::types::DynamicType_ptr type,
+            Topic* topic,
+            DataReader* datareader,
+            DynamicType::_ref_type type,
             FastDdsListener* listener,
             const DataTypeConfiguration& data_type_configuration);
 
@@ -76,7 +77,7 @@ public:
     ////////////////////////////////////////////////////
 
     void on_data_available(
-            eprosima::fastdds::dds::DataReader* reader) override;
+            DataReader* reader) override;
 
 
     ////////////////////////////////////////////////////
@@ -104,7 +105,7 @@ public:
      *
      * @return eprosima::fastdds::dds::StatusMask with callbacks needed
      */
-    static eprosima::fastdds::dds::StatusMask default_listener_mask_();
+    static StatusMask default_listener_mask_();
 
 
     ////////////////////////////////////////////////////
@@ -119,16 +120,16 @@ public:
     ////////////////////////////////////////////////////
 
     //! Topic related with this DataReader
-    eprosima::fastdds::dds::Topic* topic_;
+    Topic* topic_;
 
     //! DataReader
-    eprosima::fastdds::dds::DataReader* reader_;
+    DataReader* reader_;
 
     //! Type Informantion
-    eprosima::fastrtps::types::DynamicType_ptr type_;
+    DynamicType::_ref_type type_;
 
     //! Data Type element
-    eprosima::fastrtps::types::DynamicData* data_;
+    DynamicData::_ref_type data_;
 
     std::atomic<bool> stop_;
 

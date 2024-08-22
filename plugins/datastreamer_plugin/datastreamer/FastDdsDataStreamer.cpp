@@ -66,7 +66,6 @@ bool FastDdsDataStreamer::start(
 
     // Execute Dialog
     int dialog_result = select_topics_dialog_.exec();
-
     // Check if Accept has been pressed
     if (dialog_result != QDialog::Accepted)
     {
@@ -207,11 +206,11 @@ void FastDdsDataStreamer::on_string_data_read(
 
 void FastDdsDataStreamer::on_topic_discovery(
         const std::string& topic_name,
-        const std::string& type_name,
-        bool type_registered)
+        const std::string& type_name)
 {
     DEBUG("FastDdsDataStreamer topic_discovery_signal " << topic_name);
-
+    // TODO (Carlosespicur): Delete type_registered parameter
+    bool type_registered = true;
     // Emit signal to UI so it is handled from Qt thread
     emit select_topics_dialog_.topic_discovery_signal(
         utils::string_to_QString(topic_name),
