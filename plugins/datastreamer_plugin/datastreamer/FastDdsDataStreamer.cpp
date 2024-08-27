@@ -98,6 +98,7 @@ bool FastDdsDataStreamer::start(
     // Get all series from topics and create them
     // NUMERIC
     std::vector<types::DatumLabel> numeric_series = fastdds_handler_.numeric_data_series_names();
+    dataMap().clear(); 
     for (const auto& series : numeric_series)
     {
         // Create a series
