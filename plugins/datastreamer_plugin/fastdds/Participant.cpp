@@ -57,7 +57,7 @@ void ReaderHandlerDeleter::operator ()(
 
 ////////////////////////////////////////////////////
 // CREATION & DESTRUCTION
-////////////////////////////////////////////////////
+////////////////////////////////////////////////////k
 
 Participant::Participant(
         DomainId_t domain_id,
@@ -128,25 +128,23 @@ Participant::~Participant()
 ////////////////////////////////////////////////////
 
 // TODO: check if error handling by bool or exception
-// bool Participant::register_type_from_xml(
-//         const std::string& xml_path)
-// {
-//     eprosima::fastdds::xmlparser::XMLP_ret ret =
-//             eprosima::fastdds::xmlparser::XMLProfileManager::loadXMLFile(xml_path);
-//     if (eprosima::fastdds::xmlparser::XMLP_ret::XML_OK != ret)
-//     {
-//         WARNING("Error loading XML file: " << xml_path);
-//         throw IncorrectParamException("Failed reading XML file: " + xml_path);
-//     }
+bool Participant::register_type_from_xml(
+        const std::string& xml_path)
+{
+    if (RETCODE_OK != DomainParticipantFactory::get_instance()->load_XML_profiles_file(xml_path))
+    {
+        WARNING("Error loading XML file: " << xml_path);
+        throw IncorrectParamException("Failed reading XML file: " + xml_path);
+    }
 
-//     DEBUG("Registered types in xml file: " << xml_path);
+    DEBUG("Registered types in xml file: " << xml_path);
 
-//     // Loading an xml does not retrieve the types loaded.
-//     // Thus, it is necessary to loop over all types discovered and check if they are registered already
-//     refresh_types_registered_();
+    // Loading an xml does not retrieve the types loaded.
+    // Thus, it is necessary to loop over all types discovered and check if they are registered already
+    refresh_types_registered_();
 
-//     return true;
-// }
+    return true;
+}
 
 void Participant::create_subscription(
         const std::string& topic_name,
@@ -154,7 +152,6 @@ void Participant::create_subscription(
 {
     // TODO: check if mutex required
     DEBUG("Creating subscription for topic: " << topic_name);
-
     // Check datareader does not exist yet
     if (readers_.find(topic_name) != readers_.end())
     {
@@ -170,22 +167,57 @@ void Participant::create_subscription(
         throw InconsistencyException("Trying to create Data Reader in a non existing topic: " + topic_name);
     }
 
-    // Get TypeName and DataTypeId associated with topic name
-    std::string type_name = discovery_database_->operator [](topic_name).first;
-    DataTypeId type_id = discovery_database_->operator [](topic_name).second;
+    DataTypeNameType type_name = discovery_database_->operator[](topic_name).first;
+    DynamicType::_ref_type dyn_type;
 
-    // Get Dyn Type and register discovered type
-    xtypes::TypeObject type_object;
-    if (RETCODE_OK != DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
-                type_id, type_object))
+    // Check if type is already registered
+    if (discovery_database_->operator[](topic_name).second == false)
+    {
+        WARNING("Type " << topic_name << " has not been registered yet");
+        throw InconsistencyException("Trying to create Data Reader in a non registered type: " + topic_name);
+    }
+
+    // Check if type is registered or not in participant. If not, register it
+    if (!participant_->find_type(type_name))
+    {
+        // __FLAG__
+        DEBUG("Type info not registered in participant for topic " << topic_name);
+        //////////////////////////
+
+        // Type information is available but not registered in participant
+        // Types manually loaded (through XML file) are registered in participant when loaded, so this case is not possible
+        // The only case is that the type info has been discovered automatically and the type Id has been saved in dyn_types_info_
+        // Get TypeName and DataTypeId associated with topic name
+        DataTypeId type_id = dyn_types_info_->operator [](topic_name).second;
+
+        // Get Dyn Type and register discovered type
+        xtypes::TypeObject type_object;
+        if (RETCODE_OK != DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                    type_id, type_object))
+            {
+                EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting type object for type " << type_name);
+                return;
+            }
+        dyn_type = DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+                type_object)->build();
+        TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
+        dyn_type_support.register_type(participant_);
+    }
+    else
+    {
+        // TODO (Carlosespicur): Check if it can be done simpler. Can we avoid to create a new dyn type?
+
+        // Type information is available and registered in participant. Create dyn_type for ReaderHandler
+        DynamicTypeBuilder::_ref_type dyn_type_builder;
+        ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(type_name, dyn_type_builder);
+
+        if (RETCODE_OK != ret)
         {
-            EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting type object for type " << type_name);
+            EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting DynamicTypeBuilder from XML");
             return;
         }
-    DynamicType::_ref_type dyn_type = DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
-            type_object)->build();
-    TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
-    dyn_type_support.register_type(participant_);
+        dyn_type = dyn_type_builder->build();
+    }
     
     // Create topic
     eprosima::fastdds::dds::Topic* topic = participant_->create_topic(
@@ -207,8 +239,7 @@ void Participant::create_subscription(
     if (!datareader) {
         EPROSIMA_LOG_ERROR(PARTICIPANT, "Error creating datareader for topic " << topic_name);
         return;
-    }
-
+    } 
     // Create Reader Handler with all this information and add it to readers
     // Create it with specific deleter for reader and topic
     ReaderHandlerReference new_reader(
@@ -239,7 +270,6 @@ void Participant::on_data_writer_discovery(
         bool& should_be_ignored)
 {
     should_be_ignored = false;
-    static_cast<void>(participant);
 
     // Only set as new topic discovered if it is ALIVE
     if (reason == WriterDiscoveryStatus::DISCOVERED_WRITER)
@@ -247,12 +277,20 @@ void Participant::on_data_writer_discovery(
         // Get Topic of DataWriter discovered and set it as discovered
         std::string topic_name = info.topic_name.to_string();
         std::string type_name = info.type_name.to_string();
-        DataTypeId type_id = info.type_information.type_information.complete().typeid_with_size().type_id();
-        
         DEBUG(
             "DataWriter with guid " << info.guid << " discovered in topic : " <<
                 topic_name << " [ " << type_name << " ]");
+                
+        if (!info.type_information.assigned()) {
+            // __FLAG__
+            DEBUG("Type information not assigned for topic " << topic_name);
+            /////////////////////////////
+            // If type info is not assigned, check if it can be generated through a xml
+            on_topic_discovery_(topic_name, type_name);  
+        }
 
+        DataTypeId type_id = info.type_information.type_information.complete().typeid_with_size().type_id();
+        
         // Set Topic as discovered. If it is not new nothing happen
         on_topic_discovery_(topic_name, type_name, type_id);
     }
@@ -264,11 +302,42 @@ void Participant::on_data_writer_discovery(
 
 void Participant::on_topic_discovery_(
         const std::string& topic_name,
+        const std::string& type_name)
+{
+    bool is_already_discovered = false;
+
+    // Check if this topic has already been discovered
+    auto it = discovery_database_->find(topic_name);
+    if (it != discovery_database_->end())
+    {
+        is_already_discovered = true;
+
+        // The topic had already been discovered, so not sending callback twice
+        DEBUG(
+            "Topic " << topic_name << " has already been discovered");
+        return;
+    }
+    if (!is_already_discovered)
+    {
+        // Topic discovered without type information. Check if type information is available through xml and register it
+        check_type_info(topic_name, type_name);
+    }
+    // Call listener callback to notify new topic
+    if (listener_)
+    {
+        listener_->on_topic_discovery(topic_name, type_name);
+    }
+}
+
+void Participant::on_topic_discovery_(
+        const std::string& topic_name,
         const std::string& type_name,
         const DataTypeId& type_id)
 {
     // TODO: check if mutex required
-
+    // __FLAG__
+    DEBUG("Calling on_topic_discovery with type id for topic " << topic_name);
+    /////////////////
     bool is_already_discovered = false;
 
     // Check if this topic has already been discovered
@@ -286,7 +355,15 @@ void Participant::on_topic_discovery_(
     if (!is_already_discovered)
     {
         // Add topic as discovered and save its type name and its type identifier to build DynamicType when DataReader is created
-        discovery_database_->operator [](topic_name) = {type_name, type_id};
+        // __FLAG__
+        DEBUG("Topic " << topic_name << " discovered with type id");
+        DEBUG("Updating databases...");
+        DEBUG("...Updating discovery database...");
+        discovery_database_->operator [](topic_name) = {type_name, true};
+        DEBUG("...Updating dynamic types info database...");
+        dyn_types_info_->operator [](topic_name) = {type_name, type_id};
+        DEBUG("...Databases updated");
+        /////////////////////////////////////////////
     }
 
     // Call listener callback to notify new topic
@@ -329,6 +406,74 @@ std::vector<types::DatumLabel> Participant::string_data_series_names() const
 
     return names;
 }
+
+////////////////////////////////////////////////////
+// AUXILIAR METHODS
+////////////////////////////////////////////////////
+
+ReturnCode_t Participant::get_type_support_from_xml_(
+    const std::string& type_name,
+    TypeSupport& type_support) 
+{
+    DynamicTypeBuilder::_ref_type dyn_type_builder;
+    ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(type_name, dyn_type_builder);
+
+    if (RETCODE_OK != ret)
+    {
+        EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting DynamicTypeBuilder from XML");
+        return ret;
+    }
+    // TODO (Carlosespicur): Check if it can be done simpler
+    DynamicType::_ref_type dyn_type = dyn_type_builder->build();
+    TypeSupport dyn_type_type_support(new DynamicPubSubType(dyn_type));
+    type_support = dyn_type_type_support;
+    return RETCODE_OK;
+}
+
+void Participant::check_type_info(
+        const std::string& topic_name,
+        const std::string& type_name)
+{
+    // Check if type info has been loaded manually (though XML file). In this case, register it and update discovery database
+    TypeSupport type_support;
+        if(RETCODE_OK != get_type_support_from_xml_(type_name, type_support)) {
+            EPROSIMA_LOG_WARNING(PARTICIPANT, "type information of" << type_name << "is currently not available...");
+            discovery_database_->operator[](topic_name) = {type_name, false};
+            return;
+        }
+        if (!participant_->find_type(type_name))
+        {
+            // Type information is available and not registered in participant. Register it.
+            DEBUG("Type info available. Registering type " << type_name << "in participant");
+            discovery_database_->operator[](topic_name) = {type_name, true};
+            type_support.register_type(participant_);
+        }      
+}
+
+void Participant::refresh_types_registered_()
+{
+    // Loop over every Topic discovered and check if type info is available
+    // In case it is not, it may happen that the type info has been loaded manually (through XML profile) and registered in participant, so check in participant and
+    // modify it if necessary
+    for (auto const& [topic_name, topic_data_type_info] : *discovery_database_)
+    {
+        // Check if type info of a discovered type is currently available
+        if (std::get<TypeInfoAvailable>(topic_data_type_info))
+        {
+            // Type info set as available. Two possibilities:
+            // 1. Type info has been loaded manually (through XML profile) and registered in participant
+            // 2. Type info has been discovered automatically. Type Id already saved in dyn_types_info_
+            // Nothing to do in both cases
+            continue;
+        }
+        else
+        {
+            // Type info is set as not available. Check if it has been loaded manually and update discovery database in this case
+            check_type_info(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
+        }
+    }
+}
+
 
 ////////////////////////////////////////////////////
 // AUXILIAR STATIC METHODS

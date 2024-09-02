@@ -38,8 +38,11 @@ namespace fastdds {
 using TopicName = std::string;
 using DataTypeNameType = std::string;
 using DataTypeId = eprosima::fastdds::dds::xtypes::TypeIdentifier;
-using DataTypeInfo = std::pair<DataTypeNameType, DataTypeId>;
-using TopicDataBase = std::unordered_map<TopicName, DataTypeInfo>;
+using TypeInfoAvailable = bool;
+using DataTypeRegistryInfo = std::pair<DataTypeNameType, TypeInfoAvailable>;
+using DataTypeIdInfo = std::pair<DataTypeNameType, DataTypeId>;
+using TopicDataBase = std::unordered_map<TopicName, DataTypeRegistryInfo>;
+using TopicIds = std::unordered_map<TopicName, DataTypeIdInfo>;
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */
