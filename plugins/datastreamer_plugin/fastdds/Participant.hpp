@@ -31,9 +31,9 @@
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
-#include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 #include <fastdds/dds/subscriber/qos/SubscriberQos.hpp>
+#include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
@@ -97,8 +97,8 @@ public:
     // INTERACTION METHODS
     ////////////////////////////////////////////////////
 
-//     bool register_type_from_xml(
-//             const std::string& xml_path);
+    bool register_type_from_xml(
+            const std::string& xml_path);
 
     void create_subscription(
             const std::string& topic_name,
@@ -129,10 +129,33 @@ protected:
     // EXTERNAL EVENT METHODS
     ////////////////////////////////////////////////////
 
+    // This method is called when a new topic is discovered and type information is not available
+    void on_topic_discovery_(
+            const std::string& topic_name,
+            const std::string& type_name);
+
+    // This method is called when a new topic is discovered and type information is available
     void on_topic_discovery_(
             const std::string& topic_name,
             const std::string& type_name,
             const DataTypeId& type_id);
+
+    ////////////////////////////////////////////////////
+    // AUXILIAR METHODS
+    ////////////////////////////////////////////////////
+
+    ReturnCode_t get_type_support_from_xml_(
+        const std::string& type_name,
+        TypeSupport& type_support);
+
+    void check_type_info(
+            const std::string& topic_name,
+            const std::string& type_name);
+    
+    void refresh_types_registered_();
+
+    bool is_type_registered_in_participant_(
+            const std::string& type_name);
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
@@ -164,7 +187,7 @@ protected:
     ////////////////////////////////////////////////////
 
     std::shared_ptr<TopicDataBase> discovery_database_;
-
+    std::shared_ptr<TopicIds> dyn_types_info_ = std::make_shared<TopicIds>();
     FastDdsListener* listener_;
 
 
