@@ -471,6 +471,13 @@ void Participant::refresh_types_registered_()
             // Type info is set as not available. Check if it has been loaded manually and update discovery database in this case
             check_type_info(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
         }
+
+        // Call listener callback to notify new topic
+        // NOTE: This is necessary to refresh the list of topics in the UI
+        if (listener_)
+        {
+            listener_->on_topic_discovery(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
+        }
     }
 }
 
