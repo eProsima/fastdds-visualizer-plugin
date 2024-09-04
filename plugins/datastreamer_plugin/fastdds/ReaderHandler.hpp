@@ -92,6 +92,12 @@ public:
 
     std::vector<types::DatumLabel> string_data_series_names() const;
 
+    ////////////////////////////////////////////////////
+    // AUXILIAR METHODS
+    ////////////////////////////////////////////////////
+
+    void create_data_structures_(
+            DynamicData::_ref_type data = nullptr); 
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
@@ -131,6 +137,9 @@ public:
     //! Data Type element
     DynamicData::_ref_type data_;
 
+    //! Whether it is composed of variable sized types (e.g. sequences)
+    bool static_type_;
+
     std::atomic<bool> stop_;
 
     utils::TypeIntrospectionCollection numeric_data_info_;
@@ -138,6 +147,8 @@ public:
 
     utils::TypeIntrospectionNumericStruct numeric_data_;
     utils::TypeIntrospectionStringStruct string_data_;
+
+    DataTypeConfiguration data_type_configuration_;
 };
 
 } /* namespace fastdds */

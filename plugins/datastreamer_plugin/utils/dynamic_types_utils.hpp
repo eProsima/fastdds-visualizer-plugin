@@ -87,6 +87,7 @@ void get_introspection_type_names(
         const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
+        DynamicData::_ref_type data = nullptr,
         const std::vector<MemberId>& current_members_tree = {},
         const std::vector<TypeKind>& current_kinds_tree = {},
         const std::string& separator = "/");
@@ -178,12 +179,18 @@ bool is_kind_string(
  * @param dyn_type [in] \c DynamicType of the \c array
  * @return \c DynamicType of the \c elements in the \c array
  */
-DynamicType::_ref_type array_internal_kind(
+DynamicType::_ref_type type_internal_kind(
         const DynamicType::_ref_type& dyn_type);
 
 unsigned int array_size(
         const DynamicType::_ref_type& dyn_type);
 
+bool is_type_static(
+        const DynamicType::_ref_type& dyn_type);
+
+bool is_type_complex(
+        const DynamicType::_ref_type& dyn_type);
+        
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

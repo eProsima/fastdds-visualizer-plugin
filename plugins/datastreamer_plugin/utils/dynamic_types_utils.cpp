@@ -54,6 +54,7 @@ void get_introspection_type_names(
         const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
+        DynamicData::_ref_type data /* = nullptr */,
         const std::vector<MemberId>& current_members_tree /* = {} */,
         const std::vector<TypeKind>& current_kinds_tree /* = {} */,
         const std::string& separator /* = "/" */)
@@ -94,50 +95,67 @@ void get_introspection_type_names(
             break;
 
         case TK_ARRAY:
+        case TK_SEQUENCE:
         {
-            // Get the DynamicType of the elements in the array
-            DynamicType::_ref_type internal_type = array_internal_kind(type);
-
-            // Get the size of the array
-            uint32_t this_array_size = array_size(type);
-
+            // Get the DynamicType of the elements in the array/sequence
+            DynamicType::_ref_type internal_type = type_internal_kind(type);
+            std::string kind_str;
+            unsigned int size;
+            if (kind == TK_ARRAY)
+            {
+                kind_str = "array";
+                size = array_size(type);
+            }
+            else if (kind == TK_SEQUENCE)
+            {
+                kind_str = "sequence";
+                assert(data != nullptr);
+                size = data->get_item_count();
+            }
+            
             // Allow this array depending on data type configuration
-            if (this_array_size >= data_type_configuration.max_array_size)
+            if (size >= data_type_configuration.max_array_size)
             {
                 if (data_type_configuration.discard_large_arrays)
                 {
-                    // Discard array
-                    DEBUG("Discarding array " << base_type_name << " of size " << this_array_size);
+                    // Discard array/sequence
+                    DEBUG("Discarding " << kind_str << " " << base_type_name << " of size " << size);
                     break;
                 }
                 else
                 {
-                    // Truncate array
+                    // Truncate array/sequence
                     DEBUG(
-                        "Truncating array " << base_type_name <<
-                            " of size " << this_array_size <<
+                        "Truncating " << kind_str << " " << base_type_name <<
+                            " of size " << size <<
                             " to size " << data_type_configuration.max_array_size);
-                    this_array_size = data_type_configuration.max_array_size;
+                    size = data_type_configuration.max_array_size;
                 }
                 // Could not be neither of them, it would be an inconsistency
             }
 
-            for (MemberId member_id = 0; member_id < this_array_size; member_id++)
+            for (MemberId member_id = 0; member_id < size; member_id++)
             {
                 std::vector<MemberId> new_members_tree(current_members_tree);
                 new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
-
+                DynamicData::_ref_type member_data = data && is_type_complex(internal_type) ? data->loan_value(member_id) : nullptr;    
                 get_introspection_type_names(
                     base_type_name + "[" + std::to_string(member_id) + "]",
                     internal_type,
                     data_type_configuration,
                     numeric_type_names,
                     string_type_names,
+                    member_data,
                     new_members_tree,
                     new_kinds_tree,
                     separator);
+                
+                if (member_data)
+                {
+                    data->return_loaned_value(member_data);
+                }
             }
             break;
         }
@@ -164,22 +182,29 @@ void get_introspection_type_names(
                 {
                     throw std::runtime_error("Error getting descriptor from DynamicTypeMember");
                 }
+                DynamicData::_ref_type member_data = data ? data->loan_value(members.second->get_id()) : nullptr;
+
                 get_introspection_type_names(
                     base_type_name + separator + std::string(members.first),
                     member_descriptor->type(),
                     data_type_configuration,
                     numeric_type_names,
                     string_type_names,
+                    member_data,
                     new_members_tree,
                     new_kinds_tree,
                     separator);
+                
+                if (member_data)
+                {
+                    data->return_loaned_value(member_data);
+                }
             }
             break;
         }
-        // TODO: Add support for currently compatible types
+        // TODO: Add support for currently compatible types            
         case TK_BITSET:
         case TK_UNION:
-        case TK_SEQUENCE:
         case TK_MAP:
         case TK_NONE:
         default:
@@ -292,6 +317,7 @@ DynamicData::_ref_type get_parent_data_of_member(
         {
             case TK_STRUCTURE:
             case TK_ARRAY:
+            case TK_SEQUENCE:
             {
                 // Access to the data inside the structure
                 DynamicData::_ref_type child_data;
@@ -609,7 +635,7 @@ bool is_kind_string(
     }
 }
 
-DynamicType::_ref_type array_internal_kind(
+DynamicType::_ref_type type_internal_kind(
         const DynamicType::_ref_type& dyn_type)
 {
     TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
@@ -646,6 +672,84 @@ uint32_t array_size(
     return array_size;
 }
 
+bool is_type_static(
+        const DynamicType::_ref_type& dyn_type)
+{
+    // Get type kind and store it as kind tree
+    TypeKind kind = dyn_type->get_kind();
+
+    switch (kind)
+    {
+        case TK_BOOLEAN:
+        case TK_BYTE:
+        case TK_INT16:
+        case TK_INT32:
+        case TK_INT64:
+        case TK_UINT16:
+        case TK_UINT32:
+        case TK_UINT64:
+        case TK_FLOAT32:
+        case TK_FLOAT64:
+        case TK_FLOAT128:
+        case TK_CHAR8:
+        case TK_CHAR16:
+        case TK_STRING8:
+        case TK_STRING16:
+        case TK_ENUM:
+        case TK_BITSET:
+        case TK_BITMASK:
+        case TK_UNION:
+        case TK_ARRAY:
+            return true;
+
+        case TK_SEQUENCE:
+        case TK_MAP:
+            return false;
+
+        case TK_STRUCTURE:
+        {
+            // Using the Dynamic type, retrieve the name of the fields and its descriptions
+            DynamicTypeMembersByName members_by_name;
+            dyn_type->get_all_members_by_name(members_by_name);
+            MemberDescriptor::_ref_type member_descriptor {traits<MemberDescriptor>::make_shared()};
+            bool ret = true;
+            for (const auto& members : members_by_name)
+            {
+                if (RETCODE_OK != members.second->get_descriptor(member_descriptor))
+                {
+                    throw std::runtime_error("Error getting descriptor from DynamicTypeMember");
+                }
+                ret = ret & is_type_static(member_descriptor->type());
+            }
+            return ret;
+        }
+
+        case TK_NONE:
+        default:
+            WARNING(kind << " DataKind Not supported");
+            throw std::runtime_error("Unsupported Dynamic Types kind");
+    }
+}
+
+bool is_type_complex(
+        const DynamicType::_ref_type& dyn_type)
+{
+    TypeKind kind = dyn_type->get_kind();
+    switch (kind)
+    {
+        case TK_ANNOTATION:
+        case TK_ARRAY:
+        case TK_BITMASK:
+        case TK_BITSET:
+        case TK_MAP:
+        case TK_SEQUENCE:
+        case TK_STRUCTURE:
+        case TK_UNION:
+            return true;
+        default:
+            return false;
+    }
+}
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

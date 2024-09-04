@@ -40,7 +40,10 @@ namespace fastdds {
 class FastDdsListener
 {
 public:
-
+    virtual void on_data_available()
+    {
+        DEBUG("Calling on_data_available");
+    }
     virtual void on_double_data_read(
             const std::vector<types::NumericDatum>& numeric_data,
             double timestamp)
