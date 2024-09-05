@@ -185,6 +185,12 @@ DynamicType::_ref_type type_internal_kind(
 unsigned int array_size(
         const DynamicType::_ref_type& dyn_type);
 
+ReturnCode_t get_discriminator_value(
+        int32_t& discriminator_value,
+        DynamicData::_ref_type data,
+        const MemberId& discriminator_id,
+        const TypeKind& discriminator_kind);
+        
 bool is_type_static(
         const DynamicType::_ref_type& dyn_type);
 

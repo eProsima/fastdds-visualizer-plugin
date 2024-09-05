@@ -112,7 +112,7 @@ void get_introspection_type_names(
                 assert(data != nullptr);
                 size = data->get_item_count();
             }
-            
+
             // Allow this array depending on data type configuration
             if (size >= data_type_configuration.max_array_size)
             {
@@ -140,7 +140,8 @@ void get_introspection_type_names(
                 new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
-                DynamicData::_ref_type member_data = data && is_type_complex(internal_type) ? data->loan_value(member_id) : nullptr;    
+                DynamicData::_ref_type member_data = data &&
+                        is_type_complex(internal_type) ? data->loan_value(member_id) : nullptr;
                 get_introspection_type_names(
                     base_type_name + "[" + std::to_string(member_id) + "]",
                     internal_type,
@@ -151,7 +152,7 @@ void get_introspection_type_names(
                     new_members_tree,
                     new_kinds_tree,
                     separator);
-                
+
                 if (member_data)
                 {
                     data->return_loaned_value(member_data);
@@ -176,7 +177,8 @@ void get_introspection_type_names(
                 new_members_tree.push_back(members.second->get_id());
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
-                traits<eprosima::fastdds::dds::MemberDescriptor>::ref_type member_descriptor {traits<MemberDescriptor>::make_shared()};
+                traits<eprosima::fastdds::dds::MemberDescriptor>::ref_type member_descriptor{traits<MemberDescriptor>::
+                                                                                             make_shared()};
 
                 if (RETCODE_OK != members.second->get_descriptor(member_descriptor))
                 {
@@ -194,7 +196,7 @@ void get_introspection_type_names(
                     new_members_tree,
                     new_kinds_tree,
                     separator);
-                
+
                 if (member_data)
                 {
                     data->return_loaned_value(member_data);
@@ -202,10 +204,129 @@ void get_introspection_type_names(
             }
             break;
         }
-        // TODO: Add support for currently compatible types            
-        case TK_BITSET:
+
         case TK_UNION:
+        {
+
+            // Check which member is active
+            DynamicTypeMember::_ref_type discriminator;
+            traits<eprosima::fastdds::dds::MemberDescriptor>::ref_type member_descriptor{traits<MemberDescriptor>::
+                                                                                         make_shared()};
+
+            if (RETCODE_OK != type->get_member_by_name(discriminator, "discriminator"))
+            {
+                throw std::runtime_error("Error getting discriminator member from union");
+            }
+
+            if (RETCODE_OK != discriminator->get_descriptor(member_descriptor))
+            {
+                throw std::runtime_error("Error getting descriptor from discriminator");
+            }
+
+            TypeKind discriminator_kind = member_descriptor->type()->get_kind();
+            MemberId discriminator_id = member_descriptor->id();
+            int32_t discriminator_value;
+            DynamicTypeMembersByName members;
+            MemberId active_member_id = MEMBER_ID_INVALID;
+
+            if (RETCODE_OK != type->get_all_members_by_name(members))
+            {
+                throw std::runtime_error("Error getting members by name from DynamicType");
+            }
+
+            // If not data is provided, set active member to default
+            if (!data)
+            {
+                DEBUG("No data provided, setting default member as active");
+                
+                for (const auto& member : members)
+                {
+                    if (member.second->get_descriptor(member_descriptor) != RETCODE_OK)
+                    {
+                        throw std::runtime_error("Error getting descriptor from DynamicTypeMember");
+                    }
+
+                    if (member_descriptor->is_default_label())
+                    {
+                        active_member_id = member.second->get_id();
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+                for (const auto& member : members)
+                {
+                    DEBUG("Checking if member " << member.first << "is active");
+
+                    // Get the member descriptor and member labels
+                    if (RETCODE_OK != member.second->get_descriptor(member_descriptor))
+                    {
+                        throw std::runtime_error("Error getting descriptor from DynamicTypeMember");
+                    }
+
+                    const UnionCaseLabelSeq& member_label = member_descriptor->label();
+                    if (RETCODE_OK != get_discriminator_value(discriminator_value, data, discriminator_id, discriminator_kind))
+                    {
+                        throw std::runtime_error("Error getting discriminator value from DynamicData");
+                    }
+
+                    if (std::find(member_label.begin(), member_label.end(), discriminator_value) != member_label.end())
+                    {
+                        active_member_id = member.second->get_id();
+                        break;
+                    }
+                    else if (member_descriptor->is_default_label())
+                    {
+                        active_member_id = member.second->get_id();
+                    }
+                }
+            }
+
+            if (active_member_id == MEMBER_ID_INVALID)
+            {
+                throw std::runtime_error("Error getting active member in union");
+            }
+
+            std::vector<MemberId> new_members_tree(current_members_tree);
+            new_members_tree.push_back(active_member_id);
+            std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
+            new_kinds_tree.push_back(kind);
+
+            DynamicData::_ref_type member_data = data ? data->loan_value(active_member_id) : nullptr;
+            get_introspection_type_names(
+                base_type_name + separator + std::string(member_descriptor->name()),
+                member_descriptor->type(),
+                data_type_configuration,
+                numeric_type_names,
+                string_type_names,
+                member_data,
+                new_members_tree,
+                new_kinds_tree,
+                separator);
+
+            if (member_data)
+            {
+                data->return_loaned_value(member_data);
+            }
+
+            break;
+        }
         case TK_MAP:
+        {
+            DynamicTypeMembersByName members_by_name;
+            if (RETCODE_OK != type->get_all_members_by_name(members_by_name))
+            {
+                throw std::runtime_error("Error getting members by name from DynamicType");
+            }
+            for (const auto& member : members_by_name)
+            {
+                DEBUG("Calling introspection for " << member.first);
+            }
+        }
+        // TODO: Add support for currently compatible types
+        case TK_BITSET:
         case TK_NONE:
         default:
             WARNING(kind << " DataKind Not supported");
@@ -248,8 +369,8 @@ void get_introspection_numeric_data(
 
         numeric_data_result[i].second = get_numeric_type_from_data(
             parent_data,
-            members[members.size() - 1], // use last member Id (direct parent = parent_data)
-            actual_kind);    // use last kind (direct parent = parent_data)
+            members[members.size() - 1],             // use last member Id (direct parent = parent_data)
+            actual_kind);                            // use last kind (direct parent = parent_data)
     }
 }
 
@@ -288,8 +409,8 @@ void get_introspection_string_data(
 
         string_data_result[i].second = get_string_type_from_data(
             parent_data,
-            members[members.size() - 1], // use last member Id (direct parent = parent_data)
-            actual_kind);    // use last kind (direct parent = parent_data)
+            members[members.size() - 1],             // use last member Id (direct parent = parent_data)
+            actual_kind);                            // use last kind (direct parent = parent_data)
     }
 }
 
@@ -318,13 +439,15 @@ DynamicData::_ref_type get_parent_data_of_member(
             case TK_STRUCTURE:
             case TK_ARRAY:
             case TK_SEQUENCE:
+            case TK_UNION:
             {
                 // Access to the data inside the structure
                 DynamicData::_ref_type child_data;
                 // Get data pointer to the child_data
                 // The loan and return is a workaround to avoid creating a unecessary copy of the data
                 child_data = data->loan_value(member_id);
-                if (RETCODE_OK != data->return_loaned_value(child_data)){
+                if (RETCODE_OK != data->return_loaned_value(child_data))
+                {
                     throw std::runtime_error("Error returning loaned value from DynamicData ");
                 }
 
@@ -369,7 +492,7 @@ double get_numeric_type_from_data(
                 throw std::runtime_error("Error getting byte value from DynamicData");
             }
             return static_cast<double>(byte_value);
-        
+
         case TK_INT8:
             int8_t int8_value;
             if (RETCODE_OK != data->get_int8_value(int8_value, member))
@@ -393,7 +516,7 @@ double get_numeric_type_from_data(
                 throw std::runtime_error("Error getting int32 value from DynamicData");
             }
 
-            return static_cast<double>(int32_value);        
+            return static_cast<double>(int32_value);
 
         case TK_INT64:
             int64_t int64_value;
@@ -401,7 +524,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting int64 value from DynamicData");
-
             }
 
             return static_cast<double>(int64_value);
@@ -412,7 +534,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting int8 value from DynamicData");
-
             }
 
             return static_cast<double>(uint8_value);
@@ -424,7 +545,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting uint16 value from DynamicData");
-
             }
 
             return static_cast<double>(uint16_value);
@@ -435,7 +555,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting uint32 value from DynamicData");
-
             }
 
             return static_cast<double>(uint32_value);
@@ -446,7 +565,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting uint64 value from DynamicData");
-
             }
 
             return static_cast<double>(uint64_value);
@@ -457,7 +575,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting float32 value from DynamicData");
-
             }
             return static_cast<double>(float32_value);
 
@@ -467,7 +584,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting float64 value from DynamicData");
-
             }
             return float64_value;
 
@@ -477,7 +593,6 @@ double get_numeric_type_from_data(
             {
 
                 throw std::runtime_error("Error getting float128 value from DynamicData");
-
             }
 
             return static_cast<double>(float128_value);
@@ -504,7 +619,6 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting char8 value from DynamicData");
-            
             }
             return to_string(char8_value);
         }
@@ -515,7 +629,6 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting char16 value from DynamicData");
-            
             }
 
             return to_string(char16_value);
@@ -527,7 +640,6 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting string8 value from DynamicData");
-
             }
             return string8_value;
         }
@@ -538,7 +650,6 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting string16 value from DynamicData");
-
             }
             return to_string(string16_value);
         }
@@ -550,7 +661,6 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting enum value from DynamicData");
-
             }
 
             // Get enumeration type to obtain the names of the different values
@@ -569,9 +679,11 @@ std::string get_string_type_from_data(
             }
             // Get name associated to the numeric enum value previously obtained
             ObjectName member_name;
-            for (const auto& enum_member : enum_members) {
+            for (const auto& enum_member : enum_members)
+            {
                 MemberDescriptor::_ref_type enum_member_desc{traits<MemberDescriptor>::make_shared()};
-                if (RETCODE_OK != enum_member.second->get_descriptor(enum_member_desc)) {
+                if (RETCODE_OK != enum_member.second->get_descriptor(enum_member_desc))
+                {
                     throw std::runtime_error("Error getting enum member descriptor from DynamicData");
                 }
                 // Check if it is the member we are looking for
@@ -638,11 +750,12 @@ bool is_kind_string(
 DynamicType::_ref_type type_internal_kind(
         const DynamicType::_ref_type& dyn_type)
 {
-    TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
-    
+    TypeDescriptor::_ref_type type_descriptor{traits<TypeDescriptor>::make_shared()};
+
     if (RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
-        throw std::runtime_error(std::string("Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
+        throw std::runtime_error(std::string(
+                          "Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
     }
 
     return type_descriptor->element_type();
@@ -651,25 +764,227 @@ DynamicType::_ref_type type_internal_kind(
 uint32_t array_size(
         const DynamicType::_ref_type& dyn_type)
 {
-    TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
-    
+    TypeDescriptor::_ref_type type_descriptor{traits<TypeDescriptor>::make_shared()};
+
     if (RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
-        throw std::runtime_error(std::string("Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
+        throw std::runtime_error(std::string(
+                          "Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
     }
 
     // Get array dimension
     BoundSeq array_bound = type_descriptor->bound();
 
     // Get array size
-    if (array_bound.size() < 1){
-        throw std::runtime_error(std::string("Error getting array size from DynamicType ") + dyn_type->get_name().to_string());
+    if (array_bound.size() < 1)
+    {
+        throw std::runtime_error(std::string(
+                          "Error getting array size from DynamicType ") + dyn_type->get_name().to_string());
     }
     uint32_t array_size = 1;
-    for (auto bound : array_bound){
+    for (auto bound : array_bound)
+    {
         array_size *= bound;
     }
     return array_size;
+}
+
+// WARNING: Due to a discripency between xtypes 1.3 standard and DynamicTypes implementation, this function could lead to anomalous behavior
+// when casting to int32 non-promotable types (e.g. int64) that are also possible discriminator types.
+ReturnCode_t get_discriminator_value(
+        int32_t& discriminator_value,
+        DynamicData::_ref_type data,
+        const MemberId& discriminator_id,
+        const TypeKind& discriminator_kind)
+{
+    if (data)
+    {
+        ReturnCode_t retcode;
+
+        switch (discriminator_kind)
+        {
+            case TK_BOOLEAN:
+            {
+                bool boolean_value;
+                retcode = data->get_boolean_value(boolean_value, discriminator_id);
+
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting boolean value from DynamicData");
+                    return retcode;
+                }
+
+                discriminator_value = static_cast<int32_t>(boolean_value);
+                return RETCODE_OK;
+            }
+            case TK_BYTE:
+            {
+                fastdds::rtps::octet byte_value;
+                retcode = data->get_byte_value(byte_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting byte value from DynamicData");
+                    return retcode;
+                }
+
+                discriminator_value = static_cast<int32_t>(byte_value);
+                return RETCODE_OK;
+            }
+            case TK_CHAR8:
+            {
+                char char8_value;
+                retcode = data->get_char8_value(char8_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting char8 value from DynamicData");
+                    return retcode;
+                }
+
+                discriminator_value = static_cast<int32_t>(char8_value);
+                return RETCODE_OK;
+            }
+            case TK_CHAR16:
+            {
+                wchar_t char16_value;
+                retcode = data->get_char16_value(char16_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting char16 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(char16_value);
+                return RETCODE_OK;
+            }
+            case TK_INT8:
+            {
+                int8_t int8_value;
+                retcode = data->get_int8_value(int8_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting int8 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(int8_value);
+                return RETCODE_OK;
+            }
+            case TK_UINT8:
+            {
+                uint8_t uint8_value;
+                retcode = data->get_uint8_value(uint8_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting uint8 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(uint8_value);
+                return RETCODE_OK;
+            }
+            case TK_INT16:
+            {
+                int16_t int16_value;
+                retcode = data->get_int16_value(int16_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting int16 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(int16_value);
+                return RETCODE_OK;
+            }
+            case TK_UINT16:
+            {
+                uint16_t uint16_value;
+                retcode = data->get_uint16_value(uint16_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting uint16 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(uint16_value);
+                return RETCODE_OK;
+            }
+            case TK_INT32:
+            {
+                int32_t int32_value;
+                retcode = data->get_int32_value(int32_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting int32 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = int32_value;
+                return RETCODE_OK;
+            }
+            case TK_UINT32:
+            {
+                uint32_t uint32_value;
+                retcode = data->get_uint32_value(uint32_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting uint32 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(uint32_value);
+                return RETCODE_OK;
+            }
+            case TK_INT64:
+            {
+                int64_t int64_value;
+                retcode = data->get_int64_value(int64_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting int64 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<uint32_t>(int64_value);
+                return RETCODE_OK;
+            }
+            case TK_UINT64:
+            {
+                uint64_t uint64_value;
+                retcode = data->get_uint64_value(uint64_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting uint64 value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = static_cast<int32_t>(uint64_value);
+                return RETCODE_OK;
+            }
+            case TK_ENUM:
+            {
+                int32_t enum_value;
+                retcode = data->get_int32_value(enum_value, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting enum value from DynamicData");
+                    return retcode;
+                }
+                discriminator_value = enum_value;
+                return RETCODE_OK;
+            }
+            case TK_ALIAS:
+            {
+                traits<MemberDescriptor>::ref_type member_descriptor{traits<MemberDescriptor>::make_shared()};
+                retcode = data->get_descriptor(member_descriptor, discriminator_id);
+                if (RETCODE_OK != retcode)
+                {
+                    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting descriptor from DynamicData");
+                    return retcode;
+                }
+                get_discriminator_value(discriminator_value, data, discriminator_id,
+                        member_descriptor->type()->get_kind());
+                break;
+            }
+            default:
+                EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Unsupported discriminator type");
+                return RETCODE_BAD_PARAMETER;
+        }
+    }
+
+    EPROSIMA_LOG_ERROR(DYNAMIC_TYPES_UTILS, "Error getting discriminator value from DynamicData: data is nullptr");
+    return RETCODE_NO_DATA;
+    
 }
 
 bool is_type_static(
@@ -698,12 +1013,12 @@ bool is_type_static(
         case TK_ENUM:
         case TK_BITSET:
         case TK_BITMASK:
-        case TK_UNION:
         case TK_ARRAY:
             return true;
 
         case TK_SEQUENCE:
         case TK_MAP:
+        case TK_UNION:
             return false;
 
         case TK_STRUCTURE:
@@ -711,7 +1026,7 @@ bool is_type_static(
             // Using the Dynamic type, retrieve the name of the fields and its descriptions
             DynamicTypeMembersByName members_by_name;
             dyn_type->get_all_members_by_name(members_by_name);
-            MemberDescriptor::_ref_type member_descriptor {traits<MemberDescriptor>::make_shared()};
+            MemberDescriptor::_ref_type member_descriptor{traits<MemberDescriptor>::make_shared()};
             bool ret = true;
             for (const auto& members : members_by_name)
             {
@@ -750,6 +1065,7 @@ bool is_type_complex(
             return false;
     }
 }
-} /* namespace utils */
-} /* namespace plotjuggler */
+
+}         /* namespace utils */
+}     /* namespace plotjuggler */
 } /* namespace eprosima */

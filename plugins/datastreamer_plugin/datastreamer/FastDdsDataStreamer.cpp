@@ -214,10 +214,6 @@ void FastDdsDataStreamer::on_topic_discovery(
     DEBUG("FastDdsDataStreamer topic_discovery_signal " << topic_name);
     bool type_info_available = fastdds_handler_.get_topic_data_base()->operator[](topic_name).second;
 
-    // __FLAG__
-    DEBUG("topic discovery signal with type name " << type_name << " and type info available " << type_info_available);
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     // Emit signal to UI so it is handled from Qt thread
     emit select_topics_dialog_.topic_discovery_signal(
         utils::string_to_QString(topic_name),
