@@ -494,6 +494,9 @@ eprosima::fastdds::dds::DomainParticipantQos Participant::default_participant_qo
     // Set Generic Name
     qos.name("PlotJuggler_FastDDSPlugin_Participant");
 
+    // Set Metadata
+    qos.properties().properties().emplace_back("fastdds.application.id", "FASTDDS_VISUALIZER", true);
+    qos.properties().properties().emplace_back("fastdds.application.metadata", "", true);
     return qos;
 }
 
