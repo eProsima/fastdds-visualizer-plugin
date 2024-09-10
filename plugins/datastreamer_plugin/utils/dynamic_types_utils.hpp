@@ -55,141 +55,35 @@ using TypeIntrospectionStringStruct = std::vector<types::TextDatum>;
  * @return all label names
  */
 std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionCollection& numeric_type_names);
+        const TypeIntrospectionNumericStruct& numeric_type_names);
 
 /**
- * @brief Get the introspection information from a \c DynamicType::_ref_type .
- * This is a recursive function that may be called recursively for each data type member
- * of \c type .
- *
- * If \c type is a basic type, it adds its label, that is \c base_type_name to the
- * \c TypeIntrospectionCollection that it belongs, depending if it is numeric or text kind.
- * Along with the label, it is added the vector of parents as member Ids and kinds.
- * Those are useful to allow to acces this specific field from a \c DynamicData::_ref_type .
- *
- * If \c type is not a basic type (array or struct) this function is called for each value
- * updating \c base_type_name for each recursive call.
- *
- * \c current_members_tree and \c current_kinds_tree are used to store the parent information
- * for every recursive iteration of the function.
- *
- * @param base_type_name [in]
- * @param type [in]
- * @param numeric_type_names [out]
- * @param string_type_names [out]
- * @param current_members_tree [in]
- * @param current_kinds_tree [in]
- * @param separator [in]
- */
-void get_introspection_type_names(
+        TODO (Carlosespicur): Add description
+**/
+std::vector<std::string> get_introspection_type_names(
+        const TypeIntrospectionStringStruct& string_type_names);
+
+/**
+        TODO (Carlosespicur): Add description
+**/
+
+void get_formatted_data(
         const std::string& base_type_name,
-        const eprosima::fastdds::dds::DynamicType::_ref_type& type,
         const DataTypeConfiguration& data_type_configuration,
-        TypeIntrospectionCollection& numeric_type_names,
-        TypeIntrospectionCollection& string_type_names,
-        eprosima::fastdds::dds::DynamicData::_ref_type data = nullptr,
-        const std::vector<eprosima::fastdds::dds::MemberId>& current_members_tree = {},
-        const std::vector<eprosima::fastdds::dds::TypeKind>& current_kinds_tree = {},
+        TypeIntrospectionNumericStruct& numeric_data,
+        TypeIntrospectionStringStruct& string_data,
+        const nlohmann::json& data,
         const std::string& separator = "/");
 
-/**
- * @brief Fill numeric and string data from a \c data given
- *
- * This method uses the already calculated \c SingleDataTypeIntrospectionInfo objects
- * to make data introspection faster, by access directly the members required (to access those members
- * it is needed the kind of each, that is why it is stored).
- *
- * The data found along the data is stored in object \c numeric_data .
- * This object is already created and populated with the labels, and it is accessed by
- * the same index in \c numeric_type_names .
- * This way, we avoid creating and copying the strings each time a data arrive.
- * Instead, we reuse the whole structure with labels, and with each data is populated with the new data recieved.
- *
- * @param numeric_type_names [in]
- * @param data [in]
- * @param numeric_data [in|out]
- */
-void get_introspection_numeric_data(
-        const TypeIntrospectionCollection& numeric_type_names,
-        eprosima::fastdds::dds::DynamicData::_ref_type data,
-        TypeIntrospectionNumericStruct& numeric_data_result);
-
-/**
- * @brief TODO
- */
-void get_introspection_string_data(
-        const TypeIntrospectionCollection& string_type_names,
-        eprosima::fastdds::dds::DynamicData::_ref_type data,
-        TypeIntrospectionStringStruct& string_data_result);
-
-/**
- * @brief Get the parent data from a \c data given following the chaing of
- * parents given their parent \c members and \c kinds .
- *
- * This recursive function calls recursively to itself with the next data member of
- * \c data following the member and kind indicated by \c array_index , that changes in every iteration
- *
- * @param data [in]
- * @param members_tree [in]
- * @param kind [in]
- * @param array_indexes [in]
- * @return DynamicData::_ref_type
- */
-eprosima::fastdds::dds::DynamicData::_ref_type get_parent_data_of_member(
-        eprosima::fastdds::dds::DynamicData::_ref_type data,
-        const std::vector<eprosima::fastdds::dds::MemberId>& members,
-        const std::vector<eprosima::fastdds::dds::TypeKind>& kinds,
-        unsigned int array_index = 0);
-
-/**
- * @brief Get the numeric value of the data member of \c data given and with \c member id and \c kind given
- *
- * @param data [in]
- * @param member [in]
- * @param kind [in]
- * @return numeric data of the member casted to double
- */
-double get_numeric_type_from_data(
-        eprosima::fastdds::dds::DynamicData::_ref_type data,
-        const eprosima::fastdds::dds::MemberId& member,
-        const eprosima::fastdds::dds::TypeKind& kind);
-
-/**
- * @brief Get the string value of the data member of \c data given and with \c member id and \c kind given
- *
- * @param data [in]
- * @param member [in]
- * @param kind [in]
- * @return string data of the member casted to string
- */
-std::string get_string_type_from_data(
-        eprosima::fastdds::dds::DynamicData::_ref_type data,
-        const eprosima::fastdds::dds::MemberId& member,
-        const eprosima::fastdds::dds::TypeKind& kind);
-
 bool is_kind_numeric(
-        const eprosima::fastdds::dds::TypeKind& kind);
+        const nlohmann::json& data);
 
 bool is_kind_string(
-        const eprosima::fastdds::dds::TypeKind& kind);
+        const nlohmann::json& data);
 
-/**
- * @brief Returns a reference to the \c DynamicType of the elements in the \c array according to [standard] section \b 7.5.2.4.5
- *
- * @param dyn_type [in] \c DynamicType of the \c array
- * @return \c DynamicType of the \c elements in the \c array
- */
-eprosima::fastdds::dds::DynamicType::_ref_type type_internal_kind(
-        const eprosima::fastdds::dds::DynamicType::_ref_type& dyn_type);
-
-unsigned int array_size(
-        const eprosima::fastdds::dds::DynamicType::_ref_type& dyn_type);
-
-bool is_type_static(
-        const eprosima::fastdds::dds::DynamicType::_ref_type& dyn_type);
-
-bool is_type_complex(
-        const eprosima::fastdds::dds::DynamicType::_ref_type& dyn_type);
+ReturnCode_t serialize_data (
+    DynamicData::_ref_type data,
+    nlohmann::json& serialized_data);
 
 } /* namespace utils */
 } /* namespace plotjuggler */
