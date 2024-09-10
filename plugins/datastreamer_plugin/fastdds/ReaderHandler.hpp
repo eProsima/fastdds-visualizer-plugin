@@ -25,6 +25,9 @@
 #include <atomic>
 
 #include <fastdds/dds/core/status/StatusMask.hpp>
+#include <nlohmann/json.hpp>
+
+#include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
@@ -140,16 +143,10 @@ public:
     //! Data Type element
     eprosima::fastdds::dds::DynamicData::_ref_type data_;
 
-    //! Whether it is composed of variable sized types (e.g. sequences)
-    bool static_type_;
-
     std::atomic<bool> stop_;
 
-    utils::TypeIntrospectionCollection numeric_data_info_;
-    utils::TypeIntrospectionCollection string_data_info_;
-
-    utils::TypeIntrospectionNumericStruct numeric_data_;
-    utils::TypeIntrospectionStringStruct string_data_;
+    utils::TypeIntrospectionNumericStruct numeric_data_info_;
+    utils::TypeIntrospectionStringStruct string_data_info_;
 
     DataTypeConfiguration data_type_configuration_;
 };
