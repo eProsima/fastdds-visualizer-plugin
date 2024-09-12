@@ -80,6 +80,12 @@ void get_formatted_data(
         numeric_data.push_back({base_type_name, data.get<double>()});
         return;
     }
+    else if(is_kind_boolean(data))
+    {
+        bool value = data.get<bool>();
+        numeric_data.push_back({base_type_name, static_cast<double>(value)});
+        return;
+    }
     else if (is_kind_string(data))
     {
         string_data.push_back({base_type_name, data.get<std::string>()});
@@ -146,7 +152,13 @@ void get_formatted_data(
 bool is_kind_numeric(
         const nlohmann::json& data)
 {
-    return data.is_number() || data.is_boolean();
+    return data.is_number();
+}
+
+bool is_kind_boolean(
+        const nlohmann::json& data)
+{
+    return data.is_boolean();
 }
 
 bool is_kind_string(
