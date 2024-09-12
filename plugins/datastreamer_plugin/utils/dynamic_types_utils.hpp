@@ -78,6 +78,9 @@ void get_formatted_data(
 bool is_kind_numeric(
         const nlohmann::json& data);
 
+bool is_kind_boolean(
+        const nlohmann::json& data);
+
 bool is_kind_string(
         const nlohmann::json& data);
 
