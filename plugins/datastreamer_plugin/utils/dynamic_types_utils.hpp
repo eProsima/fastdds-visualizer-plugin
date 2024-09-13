@@ -190,7 +190,7 @@ bool is_type_static(
 
 bool is_type_complex(
         const DynamicType::_ref_type& dyn_type);
-        
+
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

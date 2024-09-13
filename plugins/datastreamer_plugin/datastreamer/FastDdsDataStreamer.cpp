@@ -212,7 +212,7 @@ void FastDdsDataStreamer::on_topic_discovery(
         const std::string& type_name)
 {
     DEBUG("FastDdsDataStreamer topic_discovery_signal " << topic_name);
-    bool type_info_available = fastdds_handler_.get_topic_data_base()->operator[](topic_name).second;
+    bool type_info_available = fastdds_handler_.get_topic_data_base()->operator [](topic_name).second;
 
     // __FLAG__
     DEBUG("topic discovery signal with type name " << type_name << " and type info available " << type_info_available);

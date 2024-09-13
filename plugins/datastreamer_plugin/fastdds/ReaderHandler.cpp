@@ -46,7 +46,7 @@ ReaderHandler::ReaderHandler(
     , type_(type)
     , listener_(listener)
     , stop_(false)
-    , data_type_configuration_(data_type_configuration) 
+    , data_type_configuration_(data_type_configuration)
 {
     // Create data so it is not required to create it each time and avoid reallocation if possible
     data_ = DynamicDataFactory::get_instance()->create_data(type_);
@@ -67,7 +67,7 @@ ReaderHandler::~ReaderHandler()
     // Stop the reader
     stop();
 
-    // Delete created data 
+    // Delete created data
     DynamicDataFactory::get_instance()->delete_data(data_);
 }
 

@@ -112,7 +112,7 @@ void get_introspection_type_names(
                 assert(data != nullptr);
                 size = data->get_item_count();
             }
-            
+
             // Allow this array depending on data type configuration
             if (size >= data_type_configuration.max_array_size)
             {
@@ -140,7 +140,8 @@ void get_introspection_type_names(
                 new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
-                DynamicData::_ref_type member_data = data && is_type_complex(internal_type) ? data->loan_value(member_id) : nullptr;    
+                DynamicData::_ref_type member_data = data &&
+                        is_type_complex(internal_type) ? data->loan_value(member_id) : nullptr;
                 get_introspection_type_names(
                     base_type_name + "[" + std::to_string(member_id) + "]",
                     internal_type,
@@ -151,7 +152,7 @@ void get_introspection_type_names(
                     new_members_tree,
                     new_kinds_tree,
                     separator);
-                
+
                 if (member_data)
                 {
                     data->return_loaned_value(member_data);
@@ -176,7 +177,8 @@ void get_introspection_type_names(
                 new_members_tree.push_back(members.second->get_id());
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
-                traits<eprosima::fastdds::dds::MemberDescriptor>::ref_type member_descriptor {traits<MemberDescriptor>::make_shared()};
+                traits<eprosima::fastdds::dds::MemberDescriptor>::ref_type member_descriptor {traits<MemberDescriptor>::
+                                                                                              make_shared()};
 
                 if (RETCODE_OK != members.second->get_descriptor(member_descriptor))
                 {
@@ -194,7 +196,7 @@ void get_introspection_type_names(
                     new_members_tree,
                     new_kinds_tree,
                     separator);
-                
+
                 if (member_data)
                 {
                     data->return_loaned_value(member_data);
@@ -202,7 +204,7 @@ void get_introspection_type_names(
             }
             break;
         }
-        // TODO: Add support for currently compatible types            
+        // TODO: Add support for currently compatible types
         case TK_BITSET:
         case TK_UNION:
         case TK_MAP:
@@ -324,7 +326,8 @@ DynamicData::_ref_type get_parent_data_of_member(
                 // Get data pointer to the child_data
                 // The loan and return is a workaround to avoid creating a unecessary copy of the data
                 child_data = data->loan_value(member_id);
-                if (RETCODE_OK != data->return_loaned_value(child_data)){
+                if (RETCODE_OK != data->return_loaned_value(child_data))
+                {
                     throw std::runtime_error("Error returning loaned value from DynamicData ");
                 }
 
@@ -369,7 +372,7 @@ double get_numeric_type_from_data(
                 throw std::runtime_error("Error getting byte value from DynamicData");
             }
             return static_cast<double>(byte_value);
-        
+
         case TK_INT8:
             int8_t int8_value;
             if (RETCODE_OK != data->get_int8_value(int8_value, member))
@@ -393,7 +396,7 @@ double get_numeric_type_from_data(
                 throw std::runtime_error("Error getting int32 value from DynamicData");
             }
 
-            return static_cast<double>(int32_value);        
+            return static_cast<double>(int32_value);
 
         case TK_INT64:
             int64_t int64_value;
@@ -504,7 +507,7 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting char8 value from DynamicData");
-            
+
             }
             return to_string(char8_value);
         }
@@ -515,7 +518,7 @@ std::string get_string_type_from_data(
             {
 
                 throw std::runtime_error("Error getting char16 value from DynamicData");
-            
+
             }
 
             return to_string(char16_value);
@@ -569,9 +572,11 @@ std::string get_string_type_from_data(
             }
             // Get name associated to the numeric enum value previously obtained
             ObjectName member_name;
-            for (const auto& enum_member : enum_members) {
+            for (const auto& enum_member : enum_members)
+            {
                 MemberDescriptor::_ref_type enum_member_desc{traits<MemberDescriptor>::make_shared()};
-                if (RETCODE_OK != enum_member.second->get_descriptor(enum_member_desc)) {
+                if (RETCODE_OK != enum_member.second->get_descriptor(enum_member_desc))
+                {
                     throw std::runtime_error("Error getting enum member descriptor from DynamicData");
                 }
                 // Check if it is the member we are looking for
@@ -639,10 +644,11 @@ DynamicType::_ref_type type_internal_kind(
         const DynamicType::_ref_type& dyn_type)
 {
     TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
-    
+
     if (RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
-        throw std::runtime_error(std::string("Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
+        throw std::runtime_error(std::string(
+                          "Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
     }
 
     return type_descriptor->element_type();
@@ -652,21 +658,25 @@ uint32_t array_size(
         const DynamicType::_ref_type& dyn_type)
 {
     TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
-    
+
     if (RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
-        throw std::runtime_error(std::string("Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
+        throw std::runtime_error(std::string(
+                          "Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
     }
 
     // Get array dimension
     BoundSeq array_bound = type_descriptor->bound();
 
     // Get array size
-    if (array_bound.size() < 1){
-        throw std::runtime_error(std::string("Error getting array size from DynamicType ") + dyn_type->get_name().to_string());
+    if (array_bound.size() < 1)
+    {
+        throw std::runtime_error(std::string(
+                          "Error getting array size from DynamicType ") + dyn_type->get_name().to_string());
     }
     uint32_t array_size = 1;
-    for (auto bound : array_bound){
+    for (auto bound : array_bound)
+    {
         array_size *= bound;
     }
     return array_size;
@@ -750,6 +760,7 @@ bool is_type_complex(
             return false;
     }
 }
+
 } /* namespace utils */
 } /* namespace plotjuggler */
 } /* namespace eprosima */

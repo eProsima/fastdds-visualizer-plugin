@@ -97,7 +97,7 @@ public:
     ////////////////////////////////////////////////////
 
     void create_data_structures_(
-            DynamicData::_ref_type data = nullptr); 
+            DynamicData::_ref_type data = nullptr);
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS

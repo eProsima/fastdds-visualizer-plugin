@@ -145,13 +145,13 @@ protected:
     ////////////////////////////////////////////////////
 
     ReturnCode_t get_type_support_from_xml_(
-        const std::string& type_name,
-        TypeSupport& type_support);
+            const std::string& type_name,
+            TypeSupport& type_support);
 
     void check_type_info(
             const std::string& topic_name,
             const std::string& type_name);
-    
+
     void refresh_types_registered_();
 
     bool is_type_registered_in_participant_(

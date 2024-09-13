@@ -167,11 +167,11 @@ void Participant::create_subscription(
         throw InconsistencyException("Trying to create Data Reader in a non existing topic: " + topic_name);
     }
 
-    DataTypeNameType type_name = discovery_database_->operator[](topic_name).first;
+    DataTypeNameType type_name = discovery_database_->operator [](topic_name).first;
     DynamicType::_ref_type dyn_type;
 
     // Check if type is already registered
-    if (discovery_database_->operator[](topic_name).second == false)
+    if (discovery_database_->operator [](topic_name).second == false)
     {
         WARNING("Type " << topic_name << " has not been registered yet");
         throw InconsistencyException("Trying to create Data Reader in a non registered type: " + topic_name);
@@ -194,12 +194,12 @@ void Participant::create_subscription(
         xtypes::TypeObject type_object;
         if (RETCODE_OK != DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
                     type_id, type_object))
-            {
-                EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting type object for type " << type_name);
-                return;
-            }
+        {
+            EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting type object for type " << type_name);
+            return;
+        }
         dyn_type = DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
-                type_object)->build();
+            type_object)->build();
         TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
         dyn_type_support.register_type(participant_);
     }
@@ -209,7 +209,8 @@ void Participant::create_subscription(
 
         // Type information is available and registered in participant. Create dyn_type for ReaderHandler
         DynamicTypeBuilder::_ref_type dyn_type_builder;
-        ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(type_name, dyn_type_builder);
+        ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(
+            type_name, dyn_type_builder);
 
         if (RETCODE_OK != ret)
         {
@@ -218,14 +219,15 @@ void Participant::create_subscription(
         }
         dyn_type = dyn_type_builder->build();
     }
-    
+
     // Create topic
     eprosima::fastdds::dds::Topic* topic = participant_->create_topic(
         topic_name,
         type_name,
         default_topic_qos_());
-    
-    if (!topic) {
+
+    if (!topic)
+    {
         EPROSIMA_LOG_ERROR(PARTICIPANT, "Error creating topic " << topic_name);
         return;
     }
@@ -236,10 +238,11 @@ void Participant::create_subscription(
         default_datareader_qos_(),
         this);     // Mask not required
 
-    if (!datareader) {
+    if (!datareader)
+    {
         EPROSIMA_LOG_ERROR(PARTICIPANT, "Error creating datareader for topic " << topic_name);
         return;
-    } 
+    }
     // Create Reader Handler with all this information and add it to readers
     // Create it with specific deleter for reader and topic
     ReaderHandlerReference new_reader(
@@ -280,17 +283,18 @@ void Participant::on_data_writer_discovery(
         DEBUG(
             "DataWriter with guid " << info.guid << " discovered in topic : " <<
                 topic_name << " [ " << type_name << " ]");
-                
-        if (!info.type_information.assigned()) {
+
+        if (!info.type_information.assigned())
+        {
             // __FLAG__
             DEBUG("Type information not assigned for topic " << topic_name);
             /////////////////////////////
             // If type info is not assigned, check if it can be generated through a xml
-            on_topic_discovery_(topic_name, type_name);  
+            on_topic_discovery_(topic_name, type_name);
         }
 
         DataTypeId type_id = info.type_information.type_information.complete().typeid_with_size().type_id();
-        
+
         // Set Topic as discovered. If it is not new nothing happen
         on_topic_discovery_(topic_name, type_name, type_id);
     }
@@ -412,11 +416,12 @@ std::vector<types::DatumLabel> Participant::string_data_series_names() const
 ////////////////////////////////////////////////////
 
 ReturnCode_t Participant::get_type_support_from_xml_(
-    const std::string& type_name,
-    TypeSupport& type_support) 
+        const std::string& type_name,
+        TypeSupport& type_support)
 {
     DynamicTypeBuilder::_ref_type dyn_type_builder;
-    ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(type_name, dyn_type_builder);
+    ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(type_name,
+                    dyn_type_builder);
 
     if (RETCODE_OK != ret)
     {
@@ -436,18 +441,19 @@ void Participant::check_type_info(
 {
     // Check if type info has been loaded manually (though XML file). In this case, register it and update discovery database
     TypeSupport type_support;
-        if(RETCODE_OK != get_type_support_from_xml_(type_name, type_support)) {
-            EPROSIMA_LOG_WARNING(PARTICIPANT, "type information of" << type_name << "is currently not available...");
-            discovery_database_->operator[](topic_name) = {type_name, false};
-            return;
-        }
-        if (!participant_->find_type(type_name))
-        {
-            // Type information is available and not registered in participant. Register it.
-            DEBUG("Type info available. Registering type " << type_name << "in participant");
-            discovery_database_->operator[](topic_name) = {type_name, true};
-            type_support.register_type(participant_);
-        }      
+    if (RETCODE_OK != get_type_support_from_xml_(type_name, type_support))
+    {
+        EPROSIMA_LOG_WARNING(PARTICIPANT, "type information of" << type_name << "is currently not available...");
+        discovery_database_->operator [](topic_name) = {type_name, false};
+        return;
+    }
+    if (!participant_->find_type(type_name))
+    {
+        // Type information is available and not registered in participant. Register it.
+        DEBUG("Type info available. Registering type " << type_name << "in participant");
+        discovery_database_->operator [](topic_name) = {type_name, true};
+        type_support.register_type(participant_);
+    }
 }
 
 void Participant::refresh_types_registered_()
@@ -480,7 +486,6 @@ void Participant::refresh_types_registered_()
         }
     }
 }
-
 
 ////////////////////////////////////////////////////
 // AUXILIAR STATIC METHODS
