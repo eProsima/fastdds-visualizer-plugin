@@ -24,13 +24,17 @@
 
 #include <atomic>
 
-#include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/dds/core/status/StatusMask.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
+#include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicData.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
 #include "FastDdsListener.hpp"
-#include "utils/dynamic_types_utils.hpp"
 #include "utils/DataTypeConfiguration.hpp"
+#include "utils/dynamic_types_utils.hpp"
+#include "utils/types.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -40,8 +44,7 @@ namespace fastdds {
  * @brief TODO
  *
  */
-using namespace eprosima::fastdds::dds;
-struct ReaderHandler : public DataReaderListener
+struct ReaderHandler : public eprosima::fastdds::dds::DataReaderListener
 {
 public:
 
@@ -50,9 +53,9 @@ public:
     ////////////////////////////////////////////////////
 
     ReaderHandler(
-            Topic* topic,
-            DataReader* datareader,
-            DynamicType::_ref_type type,
+            eprosima::fastdds::dds::Topic* topic,
+            eprosima::fastdds::dds::DataReader* datareader,
+            eprosima::fastdds::dds::DynamicType::_ref_type type,
             FastDdsListener* listener,
             const DataTypeConfiguration& data_type_configuration);
 
@@ -77,7 +80,7 @@ public:
     ////////////////////////////////////////////////////
 
     void on_data_available(
-            DataReader* reader) override;
+            eprosima::fastdds::dds::DataReader* reader) override;
 
 
     ////////////////////////////////////////////////////
@@ -97,7 +100,7 @@ public:
     ////////////////////////////////////////////////////
 
     void create_data_structures_(
-            DynamicData::_ref_type data = nullptr);
+            eprosima::fastdds::dds::DynamicData::_ref_type data = nullptr);
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
@@ -111,7 +114,7 @@ public:
      *
      * @return eprosima::fastdds::dds::StatusMask with callbacks needed
      */
-    static StatusMask default_listener_mask_();
+    static eprosima::fastdds::dds::StatusMask default_listener_mask_();
 
 
     ////////////////////////////////////////////////////
@@ -126,16 +129,16 @@ public:
     ////////////////////////////////////////////////////
 
     //! Topic related with this DataReader
-    Topic* topic_;
+    eprosima::fastdds::dds::Topic* topic_;
 
     //! DataReader
-    DataReader* reader_;
+    eprosima::fastdds::dds::DataReader* reader_;
 
     //! Type Informantion
-    DynamicType::_ref_type type_;
+    eprosima::fastdds::dds::DynamicType::_ref_type type_;
 
     //! Data Type element
-    DynamicData::_ref_type data_;
+    eprosima::fastdds::dds::DynamicData::_ref_type data_;
 
     //! Whether it is composed of variable sized types (e.g. sequences)
     bool static_type_;

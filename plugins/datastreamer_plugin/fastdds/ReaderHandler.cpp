@@ -30,6 +30,7 @@ namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
 
+using namespace eprosima::fastdds::dds;
 
 ////////////////////////////////////////////////////
 // CREATION & DESTRUCTION

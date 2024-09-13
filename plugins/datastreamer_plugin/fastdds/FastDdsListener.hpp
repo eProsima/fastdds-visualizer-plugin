@@ -24,8 +24,8 @@
 
 #include <string>
 
-#include "utils/utils.hpp"
 #include "utils/types.hpp"
+#include "utils/utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {

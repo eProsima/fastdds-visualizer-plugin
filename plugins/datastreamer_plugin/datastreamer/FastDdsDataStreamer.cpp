@@ -66,6 +66,7 @@ bool FastDdsDataStreamer::start(
 
     // Execute Dialog
     int dialog_result = select_topics_dialog_.exec();
+
     // Check if Accept has been pressed
     if (dialog_result != QDialog::Accepted)
     {

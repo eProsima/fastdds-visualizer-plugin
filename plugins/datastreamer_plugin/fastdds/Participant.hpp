@@ -47,23 +47,21 @@ namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
 
-using namespace eprosima::fastdds::dds;
-using namespace eprosima::fastdds::rtps;
 class ReaderHandlerDeleter
 {
 public:
 
     ReaderHandlerDeleter(
-            DomainParticipant* participant,
-            Subscriber* subscriber);
+            eprosima::fastdds::dds::DomainParticipant* participant,
+            eprosima::fastdds::dds::Subscriber* subscriber);
 
     void operator ()(
             ReaderHandler* ptr) const;
 
 protected:
 
-    DomainParticipant* participant_;
-    Subscriber* subscriber_;
+    eprosima::fastdds::dds::DomainParticipant* participant_;
+    eprosima::fastdds::dds::Subscriber* subscriber_;
 };
 
 using ReaderHandlerReference = std::unique_ptr<ReaderHandler, ReaderHandlerDeleter>;
@@ -77,7 +75,7 @@ using ReaderHandlerReference = std::unique_ptr<ReaderHandler, ReaderHandlerDelet
  * FUTURE WORK:
  * Use a specific thread to call callbacks instead of using Fast DDS thread
  */
-class Participant : public DomainParticipantListener
+class Participant : public eprosima::fastdds::dds::DomainParticipantListener
 {
 public:
 
@@ -86,7 +84,7 @@ public:
     ////////////////////////////////////////////////////
 
     Participant(
-            DomainId_t domain_id,
+            eprosima::fastdds::dds::DomainId_t domain_id,
             std::shared_ptr<TopicDataBase> discovery_database,
             FastDdsListener* listener);
 
@@ -110,9 +108,9 @@ public:
     ////////////////////////////////////////////////////
 
     void on_data_writer_discovery(
-            DomainParticipant* participant,
-            WriterDiscoveryStatus reason,
-            const PublicationBuiltinTopicData& info,
+            eprosima::fastdds::dds::DomainParticipant* participant,
+            eprosima::fastdds::rtps::WriterDiscoveryStatus reason,
+            const eprosima::fastdds::rtps::PublicationBuiltinTopicData& info,
             bool& should_be_ignored) override;
 
     ////////////////////////////////////////////////////
@@ -144,9 +142,9 @@ protected:
     // AUXILIAR METHODS
     ////////////////////////////////////////////////////
 
-    ReturnCode_t get_type_support_from_xml_(
+    eprosima::fastdds::dds::ReturnCode_t get_type_support_from_xml_(
             const std::string& type_name,
-            TypeSupport& type_support);
+            eprosima::fastdds::dds::TypeSupport& type_support);
 
     void check_type_info(
             const std::string& topic_name,
@@ -161,13 +159,13 @@ protected:
     // AUXILIAR STATIC METHODS
     ////////////////////////////////////////////////////
 
-    static DomainParticipantQos default_participant_qos_();
+    static eprosima::fastdds::dds::DomainParticipantQos default_participant_qos_();
 
-    static SubscriberQos default_subscriber_qos_();
+    static eprosima::fastdds::dds::SubscriberQos default_subscriber_qos_();
 
-    static TopicQos default_topic_qos_();
+    static eprosima::fastdds::dds::TopicQos default_topic_qos_();
 
-    static DataReaderQos default_datareader_qos_();
+    static eprosima::fastdds::dds::DataReaderQos default_datareader_qos_();
 
     /**
      * @brief Get default mask
@@ -179,7 +177,7 @@ protected:
      *
      * @return eprosima::fastdds::dds::StatusMask with callbacks needed
      */
-    static StatusMask default_listener_mask_();
+    static eprosima::fastdds::dds::StatusMask default_listener_mask_();
 
 
     ////////////////////////////////////////////////////
@@ -196,9 +194,9 @@ protected:
     ////////////////////////////////////////////////////
 
     //! Internal DomainParticipant reference
-    DomainParticipant* participant_;
+    eprosima::fastdds::dds::DomainParticipant* participant_;
     //! Internal Subscriber reference (only one for every DataReader)
-    Subscriber* subscriber_;
+    eprosima::fastdds::dds::Subscriber* subscriber_;
 
     /**
      * Collection created in Participant indexed by topic name that contains

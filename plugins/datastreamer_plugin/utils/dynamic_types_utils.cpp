@@ -36,6 +36,8 @@
 namespace eprosima {
 namespace plotjuggler {
 namespace utils {
+using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
 
 std::vector<std::string> get_introspection_type_names(
         const TypeIntrospectionCollection& numeric_type_names)
@@ -113,7 +115,7 @@ void get_introspection_type_names(
                 size = data->get_item_count();
             }
 
-            // Allow this array depending on data type configuration
+            // Allow this array/sequence depending on data type configuration
             if (size >= data_type_configuration.max_array_size)
             {
                 if (data_type_configuration.discard_large_arrays)

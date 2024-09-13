@@ -32,6 +32,9 @@ namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
 
+using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
+
 ////////////////////////////////////////////////////
 // READERHANDLER DELETER
 ////////////////////////////////////////////////////
@@ -57,7 +60,7 @@ void ReaderHandlerDeleter::operator ()(
 
 ////////////////////////////////////////////////////
 // CREATION & DESTRUCTION
-////////////////////////////////////////////////////k
+////////////////////////////////////////////////////
 
 Participant::Participant(
         DomainId_t domain_id,
@@ -205,8 +208,6 @@ void Participant::create_subscription(
     }
     else
     {
-        // TODO (Carlosespicur): Check if it can be done simpler. Can we avoid to create a new dyn type?
-
         // Type information is available and registered in participant. Create dyn_type for ReaderHandler
         DynamicTypeBuilder::_ref_type dyn_type_builder;
         ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(
