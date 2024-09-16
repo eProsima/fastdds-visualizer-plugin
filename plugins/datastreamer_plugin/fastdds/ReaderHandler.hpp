@@ -24,10 +24,9 @@
 
 #include <atomic>
 
-#include <fastdds/dds/core/status/StatusMask.hpp>
 #include <nlohmann/json.hpp>
 
-#include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/dds/core/status/StatusMask.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 #include <fastdds/dds/topic/Topic.hpp>

@@ -31,41 +31,21 @@ namespace eprosima {
 namespace plotjuggler {
 namespace utils {
 
-using SingleDataTypeIntrospectionInfo =
-        std::tuple<
-    types::DatumLabel,
-    std::vector<eprosima::fastdds::dds::MemberId>,           // Member Ids of the parents of the data member
-    std::vector<eprosima::fastdds::dds::TypeKind>,           // Kind of the parents of the data member
-    eprosima::fastdds::dds::TypeKind>;                       // Kind of this member
-
-using TypeIntrospectionCollection =
-        std::vector<SingleDataTypeIntrospectionInfo>;
-
 using TypeIntrospectionNumericStruct = std::vector<types::NumericDatum>;
 using TypeIntrospectionStringStruct = std::vector<types::TextDatum>;
 
 
 /**
- * @brief Get the names of each label in a \c TypeIntrospectionCollection
- * This function is used to obtain all the labels form by topics + data type members
+ * @brief This function is used to obtain all the names of a given collection of numeric/string data.
  *
- * Iterate over every \c SingleDataTypeIntrospectionInfo and get the \c DatumLabel .
+ * Iterate over every member and get name.
  *
  * @param numeric_type_names collection to get all names
  * @return all label names
  */
+template <typename T>
 std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionNumericStruct& numeric_type_names);
-
-/**
-        TODO (Carlosespicur): Add description
-**/
-std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionStringStruct& string_type_names);
-
-/**
-        TODO (Carlosespicur): Add description
-**/
+        const T& type_names_struct);
 
 void get_formatted_data(
         const std::string& base_type_name,
@@ -84,9 +64,9 @@ bool is_kind_boolean(
 bool is_kind_string(
         const nlohmann::json& data);
 
-ReturnCode_t serialize_data (
-    DynamicData::_ref_type data,
-    nlohmann::json& serialized_data);
+eprosima::fastdds::dds::ReturnCode_t serialize_data (
+        eprosima::fastdds::dds::DynamicData::_ref_type data,
+        nlohmann::json& serialized_data);
 
 } /* namespace utils */
 } /* namespace plotjuggler */
