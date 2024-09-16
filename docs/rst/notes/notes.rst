@@ -1,43 +1,43 @@
-.. include:: ../exports/alias.include
-
 .. _release_notes:
 
+.. TODO uncomment when there are forthcoming notes
+.. .. include:: forthcoming_version.rst
+
 ##############
-Version v1.0.0
+Version v2.0.0
 ##############
 
-This is the first release of eProsima |ddsvisualizer|.
+This release includes the following **updates**:
 
-This release includes the *Fast DDS Visualizer Plugin*, a **new Plugin** for the |plotjuggler| application,
-supporting the configuration and visualization of DDS data powered by |fastdds|.
+    * Add support to Fast DDS v3.0.0
+    * Fix a topic persistence bug in Plotjuggler time series
+    * Fix a topic list refresh error when adding types manually using a XML profile
+    * Add support to sequence, map, union, bitmask and bitset data types
 
+This release includes the following **dependencies update**:
 
-This release includes the following **User Interface features**:
+.. list-table::
+    :header-rows: 1
 
-* New |ddsvisualizer| *DataStream* plugin for |plotjuggler|.
-* Dialogs and menus to configure |ddsvisualizer|.
+    *   -
+        - Repository
+        - Old Version
+        - New Version
+    *   - Fast CDR
+        - `eProsima/Fast-CDR <https://github.com/eProsima/Fast-CDR>`_
+        - `v2.2.0 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0>`__
+        - `v2.2.4 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.4>`__
+    *   - Fast DDS
+        - `eProsima/Fast-DDS <https://github.com/eProsima/Fast-DDS>`_
+        - `v2.14.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.0>`__
+        - `v3.0.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v3.0.0>`__
+    *   - Plotjuggler
+        - `facontidavide/PlotJuggler <https://github.com/facontidavide/PlotJuggler>`_
+        - `v3.4.5 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.4.5>`__
+        - `v3.9.1 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.9.1>`__
 
+#################
+Previous versions
+#################
 
-This release includes the following **Configuration features**:
-
-* Select a Domain Id to discover and subscribe to topics.
-* Load XML files with data type descriptions.
-* Array clamp or discard with respect to its size.
-* Select DDS topics whenever the data type is known.
-
-
-This release includes the following **Discover features**:
-
-* Discover every topic in the Domain Id.
-* Automatically discover data types when the external *Domain Participant* is configured as a *Type Lookup Server*.
-
-
-This release includes the following **DDS features**:
-
-* Allow UDP, TCP, SHM and data sharing transport communication.
-* Allow dynamic discovery of new topics and data types.
-
-
-This release includes the following **Documentation features**:
-
-* This same documentation.
+.. include:: previous_versions/v1.0.0.rst
