@@ -31,7 +31,10 @@ This release includes the following **dependencies update**:
         - `eProsima/Fast-DDS <https://github.com/eProsima/Fast-DDS>`_
         - `v2.14.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.0>`__
         - `v3.0.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v3.0.0>`__
-
+    *   - Plotjuggler
+        - `facontidavide/PlotJuggler <https://github.com/facontidavide/PlotJuggler>`_
+        - `-`
+        - `v3.9.1 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.9.1>`__
 
 #################
 Previous versions

@@ -1,8 +1,8 @@
 .. include:: /rst/exports/alias.include
 
-##############
+==============
 Version v1.0.0
-##############
+==============
 
 This is the first release of eProsima |ddsvisualizer|.
 
