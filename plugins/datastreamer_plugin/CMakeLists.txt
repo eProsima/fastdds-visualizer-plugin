@@ -146,6 +146,7 @@ target_link_libraries(
         ${QT_LINK_LIBRARIES}
         ${plotjuggler_LIBRARIES}
         fastdds
+        fastcdr
     )
 
 
