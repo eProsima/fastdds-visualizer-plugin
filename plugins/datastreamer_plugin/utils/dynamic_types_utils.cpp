@@ -19,11 +19,11 @@
  * @file dynamic_types_utils.cpp
  */
 
-#include <sstream>
-#include <iostream>
-#include <random>
-#include <limits>
 #include <algorithm>
+#include <iostream>
+#include <limits>
+#include <random>
+#include <sstream>
 
 #include <nlohmann/json.hpp>
 
@@ -35,8 +35,8 @@
 #include <fastdds/dds/xtypes/utils.hpp>
 
 #include "dynamic_types_utils.hpp"
-#include "utils.hpp"
 #include "Exception.hpp"
+#include "utils.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -44,22 +44,17 @@ namespace utils {
 using namespace eprosima::fastdds::dds;
 using namespace eprosima::fastdds::rtps;
 
-std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionNumericStruct& numeric_type_names)
-{
-    std::vector<std::string> type_names;
-    for (const auto& type_name : numeric_type_names)
-    {
-        type_names.push_back(type_name.first);
-    }
-    return type_names;
-}
+template std::vector<std::string> get_introspection_type_names<TypeIntrospectionNumericStruct>(
+        const TypeIntrospectionNumericStruct& type_names_struct);
+template std::vector<std::string> get_introspection_type_names<TypeIntrospectionStringStruct>(
+        const TypeIntrospectionStringStruct& type_names_struct);
 
+template <typename T>
 std::vector<std::string> get_introspection_type_names(
-        const TypeIntrospectionStringStruct& string_type_names)
+        const T& type_names_struct)
 {
     std::vector<std::string> type_names;
-    for (const auto& type_name : string_type_names)
+    for (const auto& type_name : type_names_struct)
     {
         type_names.push_back(type_name.first);
     }
@@ -80,7 +75,7 @@ void get_formatted_data(
         numeric_data.push_back({base_type_name, data.get<double>()});
         return;
     }
-    else if(is_kind_boolean(data))
+    else if (is_kind_boolean(data))
     {
         bool value = data.get<bool>();
         numeric_data.push_back({base_type_name, static_cast<double>(value)});
@@ -168,8 +163,8 @@ bool is_kind_string(
 }
 
 ReturnCode_t serialize_data (
-    DynamicData::_ref_type data,
-    nlohmann::json& serialized_data)
+        DynamicData::_ref_type data,
+        nlohmann::json& serialized_data)
 {
     std::stringstream serializer_output;
     ReturnCode_t retcode;

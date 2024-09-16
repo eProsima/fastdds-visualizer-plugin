@@ -52,7 +52,7 @@ ReaderHandler::ReaderHandler(
 {
     // Create data so it is not required to create it each time and avoid reallocation if possible
     data_ = DynamicDataFactory::get_instance()->create_data(type_);
-    
+
     // Set this object as this reader's listener
     reader_->set_listener(this);
 }
