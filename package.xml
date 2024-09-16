@@ -22,7 +22,7 @@
 
     <!-- Fast DDS dependencies -->
     <depend>fastcdr</depend>
-    <depend>fastrtps</depend>
+    <depend>fastdds</depend>
 
     <!-- Plotjuggler -->
     <depend>plotjuggler</depend>

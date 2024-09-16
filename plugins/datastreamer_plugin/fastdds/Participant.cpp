@@ -20,10 +20,9 @@
  */
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastrtps/xmlparser/XMLProfileManager.h>
-#include <fastrtps/types/DynamicDataHelper.hpp>
-#include <fastrtps/types/DynamicDataFactory.h>
-#include <fastrtps/types/TypeObjectFactory.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicDataFactory.hpp>
+#include <fastdds/dds/xtypes/type_representation/ITypeObjectRegistry.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 
 #include "Participant.hpp"
 #include "utils/utils.hpp"
@@ -33,13 +32,16 @@ namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
 
+using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
+
 ////////////////////////////////////////////////////
 // READERHANDLER DELETER
 ////////////////////////////////////////////////////
 
 ReaderHandlerDeleter::ReaderHandlerDeleter(
-        eprosima::fastdds::dds::DomainParticipant* participant,
-        eprosima::fastdds::dds::Subscriber* subscriber)
+        DomainParticipant* participant,
+        Subscriber* subscriber)
     : participant_(participant)
     , subscriber_(subscriber)
 {
@@ -61,7 +63,7 @@ void ReaderHandlerDeleter::operator ()(
 ////////////////////////////////////////////////////
 
 Participant::Participant(
-        eprosima::fastdds::dds::DomainId_t domain_id,
+        DomainId_t domain_id,
         std::shared_ptr<TopicDataBase> discovery_database,
         FastDdsListener* listener)
     : listener_(listener)
@@ -70,7 +72,7 @@ Participant::Participant(
     // TODO check entities are created correctly
 
     // Create Domain Participant
-    participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+    participant_ = DomainParticipantFactory::get_instance()->create_participant(
         domain_id,
         default_participant_qos_(),
         this,
@@ -90,7 +92,7 @@ Participant::Participant(
     if (!subscriber_)
     {
         // Delete participant
-        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
+        DomainParticipantFactory::get_instance()->delete_participant(participant_);
         participant_ = nullptr;
 
         throw InitializationException("Error creating Subscriber");
@@ -132,9 +134,7 @@ Participant::~Participant()
 bool Participant::register_type_from_xml(
         const std::string& xml_path)
 {
-    eprosima::fastrtps::xmlparser::XMLP_ret ret =
-            eprosima::fastrtps::xmlparser::XMLProfileManager::loadXMLFile(xml_path);
-    if (eprosima::fastrtps::xmlparser::XMLP_ret::XML_OK != ret)
+    if (RETCODE_OK != DomainParticipantFactory::get_instance()->load_XML_profiles_file(xml_path))
     {
         WARNING("Error loading XML file: " << xml_path);
         throw IncorrectParamException("Failed reading XML file: " + xml_path);
@@ -155,7 +155,6 @@ void Participant::create_subscription(
 {
     // TODO: check if mutex required
     DEBUG("Creating subscription for topic: " << topic_name);
-
     // Check datareader does not exist yet
     if (readers_.find(topic_name) != readers_.end())
     {
@@ -167,12 +166,60 @@ void Participant::create_subscription(
     auto topic_type = discovery_database_->find(topic_name);
     if (topic_type == discovery_database_->end())
     {
-        WARNING("Topic " << topic_name << " has not been discovered not exist, so type unknowon");
+        WARNING("Topic " << topic_name << " has not been discovered not exist, so type unknown");
         throw InconsistencyException("Trying to create Data Reader in a non existing topic: " + topic_name);
     }
 
-    // Get TypeName associated with topic name
-    std::string type_name = discovery_database_->operator [](topic_name).first;
+    DataTypeNameType type_name = discovery_database_->operator [](topic_name).first;
+    DynamicType::_ref_type dyn_type;
+
+    // Check if type is already registered
+    if (discovery_database_->operator [](topic_name).second == false)
+    {
+        WARNING("Type " << topic_name << " has not been registered yet");
+        throw InconsistencyException("Trying to create Data Reader in a non registered type: " + topic_name);
+    }
+
+    // Check if type is registered or not in participant. If not, register it
+    if (!participant_->find_type(type_name))
+    {
+        // __FLAG__
+        DEBUG("Type info not registered in participant for topic " << topic_name);
+        //////////////////////////
+
+        // Type information is available but not registered in participant
+        // Types manually loaded (through XML file) are registered in participant when loaded, so this case is not possible
+        // The only case is that the type info has been discovered automatically and the type Id has been saved in dyn_types_info_
+        // Get TypeName and DataTypeId associated with topic name
+        DataTypeId type_id = dyn_types_info_->operator [](topic_name).second;
+
+        // Get Dyn Type and register discovered type
+        xtypes::TypeObject type_object;
+        if (RETCODE_OK != DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                    type_id, type_object))
+        {
+            EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting type object for type " << type_name);
+            return;
+        }
+        dyn_type = DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+            type_object)->build();
+        TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
+        dyn_type_support.register_type(participant_);
+    }
+    else
+    {
+        // Type information is available and registered in participant. Create dyn_type for ReaderHandler
+        DynamicTypeBuilder::_ref_type dyn_type_builder;
+        ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(
+            type_name, dyn_type_builder);
+
+        if (RETCODE_OK != ret)
+        {
+            EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting DynamicTypeBuilder from XML");
+            return;
+        }
+        dyn_type = dyn_type_builder->build();
+    }
 
     // Create topic
     eprosima::fastdds::dds::Topic* topic = participant_->create_topic(
@@ -180,16 +227,23 @@ void Participant::create_subscription(
         type_name,
         default_topic_qos_());
 
+    if (!topic)
+    {
+        EPROSIMA_LOG_ERROR(PARTICIPANT, "Error creating topic " << topic_name);
+        return;
+    }
+
     // Create datareader
     eprosima::fastdds::dds::DataReader* datareader = subscriber_->create_datareader(
         topic,
         default_datareader_qos_(),
         this);     // Mask not required
 
-    // Get Dyn Type for type
-    // This could not fail, as we know type is registered
-    eprosima::fastrtps::types::DynamicType_ptr dyn_type = get_type_registered_(type_name);
-
+    if (!datareader)
+    {
+        EPROSIMA_LOG_ERROR(PARTICIPANT, "Error creating datareader for topic " << topic_name);
+        return;
+    }
     // Create Reader Handler with all this information and add it to readers
     // Create it with specific deleter for reader and topic
     ReaderHandlerReference new_reader(
@@ -213,86 +267,38 @@ void Participant::create_subscription(
 // LISTENER METHODS [ PARTICIPANT ]
 ////////////////////////////////////////////////////
 
-void Participant::on_publisher_discovery(
-        eprosima::fastdds::dds::DomainParticipant* participant,
-        fastrtps::rtps::WriterDiscoveryInfo&& info)
+void Participant::on_data_writer_discovery(
+        DomainParticipant* participant,
+        WriterDiscoveryStatus reason,
+        const PublicationBuiltinTopicData& info,
+        bool& should_be_ignored)
 {
+    should_be_ignored = false;
+
     // Only set as new topic discovered if it is ALIVE
-    if (info.status == eprosima::fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
+    if (reason == WriterDiscoveryStatus::DISCOVERED_WRITER)
     {
         // Get Topic of DataWriter discovered and set it as discovered
-        std::string topic_name = info.info.topicName().to_string();
-        std::string type_name = info.info.typeName().to_string();
-
+        std::string topic_name = info.topic_name.to_string();
+        std::string type_name = info.type_name.to_string();
         DEBUG(
-            "DataWriter with guid " << info.info.guid() << " discovered in topic : " <<
+            "DataWriter with guid " << info.guid << " discovered in topic : " <<
                 topic_name << " [ " << type_name << " ]");
 
-        // Set Topic as discovered. If it is not new nothing happen
-        on_topic_discovery_(topic_name, type_name);
-    }
-}
-
-void Participant::on_type_information_received(
-        eprosima::fastdds::dds::DomainParticipant*,
-        const fastrtps::string_255 topic_name,
-        const fastrtps::string_255 type_name,
-        const fastrtps::types::TypeInformation& type_information)
-{
-    DEBUG("Type Information received: " << type_name.to_string() << " in topic: " << topic_name.to_string());
-
-    // Prepare callback that will be executed after registering type
-    std::function<void(const std::string&, const eprosima::fastrtps::types::DynamicType_ptr)> callback(
-        [this, topic_name]
-            (const std::string&, const eprosima::fastrtps::types::DynamicType_ptr type)
+        if (!info.type_information.assigned())
         {
-            DEBUG(
-                "Type discovered by lookup info: " << type->get_name() << " in topic: " << topic_name.to_string());
-            this->on_topic_discovery_(topic_name.to_string(), type->get_name());
-        });
+            // __FLAG__
+            DEBUG("Type information not assigned for topic " << topic_name);
+            /////////////////////////////
+            // If type info is not assigned, check if it can be generated through a xml
+            on_topic_discovery_(topic_name, type_name);
+        }
 
-    // Registering type and creating reader
-    participant_->register_remote_type(
-        type_information,
-        type_name.to_string(),
-        callback);
-}
+        DataTypeId type_id = info.type_information.type_information.complete().typeid_with_size().type_id();
 
-void Participant::on_type_discovery(
-        eprosima::fastdds::dds::DomainParticipant* participant,
-        const fastrtps::rtps::SampleIdentity& request_sample_id,
-        const fastrtps::string_255& topic,
-        const fastrtps::types::TypeIdentifier* identifier,
-        const fastrtps::types::TypeObject* object,
-        fastrtps::types::DynamicType_ptr dyn_type)
-{
-    // TOOD study this
-    // In case of complex data types, registering here means that the data type will be incorrectly registered
-    // because the internal data will be received and registered faster than lookup service, which produces an error
-    // when registering type:
-    //  logError(PARTICIPANT, "Another type with the same name Struct_TypeIntrospectionExample is already registered.");
-    // WORKAROUND: only use TypeLookup service to get Type Information and forget about the TypeObject
-    // For the future: it seems like the error appears when registering the type from here because this callback is
-    // erroneous, so it can be checked wether this type has already been registered. Be careful because it should
-    // not only check it has been registered but it has been discovered by the Service, that may be in process of
-    // registering when this callback arrives
-
-    // if (!dyn_type)
-    // {
-    //     // Fast DDS may call this callback with a nullptr in dyn_type because of reasons. Avoid break.
-    //     WARNING("on_type_discovery callback called with nullptr dyn type");
-    //     return;
-    // }
-
-    // DEBUG("TypeObject discovered: " << dyn_type->get_name() << " for topic: " << topic.to_string());
-
-    // Create TypeSupport and register it
-    // eprosima::fastdds::dds::TypeSupport(
-    //     new eprosima::fastrtps::types::DynamicPubSubType(dyn_type)).register_type(participant_);
-
-    // // In case this callback is sent, it means that the type is already registered, so notify
-    // // TODO in future it would be better to update every topic in this type name, and not just the one calling here
-    // on_topic_discovery_(topic.to_string(), dyn_type->get_name());
+        // Set Topic as discovered. If it is not new nothing happen
+        on_topic_discovery_(topic_name, type_name, type_id);
+    }
 }
 
 ////////////////////////////////////////////////////
@@ -303,10 +309,6 @@ void Participant::on_topic_discovery_(
         const std::string& topic_name,
         const std::string& type_name)
 {
-    // TODO: check if mutex required
-
-    // Check if type is registered in Participant
-    bool is_registered = is_type_registered_in_participant_(type_name);
     bool is_already_discovered = false;
 
     // Check if this topic has already been discovered
@@ -315,26 +317,64 @@ void Participant::on_topic_discovery_(
     {
         is_already_discovered = true;
 
-        // If the topic is already discovered, check the registered type
-        if (it->second.second)
-        {
-            // The topic had already been discovered and registered, so not sending callback twice
-            DEBUG(
-                "Topic " << topic_name << " has already been discovered");
-            return;
-        }
+        // The topic had already been discovered, so not sending callback twice
+        DEBUG(
+            "Topic " << topic_name << " has already been discovered");
+        return;
+    }
+    if (!is_already_discovered)
+    {
+        // Topic discovered without type information. Check if type information is available through xml and register it
+        check_type_info(topic_name, type_name);
+    }
+    // Call listener callback to notify new topic
+    if (listener_)
+    {
+        listener_->on_topic_discovery(topic_name, type_name);
+    }
+}
+
+void Participant::on_topic_discovery_(
+        const std::string& topic_name,
+        const std::string& type_name,
+        const DataTypeId& type_id)
+{
+    // TODO: check if mutex required
+    // __FLAG__
+    DEBUG("Calling on_topic_discovery with type id for topic " << topic_name);
+    /////////////////
+    bool is_already_discovered = false;
+
+    // Check if this topic has already been discovered
+    auto it = discovery_database_->find(topic_name);
+    if (it != discovery_database_->end())
+    {
+        is_already_discovered = true;
+
+        // The topic had already been discovered, so not sending callback twice
+        DEBUG(
+            "Topic " << topic_name << " has already been discovered");
+        return;
     }
 
     if (!is_already_discovered)
     {
-        // Add topic as discovered
-        discovery_database_->operator [](topic_name) = {type_name, is_registered};
+        // Add topic as discovered and save its type name and its type identifier to build DynamicType when DataReader is created
+        // __FLAG__
+        DEBUG("Topic " << topic_name << " discovered with type id");
+        DEBUG("Updating databases...");
+        DEBUG("...Updating discovery database...");
+        discovery_database_->operator [](topic_name) = {type_name, true};
+        DEBUG("...Updating dynamic types info database...");
+        dyn_types_info_->operator [](topic_name) = {type_name, type_id};
+        DEBUG("...Databases updated");
+        /////////////////////////////////////////////
     }
 
     // Call listener callback to notify new topic
     if (listener_)
     {
-        listener_->on_topic_discovery(topic_name, type_name, is_registered);
+        listener_->on_topic_discovery(topic_name, type_name);
     }
 }
 
@@ -376,115 +416,75 @@ std::vector<types::DatumLabel> Participant::string_data_series_names() const
 // AUXILIAR METHODS
 ////////////////////////////////////////////////////
 
+ReturnCode_t Participant::get_type_support_from_xml_(
+        const std::string& type_name,
+        TypeSupport& type_support)
+{
+    DynamicTypeBuilder::_ref_type dyn_type_builder;
+    ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(type_name,
+                    dyn_type_builder);
+
+    if (RETCODE_OK != ret)
+    {
+        EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting DynamicTypeBuilder from XML");
+        return ret;
+    }
+    // TODO (Carlosespicur): Check if it can be done simpler
+    DynamicType::_ref_type dyn_type = dyn_type_builder->build();
+    TypeSupport dyn_type_type_support(new DynamicPubSubType(dyn_type));
+    type_support = dyn_type_type_support;
+    return RETCODE_OK;
+}
+
+void Participant::check_type_info(
+        const std::string& topic_name,
+        const std::string& type_name)
+{
+    // Check if type info has been loaded manually (though XML file). In this case, register it and update discovery database
+    TypeSupport type_support;
+    if (RETCODE_OK != get_type_support_from_xml_(type_name, type_support))
+    {
+        EPROSIMA_LOG_WARNING(PARTICIPANT, "type information of" << type_name << "is currently not available...");
+        discovery_database_->operator [](topic_name) = {type_name, false};
+        return;
+    }
+    if (!participant_->find_type(type_name))
+    {
+        // Type information is available and not registered in participant. Register it.
+        DEBUG("Type info available. Registering type " << type_name << "in participant");
+        discovery_database_->operator [](topic_name) = {type_name, true};
+        type_support.register_type(participant_);
+    }
+}
+
 void Participant::refresh_types_registered_()
 {
-    // Loop over every Topic discovered and check if type is registered
-    // In case it is not, it may happen that the type is registered now, so check in participant and
+    // Loop over every Topic discovered and check if type info is available
+    // In case it is not, it may happen that the type info has been loaded manually (through XML profile) and registered in participant, so check in participant and
     // modify it if necessary
     for (auto const& [topic_name, topic_data_type_info] : *discovery_database_)
     {
-        // Check if type is registered in database
-        if (std::get<DataTypeRegistered>(topic_data_type_info))
+        // Check if type info of a discovered type is currently available
+        if (std::get<TypeInfoAvailable>(topic_data_type_info))
         {
-            // Type is registered, so nothing to do
+            // Type info set as available. Two possibilities:
+            // 1. Type info has been loaded manually (through XML profile) and registered in participant
+            // 2. Type info has been discovered automatically. Type Id already saved in dyn_types_info_
+            // Nothing to do in both cases
             continue;
         }
         else
         {
-            // If already registered, add it to database and notify listener by own topic discovery callback
-            if (is_type_registered_in_participant_(std::get<DataTypeNameType>(topic_data_type_info)))
-            {
-                // NOTE Do not modify the discovery database, as it must be consistent with the data sent in
-                // callbacks and not with the internal data.
-                // Set as discovered, so listener is called
-                on_topic_discovery_(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
-            }
+            // Type info is set as not available. Check if it has been loaded manually and update discovery database in this case
+            check_type_info(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
         }
-    }
-}
 
-bool Participant::is_type_registered_in_participant_(
-        const std::string& type_name)
-{
-    // Check type is registered in Participant
-    if (participant_->find_type(type_name) != nullptr)
-    {
-        return true;
-    }
-
-    // It may happen that type is registered in XML and not in Participant
-    // If so, register it in Participant
-    if (is_type_registered_in_xml_(type_name))
-    {
-        // Create TypeSupport and register it
-        eprosima::fastdds::dds::TypeSupport(
-            new eprosima::fastrtps::types::DynamicPubSubType(
-                get_type_registered_(type_name))).register_type(participant_);
-        return true;
-    }
-
-    // It could also be in TypeObjectFactory because it has been registered by other Participant (a previous one)
-    // and still be stored in the singleton
-    if (is_type_registered_in_factory_(type_name))
-    {
-        // Create TypeSupport and register it
-        eprosima::fastdds::dds::TypeSupport(
-            new eprosima::fastrtps::types::DynamicPubSubType(
-                get_type_registered_(type_name))).register_type(participant_);
-        return true;
-    }
-
-    return false;
-}
-
-bool Participant::is_type_registered_in_xml_(
-        const std::string& type_name)
-{
-    return nullptr != eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name);
-}
-
-bool Participant::is_type_registered_in_factory_(
-        const std::string& type_name)
-{
-    return nullptr !=  eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name, true);
-}
-
-eprosima::fastrtps::types::DynamicType_ptr Participant::get_type_registered_(
-        const std::string& type_name)
-{
-    // Get DynamicType builder
-    auto builder = eprosima::fastrtps::xmlparser::XMLProfileManager::getDynamicTypeByName(type_name);
-
-    // If not builder associated, the type does not exist
-    if (!builder)
-    {
-        // Check if it could be generated
-        // This case is when it has not been registered by XML
-        auto type_object =
-                eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type_name,
-                        true);
-        if (!type_object)
+        // Call listener callback to notify new topic
+        // NOTE: This is necessary to refresh the list of topics in the UI
+        if (listener_)
         {
-            throw IncorrectParamException("Dynamic type not registered");
+            listener_->on_topic_discovery(topic_name, std::get<DataTypeNameType>(topic_data_type_info));
         }
-
-        auto type_id =
-                eprosima::fastrtps::types::TypeObjectFactory::get_instance()->get_type_identifier(type_name,
-                        true);
-        if (!type_id)
-        {
-            throw IncorrectParamException("Dynamic type not registered");
-        }
-
-        auto dyn_type = eprosima::fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(type_name,
-                        type_id,
-                        type_object);
-
-        return dyn_type;
-    }
-    else
-    {
-        return builder->build();
     }
 }
 
@@ -500,9 +500,9 @@ eprosima::fastdds::dds::DomainParticipantQos Participant::default_participant_qo
     // Set Generic Name
     qos.name("PlotJuggler_FastDDSPlugin_Participant");
 
-    // Set to be used as a client type lookup
-    qos.wire_protocol().builtin.typelookup_config.use_client = true;
-
+    // Set Metadata
+    qos.properties().properties().emplace_back("fastdds.application.id", "FASTDDS_VISUALIZER", true);
+    qos.properties().properties().emplace_back("fastdds.application.metadata", "", true);
     return qos;
 }
 

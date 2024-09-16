@@ -31,9 +31,13 @@
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
-#include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 #include <fastdds/dds/subscriber/qos/SubscriberQos.hpp>
+#include <fastdds/dds/subscriber/Subscriber.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
 
 #include "FastDdsListener.hpp"
 #include "ReaderHandler.hpp"
@@ -103,24 +107,11 @@ public:
     // LISTENER [ DOMAIN PARTICIPANT ] METHODS
     ////////////////////////////////////////////////////
 
-    void on_publisher_discovery(
+    void on_data_writer_discovery(
             eprosima::fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
-
-    void on_type_information_received(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const fastrtps::string_255 topic_name,
-            const fastrtps::string_255 type_name,
-            const fastrtps::types::TypeInformation& type_information) override;
-
-    void on_type_discovery(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const fastrtps::rtps::SampleIdentity& request_sample_id,
-            const fastrtps::string_255& topic,
-            const fastrtps::types::TypeIdentifier* identifier,
-            const fastrtps::types::TypeObject* object,
-            fastrtps::types::DynamicType_ptr dyn_type) override;
-
+            eprosima::fastdds::rtps::WriterDiscoveryStatus reason,
+            const eprosima::fastdds::rtps::PublicationBuiltinTopicData& info,
+            bool& should_be_ignored) override;
 
     ////////////////////////////////////////////////////
     // RETRIEVE INFORMATION METHODS
@@ -136,29 +127,33 @@ protected:
     // EXTERNAL EVENT METHODS
     ////////////////////////////////////////////////////
 
+    // This method is called when a new topic is discovered and type information is not available
     void on_topic_discovery_(
             const std::string& topic_name,
             const std::string& type_name);
 
+    // This method is called when a new topic is discovered and type information is available
+    void on_topic_discovery_(
+            const std::string& topic_name,
+            const std::string& type_name,
+            const DataTypeId& type_id);
 
     ////////////////////////////////////////////////////
     // AUXILIAR METHODS
     ////////////////////////////////////////////////////
 
+    eprosima::fastdds::dds::ReturnCode_t get_type_support_from_xml_(
+            const std::string& type_name,
+            eprosima::fastdds::dds::TypeSupport& type_support);
+
+    void check_type_info(
+            const std::string& topic_name,
+            const std::string& type_name);
+
     void refresh_types_registered_();
 
     bool is_type_registered_in_participant_(
             const std::string& type_name);
-
-    bool is_type_registered_in_xml_(
-            const std::string& type_name);
-
-    bool is_type_registered_in_factory_(
-            const std::string& type_name);
-
-    eprosima::fastrtps::types::DynamicType_ptr get_type_registered_(
-            const std::string& type_name);
-
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
@@ -190,7 +185,7 @@ protected:
     ////////////////////////////////////////////////////
 
     std::shared_ptr<TopicDataBase> discovery_database_;
-
+    std::shared_ptr<TopicIds> dyn_types_info_ = std::make_shared<TopicIds>();
     FastDdsListener* listener_;
 
 

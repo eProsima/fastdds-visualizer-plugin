@@ -25,6 +25,8 @@
 #include <unordered_map>
 #include <tuple>
 
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+
 namespace eprosima {
 namespace plotjuggler {
 namespace fastdds {
@@ -35,9 +37,12 @@ namespace fastdds {
  */
 using TopicName = std::string;
 using DataTypeNameType = std::string;
-using DataTypeRegistered = bool;
-using DataTypeInfo = std::pair<DataTypeNameType, DataTypeRegistered>;
-using TopicDataBase = std::unordered_map<TopicName, DataTypeInfo>;
+using DataTypeId = eprosima::fastdds::dds::xtypes::TypeIdentifier;
+using TypeInfoAvailable = bool;
+using DataTypeRegistryInfo = std::pair<DataTypeNameType, TypeInfoAvailable>;
+using DataTypeIdInfo = std::pair<DataTypeNameType, DataTypeId>;
+using TopicDataBase = std::unordered_map<TopicName, DataTypeRegistryInfo>;
+using TopicIds = std::unordered_map<TopicName, DataTypeIdInfo>;
 
 } /* namespace fastdds */
 } /* namespace plotjuggler */

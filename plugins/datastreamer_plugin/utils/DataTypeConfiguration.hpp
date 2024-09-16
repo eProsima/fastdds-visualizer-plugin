@@ -45,7 +45,6 @@ struct DataTypeConfiguration
     bool discard_large_arrays = false;
 };
 
-
 } /* namespace plotjuggler */
 } /* namespace eprosima */
 

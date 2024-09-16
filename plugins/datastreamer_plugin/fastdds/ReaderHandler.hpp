@@ -24,13 +24,17 @@
 
 #include <atomic>
 
-#include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/dds/core/status/StatusMask.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
+#include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicData.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
 #include "FastDdsListener.hpp"
-#include "utils/dynamic_types_utils.hpp"
 #include "utils/DataTypeConfiguration.hpp"
+#include "utils/dynamic_types_utils.hpp"
+#include "utils/types.hpp"
 
 namespace eprosima {
 namespace plotjuggler {
@@ -51,7 +55,7 @@ public:
     ReaderHandler(
             eprosima::fastdds::dds::Topic* topic,
             eprosima::fastdds::dds::DataReader* datareader,
-            eprosima::fastrtps::types::DynamicType_ptr type,
+            eprosima::fastdds::dds::DynamicType::_ref_type type,
             FastDdsListener* listener,
             const DataTypeConfiguration& data_type_configuration);
 
@@ -91,6 +95,12 @@ public:
 
     std::vector<types::DatumLabel> string_data_series_names() const;
 
+    ////////////////////////////////////////////////////
+    // AUXILIAR METHODS
+    ////////////////////////////////////////////////////
+
+    void create_data_structures_(
+            eprosima::fastdds::dds::DynamicData::_ref_type data = nullptr);
 
     ////////////////////////////////////////////////////
     // AUXILIAR STATIC METHODS
@@ -125,10 +135,13 @@ public:
     eprosima::fastdds::dds::DataReader* reader_;
 
     //! Type Informantion
-    eprosima::fastrtps::types::DynamicType_ptr type_;
+    eprosima::fastdds::dds::DynamicType::_ref_type type_;
 
     //! Data Type element
-    eprosima::fastrtps::types::DynamicData* data_;
+    eprosima::fastdds::dds::DynamicData::_ref_type data_;
+
+    //! Whether it is composed of variable sized types (e.g. sequences)
+    bool static_type_;
 
     std::atomic<bool> stop_;
 
@@ -137,6 +150,8 @@ public:
 
     utils::TypeIntrospectionNumericStruct numeric_data_;
     utils::TypeIntrospectionStringStruct string_data_;
+
+    DataTypeConfiguration data_type_configuration_;
 };
 
 } /* namespace fastdds */

@@ -74,7 +74,7 @@ jobs:
         if: always()
 
       - name: Upload Logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: colcon-logs-ubuntu
           path: log/
@@ -134,13 +134,13 @@ jobs:
         if: always()
 
       - name: Upload documentation
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation HTML
           path: install/fastdds_visualizer_plugin/docs/fastdds_visualizer_plugin_docs/sphinx/html/
 
       - name: Upload Logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: colcon-logs-ubuntu
           path: log/
@@ -294,7 +294,7 @@ jobs:
             ${MODIFIED_FILES}
 
       - name: Upload uncrustify results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: uncrustify_results
           path: uncrustify_results.xml

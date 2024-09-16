@@ -29,7 +29,7 @@ namespace plotjuggler {
 namespace utils {
 
 std::string get_timestamp_string(
-        const fastrtps::rtps::Time_t& timestamp)
+        const fastdds::rtps::Time_t& timestamp)
 {
     std::stringstream ss;
     ss << timestamp;
@@ -37,7 +37,7 @@ std::string get_timestamp_string(
 }
 
 double get_timestamp_seconds_numeric_value(
-        const fastrtps::rtps::Time_t& timestamp)
+        const fastdds::rtps::Time_t& timestamp)
 {
     return (timestamp.seconds() + (timestamp.nanosec() * 1e-9));
 }

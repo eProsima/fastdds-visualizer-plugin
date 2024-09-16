@@ -23,9 +23,11 @@
 #include <random>
 #include <limits>
 
-#include <fastrtps/types/DynamicDataFactory.h>
-#include <fastrtps/types/DynamicTypeMember.h>
-#include <fastrtps/types/TypeDescriptor.h>
+#include <fastdds/dds/log/Log.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicDataFactory.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeMember.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/TypeDescriptor.hpp>
 
 #include "dynamic_types_utils.hpp"
 #include "utils.hpp"
@@ -34,8 +36,8 @@
 namespace eprosima {
 namespace plotjuggler {
 namespace utils {
-
-using namespace eprosima::fastrtps::types;
+using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
 
 std::vector<std::string> get_introspection_type_names(
         const TypeIntrospectionCollection& numeric_type_names)
@@ -50,10 +52,11 @@ std::vector<std::string> get_introspection_type_names(
 
 void get_introspection_type_names(
         const std::string& base_type_name,
-        const DynamicType_ptr& type,
+        const fastdds::dds::DynamicType::_ref_type& type,
         const DataTypeConfiguration& data_type_configuration,
         TypeIntrospectionCollection& numeric_type_names,
         TypeIntrospectionCollection& string_type_names,
+        DynamicData::_ref_type data /* = nullptr */,
         const std::vector<MemberId>& current_members_tree /* = {} */,
         const std::vector<TypeKind>& current_kinds_tree /* = {} */,
         const std::string& separator /* = "/" */)
@@ -65,81 +68,105 @@ void get_introspection_type_names(
 
     switch (kind)
     {
-        case fastrtps::types::TK_BOOLEAN:
-        case fastrtps::types::TK_BYTE:
-        case fastrtps::types::TK_INT16:
-        case fastrtps::types::TK_INT32:
-        case fastrtps::types::TK_INT64:
-        case fastrtps::types::TK_UINT16:
-        case fastrtps::types::TK_UINT32:
-        case fastrtps::types::TK_UINT64:
-        case fastrtps::types::TK_FLOAT32:
-        case fastrtps::types::TK_FLOAT64:
-        case fastrtps::types::TK_FLOAT128:
+        case TK_BOOLEAN:
+        case TK_BYTE:
+        case TK_INT8:
+        case TK_INT16:
+        case TK_INT32:
+        case TK_INT64:
+        case TK_UINT8:
+        case TK_UINT16:
+        case TK_UINT32:
+        case TK_UINT64:
+        case TK_FLOAT32:
+        case TK_FLOAT64:
+        case TK_FLOAT128:
             // Add numeric value
             numeric_type_names.push_back(
                 {base_type_name, current_members_tree, current_kinds_tree, kind});
             break;
 
-        case fastrtps::types::TK_CHAR8:
-        case fastrtps::types::TK_CHAR16:
-        case fastrtps::types::TK_STRING8:
-        case fastrtps::types::TK_STRING16:
-        case fastrtps::types::TK_ENUM:
+        case TK_CHAR8:
+        case TK_CHAR16:
+        case TK_STRING8:
+        case TK_STRING16:
+        case TK_ALIAS:
+        case TK_ENUM:
             string_type_names.push_back(
                 {base_type_name, current_members_tree, current_kinds_tree, kind});
             break;
 
-        case fastrtps::types::TK_ARRAY:
+        case TK_ARRAY:
+        case TK_SEQUENCE:
         {
-            DynamicType_ptr internal_type = array_internal_kind(type);
-            unsigned int this_array_size = array_size(type);
+            // Get the DynamicType of the elements in the array/sequence
+            DynamicType::_ref_type internal_type = type_internal_kind(type);
+            std::string kind_str;
+            unsigned int size;
+            if (kind == TK_ARRAY)
+            {
+                kind_str = "array";
+                size = array_size(type);
+            }
+            else if (kind == TK_SEQUENCE)
+            {
+                kind_str = "sequence";
+                assert(data != nullptr);
+                size = data->get_item_count();
+            }
 
-            // Allow this array depending on data type configuration
-            if (this_array_size >= data_type_configuration.max_array_size)
+            // Allow this array/sequence depending on data type configuration
+            if (size >= data_type_configuration.max_array_size)
             {
                 if (data_type_configuration.discard_large_arrays)
                 {
-                    // Discard array
-                    DEBUG("Discarding array " << base_type_name << " of size " << this_array_size);
+                    // Discard array/sequence
+                    DEBUG("Discarding " << kind_str << " " << base_type_name << " of size " << size);
                     break;
                 }
                 else
                 {
-                    // Truncate array
+                    // Truncate array/sequence
                     DEBUG(
-                        "Truncating array " << base_type_name <<
-                            " of size " << this_array_size <<
+                        "Truncating " << kind_str << " " << base_type_name <<
+                            " of size " << size <<
                             " to size " << data_type_configuration.max_array_size);
-                    this_array_size = data_type_configuration.max_array_size;
+                    size = data_type_configuration.max_array_size;
                 }
                 // Could not be neither of them, it would be an inconsistency
             }
 
-            for (MemberId member_id = 0; member_id < this_array_size; member_id++)
+            for (MemberId member_id = 0; member_id < size; member_id++)
             {
                 std::vector<MemberId> new_members_tree(current_members_tree);
                 new_members_tree.push_back(member_id);
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
-
+                DynamicData::_ref_type member_data = data &&
+                        is_type_complex(internal_type) ? data->loan_value(member_id) : nullptr;
                 get_introspection_type_names(
                     base_type_name + "[" + std::to_string(member_id) + "]",
                     internal_type,
                     data_type_configuration,
                     numeric_type_names,
                     string_type_names,
+                    member_data,
                     new_members_tree,
                     new_kinds_tree,
                     separator);
+
+                if (member_data)
+                {
+                    data->return_loaned_value(member_data);
+                }
             }
             break;
         }
 
-        case fastrtps::types::TK_STRUCTURE:
+        case TK_STRUCTURE:
         {
             // Using the Dynamic type, retrieve the name of the fields and its descriptions
-            std::map<std::string, DynamicTypeMember*> members_by_name;
+            DynamicTypeMembersByName members_by_name;
             type->get_all_members_by_name(members_by_name);
 
             DEBUG("Size of members " << members_by_name.size());
@@ -152,25 +179,38 @@ void get_introspection_type_names(
                 new_members_tree.push_back(members.second->get_id());
                 std::vector<TypeKind> new_kinds_tree(current_kinds_tree);
                 new_kinds_tree.push_back(kind);
+                traits<eprosima::fastdds::dds::MemberDescriptor>::ref_type member_descriptor {traits<MemberDescriptor>::
+                                                                                              make_shared()};
+
+                if (RETCODE_OK != members.second->get_descriptor(member_descriptor))
+                {
+                    throw std::runtime_error("Error getting descriptor from DynamicTypeMember");
+                }
+                DynamicData::_ref_type member_data = data ? data->loan_value(members.second->get_id()) : nullptr;
 
                 get_introspection_type_names(
-                    base_type_name + separator + members.first,
-                    members.second->get_descriptor()->get_type(),
+                    base_type_name + separator + std::string(members.first),
+                    member_descriptor->type(),
                     data_type_configuration,
                     numeric_type_names,
                     string_type_names,
+                    member_data,
                     new_members_tree,
                     new_kinds_tree,
                     separator);
+
+                if (member_data)
+                {
+                    data->return_loaned_value(member_data);
+                }
             }
             break;
         }
-
-        case fastrtps::types::TK_BITSET:
-        case fastrtps::types::TK_UNION:
-        case fastrtps::types::TK_SEQUENCE:
-        case fastrtps::types::TK_MAP:
-        case fastrtps::types::TK_NONE:
+        // TODO: Add support for currently compatible types
+        case TK_BITSET:
+        case TK_UNION:
+        case TK_MAP:
+        case TK_NONE:
         default:
             WARNING(kind << " DataKind Not supported");
             throw std::runtime_error("Unsupported Dynamic Types kind");
@@ -179,7 +219,7 @@ void get_introspection_type_names(
 
 void get_introspection_numeric_data(
         const TypeIntrospectionCollection& numeric_type_names,
-        DynamicData* data,
+        DynamicData::_ref_type data,
         TypeIntrospectionNumericStruct& numeric_data_result)
 {
     DEBUG("Getting numeric data");
@@ -219,7 +259,7 @@ void get_introspection_numeric_data(
 
 void get_introspection_string_data(
         const TypeIntrospectionCollection& string_type_names,
-        DynamicData* data,
+        DynamicData::_ref_type data,
         TypeIntrospectionStringStruct& string_data_result)
 {
     DEBUG("Getting string data");
@@ -257,8 +297,8 @@ void get_introspection_string_data(
     }
 }
 
-DynamicData* get_parent_data_of_member(
-        DynamicData* data,
+DynamicData::_ref_type get_parent_data_of_member(
+        DynamicData::_ref_type data,
         const std::vector<MemberId>& members_tree,
         const std::vector<TypeKind>& kind_tree,
         unsigned int array_indexes /* = 0 */)
@@ -279,15 +319,19 @@ DynamicData* get_parent_data_of_member(
 
         switch (kind)
         {
-            case fastrtps::types::TK_STRUCTURE:
-            case fastrtps::types::TK_ARRAY:
+            case TK_STRUCTURE:
+            case TK_ARRAY:
+            case TK_SEQUENCE:
             {
                 // Access to the data inside the structure
-                DynamicData* child_data;
+                DynamicData::_ref_type child_data;
                 // Get data pointer to the child_data
                 // The loan and return is a workaround to avoid creating a unecessary copy of the data
                 child_data = data->loan_value(member_id);
-                data->return_loaned_value(child_data);
+                if (RETCODE_OK != data->return_loaned_value(child_data))
+                {
+                    throw std::runtime_error("Error returning loaned value from DynamicData ");
+                }
 
                 return get_parent_data_of_member(
                     child_data,
@@ -307,7 +351,7 @@ DynamicData* get_parent_data_of_member(
 }
 
 double get_numeric_type_from_data(
-        DynamicData* data,
+        DynamicData::_ref_type data,
         const MemberId& member,
         const TypeKind& kind)
 {
@@ -315,38 +359,133 @@ double get_numeric_type_from_data(
 
     switch (kind)
     {
-        case fastrtps::types::TK_BOOLEAN:
-            return static_cast<double>(data->get_bool_value(member));
+        case TK_BOOLEAN:
+            bool boolean_value;
+            if (RETCODE_OK != data->get_boolean_value(boolean_value, member))
+            {
+                throw std::runtime_error("Error getting boolean value from DynamicData");
+            }
+            return static_cast<double>(boolean_value);
 
-        case fastrtps::types::TK_BYTE:
-            return static_cast<double>(data->get_byte_value(member));
+        case TK_BYTE:
+            fastdds::rtps::octet byte_value;
+            if (RETCODE_OK != data->get_byte_value(byte_value, member))
+            {
+                throw std::runtime_error("Error getting byte value from DynamicData");
+            }
+            return static_cast<double>(byte_value);
 
-        case fastrtps::types::TK_INT16:
-            return static_cast<double>(data->get_int16_value(member));
+        case TK_INT8:
+            int8_t int8_value;
+            if (RETCODE_OK != data->get_int8_value(int8_value, member))
+            {
+                throw std::runtime_error("Error getting int8 value from DynamicData");
+            }
+            return static_cast<double>(int8_value);
 
-        case fastrtps::types::TK_INT32:
-            return static_cast<double>(data->get_int32_value(member));
+        case TK_INT16:
+            int16_t int16_value;
+            if (RETCODE_OK != data->get_int16_value(int16_value, member))
+            {
+                throw std::runtime_error("Error getting int16 value from DynamicData");
+            }
+            return static_cast<double>(int16_value);
 
-        case fastrtps::types::TK_INT64:
-            return static_cast<double>(data->get_int64_value(member));
+        case TK_INT32:
+            int32_t int32_value;
+            if (RETCODE_OK != data->get_int32_value(int32_value, member))
+            {
+                throw std::runtime_error("Error getting int32 value from DynamicData");
+            }
 
-        case fastrtps::types::TK_UINT16:
-            return static_cast<double>(data->get_uint16_value(member));
+            return static_cast<double>(int32_value);
 
-        case fastrtps::types::TK_UINT32:
-            return static_cast<double>(data->get_uint32_value(member));
+        case TK_INT64:
+            int64_t int64_value;
+            if (RETCODE_OK != data->get_int64_value(int64_value, member))
+            {
 
-        case fastrtps::types::TK_UINT64:
-            return static_cast<double>(data->get_uint64_value(member));
+                throw std::runtime_error("Error getting int64 value from DynamicData");
 
-        case fastrtps::types::TK_FLOAT32:
-            return static_cast<double>(data->get_float32_value(member));
+            }
 
-        case fastrtps::types::TK_FLOAT64:
-            return static_cast<double>(data->get_float64_value(member));
+            return static_cast<double>(int64_value);
 
-        case fastrtps::types::TK_FLOAT128:
-            return static_cast<double>(data->get_float128_value(member));
+        case TK_UINT8:
+            uint8_t uint8_value;
+            if (RETCODE_OK != data->get_uint8_value(uint8_value, member))
+            {
+
+                throw std::runtime_error("Error getting int8 value from DynamicData");
+
+            }
+
+            return static_cast<double>(uint8_value);
+
+        case TK_UINT16:
+            uint16_t uint16_value;
+            if (RETCODE_OK != data->get_uint16_value(uint16_value, member))
+
+            {
+
+                throw std::runtime_error("Error getting uint16 value from DynamicData");
+
+            }
+
+            return static_cast<double>(uint16_value);
+
+        case TK_UINT32:
+            uint32_t uint32_value;
+            if (RETCODE_OK != data->get_uint32_value(uint32_value, member))
+            {
+
+                throw std::runtime_error("Error getting uint32 value from DynamicData");
+
+            }
+
+            return static_cast<double>(uint32_value);
+
+        case TK_UINT64:
+            uint64_t uint64_value;
+            if (RETCODE_OK != data->get_uint64_value(uint64_value, member))
+            {
+
+                throw std::runtime_error("Error getting uint64 value from DynamicData");
+
+            }
+
+            return static_cast<double>(uint64_value);
+
+        case TK_FLOAT32:
+            float float32_value;
+            if (RETCODE_OK != data->get_float32_value(float32_value, member))
+            {
+
+                throw std::runtime_error("Error getting float32 value from DynamicData");
+
+            }
+            return static_cast<double>(float32_value);
+
+        case TK_FLOAT64:
+            double float64_value;
+            if (RETCODE_OK != data->get_float64_value(float64_value, member))
+            {
+
+                throw std::runtime_error("Error getting float64 value from DynamicData");
+
+            }
+            return float64_value;
+
+        case TK_FLOAT128:
+            long double float128_value;
+            if (RETCODE_OK != data->get_float128_value(float128_value, member))
+            {
+
+                throw std::runtime_error("Error getting float128 value from DynamicData");
+
+            }
+
+            return static_cast<double>(float128_value);
 
         default:
             // The rest of values should not arrive here (are cut before when creating type names)
@@ -355,7 +494,7 @@ double get_numeric_type_from_data(
 }
 
 std::string get_string_type_from_data(
-        DynamicData* data,
+        DynamicData::_ref_type data,
         const MemberId& member,
         const TypeKind& kind)
 {
@@ -363,24 +502,101 @@ std::string get_string_type_from_data(
 
     switch (kind)
     {
-        case fastrtps::types::TK_CHAR8:
-            return to_string(data->get_char8_value(member));
+        case TK_CHAR8:
+        {
+            char char8_value;
+            if (RETCODE_OK != data->get_char8_value(char8_value, member))
+            {
 
-        case fastrtps::types::TK_CHAR16:
-            return to_string(data->get_char16_value(member));
+                throw std::runtime_error("Error getting char8 value from DynamicData");
 
-        case fastrtps::types::TK_STRING8:
-            return data->get_string_value(member);
+            }
+            return to_string(char8_value);
+        }
+        case TK_CHAR16:
+        {
+            wchar_t char16_value;
+            if (RETCODE_OK != data->get_char16_value(char16_value, member))
+            {
 
-        case fastrtps::types::TK_STRING16:
-            return to_string(data->get_wstring_value(member));
+                throw std::runtime_error("Error getting char16 value from DynamicData");
 
-        case fastrtps::types::TK_ENUM:
-            return data->get_enum_value(member);
+            }
 
+            return to_string(char16_value);
+        }
+        case TK_STRING8:
+        {
+            std::string string8_value;
+            if (RETCODE_OK != data->get_string_value(string8_value, member))
+            {
+
+                throw std::runtime_error("Error getting string8 value from DynamicData");
+
+            }
+            return string8_value;
+        }
+        case TK_STRING16:
+        {
+            std::wstring string16_value;
+            if (RETCODE_OK != data->get_wstring_value(string16_value, member))
+            {
+
+                throw std::runtime_error("Error getting string16 value from DynamicData");
+
+            }
+            return to_string(string16_value);
+        }
+        case TK_ENUM:
+        {
+            // Obtain first the numeric value of the enum
+            int32_t enum_value;
+            if (RETCODE_OK != data->get_int32_value(enum_value, member))
+            {
+
+                throw std::runtime_error("Error getting enum value from DynamicData");
+
+            }
+
+            // Get enumeration type to obtain the names of the different values
+            DynamicType::_ref_type enum_type;
+            MemberDescriptor::_ref_type enum_desc{traits<MemberDescriptor>::make_shared()};
+            if (RETCODE_OK != data->get_descriptor(enum_desc, member))
+            {
+                throw std::runtime_error("Error getting enum descriptor from DynamicData");
+            }
+            enum_type = enum_desc->type();
+
+            DynamicTypeMembersByName enum_members;
+            if (RETCODE_OK != enum_type->get_all_members_by_name(enum_members))
+            {
+                throw std::runtime_error("Error getting enum members from DynamicData");
+            }
+            // Get name associated to the numeric enum value previously obtained
+            ObjectName member_name;
+            for (const auto& enum_member : enum_members)
+            {
+                MemberDescriptor::_ref_type enum_member_desc{traits<MemberDescriptor>::make_shared()};
+                if (RETCODE_OK != enum_member.second->get_descriptor(enum_member_desc))
+                {
+                    throw std::runtime_error("Error getting enum member descriptor from DynamicData");
+                }
+                // Check if it is the member we are looking for
+                if (enum_member_desc->default_value() == std::to_string(enum_value))
+                {
+                    member_name = enum_member.first;
+                    assert(member_name == enum_member.second->get_name());
+                    break;
+                }
+            }
+
+            return member_name.to_string();
+        }
         default:
+        {
             // The rest of values should not arrive here (are cut before when creating type names)
             throw InconsistencyException("Member wrongly set as string");
+        }
     }
 }
 
@@ -389,17 +605,19 @@ bool is_kind_numeric(
 {
     switch (kind)
     {
-        case fastrtps::types::TK_BOOLEAN:
-        case fastrtps::types::TK_BYTE:
-        case fastrtps::types::TK_INT16:
-        case fastrtps::types::TK_INT32:
-        case fastrtps::types::TK_INT64:
-        case fastrtps::types::TK_UINT16:
-        case fastrtps::types::TK_UINT32:
-        case fastrtps::types::TK_UINT64:
-        case fastrtps::types::TK_FLOAT32:
-        case fastrtps::types::TK_FLOAT64:
-        case fastrtps::types::TK_FLOAT128:
+        case TK_BOOLEAN:
+        case TK_BYTE:
+        case TK_INT8:
+        case TK_INT16:
+        case TK_INT32:
+        case TK_INT64:
+        case TK_UINT8:
+        case TK_UINT16:
+        case TK_UINT32:
+        case TK_UINT64:
+        case TK_FLOAT32:
+        case TK_FLOAT64:
+        case TK_FLOAT128:
             return true;
 
         default:
@@ -412,11 +630,11 @@ bool is_kind_string(
 {
     switch (kind)
     {
-        case fastrtps::types::TK_CHAR8:
-        case fastrtps::types::TK_CHAR16:
-        case fastrtps::types::TK_STRING8:
-        case fastrtps::types::TK_STRING16:
-        case fastrtps::types::TK_ENUM:
+        case TK_CHAR8:
+        case TK_CHAR16:
+        case TK_STRING8:
+        case TK_STRING16:
+        case TK_ENUM:
             return true;
 
         default:
@@ -424,16 +642,125 @@ bool is_kind_string(
     }
 }
 
-DynamicType_ptr array_internal_kind(
-        const DynamicType_ptr& dyn_type)
+DynamicType::_ref_type type_internal_kind(
+        const DynamicType::_ref_type& dyn_type)
 {
-    return dyn_type->get_descriptor()->get_element_type();
+    TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
+
+    if (RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
+    {
+        throw std::runtime_error(std::string(
+                          "Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
+    }
+
+    return type_descriptor->element_type();
 }
 
-unsigned int array_size(
-        const DynamicType_ptr& dyn_type)
+uint32_t array_size(
+        const DynamicType::_ref_type& dyn_type)
 {
-    return dyn_type->get_descriptor()->get_total_bounds();
+    TypeDescriptor::_ref_type type_descriptor {traits<TypeDescriptor>::make_shared()};
+
+    if (RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
+    {
+        throw std::runtime_error(std::string(
+                          "Error getting descriptor from DynamicType ") + dyn_type->get_name().to_string());
+    }
+
+    // Get array dimension
+    BoundSeq array_bound = type_descriptor->bound();
+
+    // Get array size
+    if (array_bound.size() < 1)
+    {
+        throw std::runtime_error(std::string(
+                          "Error getting array size from DynamicType ") + dyn_type->get_name().to_string());
+    }
+    uint32_t array_size = 1;
+    for (auto bound : array_bound)
+    {
+        array_size *= bound;
+    }
+    return array_size;
+}
+
+bool is_type_static(
+        const DynamicType::_ref_type& dyn_type)
+{
+    // Get type kind and store it as kind tree
+    TypeKind kind = dyn_type->get_kind();
+
+    switch (kind)
+    {
+        case TK_BOOLEAN:
+        case TK_BYTE:
+        case TK_INT16:
+        case TK_INT32:
+        case TK_INT64:
+        case TK_UINT16:
+        case TK_UINT32:
+        case TK_UINT64:
+        case TK_FLOAT32:
+        case TK_FLOAT64:
+        case TK_FLOAT128:
+        case TK_CHAR8:
+        case TK_CHAR16:
+        case TK_STRING8:
+        case TK_STRING16:
+        case TK_ENUM:
+        case TK_BITSET:
+        case TK_BITMASK:
+        case TK_UNION:
+        case TK_ARRAY:
+            return true;
+
+        case TK_SEQUENCE:
+        case TK_MAP:
+            return false;
+
+        case TK_STRUCTURE:
+        {
+            // Using the Dynamic type, retrieve the name of the fields and its descriptions
+            DynamicTypeMembersByName members_by_name;
+            dyn_type->get_all_members_by_name(members_by_name);
+            MemberDescriptor::_ref_type member_descriptor {traits<MemberDescriptor>::make_shared()};
+            bool ret = true;
+            for (const auto& members : members_by_name)
+            {
+                if (RETCODE_OK != members.second->get_descriptor(member_descriptor))
+                {
+                    throw std::runtime_error("Error getting descriptor from DynamicTypeMember");
+                }
+                ret = ret & is_type_static(member_descriptor->type());
+            }
+            return ret;
+        }
+
+        case TK_NONE:
+        default:
+            WARNING(kind << " DataKind Not supported");
+            throw std::runtime_error("Unsupported Dynamic Types kind");
+    }
+}
+
+bool is_type_complex(
+        const DynamicType::_ref_type& dyn_type)
+{
+    TypeKind kind = dyn_type->get_kind();
+    switch (kind)
+    {
+        case TK_ANNOTATION:
+        case TK_ARRAY:
+        case TK_BITMASK:
+        case TK_BITSET:
+        case TK_MAP:
+        case TK_SEQUENCE:
+        case TK_STRUCTURE:
+        case TK_UNION:
+            return true;
+        default:
+            return false;
+    }
 }
 
 } /* namespace utils */
