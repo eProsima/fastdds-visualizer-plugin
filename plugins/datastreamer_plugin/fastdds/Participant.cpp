@@ -205,7 +205,7 @@ void Participant::create_subscription(
             type_object)->build();
         TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
         dyn_type_support.register_type(participant_);
-    } 
+    }
     else
     {
         // Type information is available and registered in participant. Create dyn_type for ReaderHandler
