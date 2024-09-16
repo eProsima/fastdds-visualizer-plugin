@@ -33,7 +33,7 @@ This release includes the following **dependencies update**:
         - `v3.0.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v3.0.0>`__
     *   - Plotjuggler
         - `facontidavide/PlotJuggler <https://github.com/facontidavide/PlotJuggler>`_
-        - `-`
+        - `v3.4.5 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.4.5>`__
         - `v3.9.1 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.9.1>`__
 
 #################
