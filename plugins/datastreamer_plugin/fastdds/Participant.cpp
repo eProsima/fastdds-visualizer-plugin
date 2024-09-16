@@ -205,20 +205,40 @@ void Participant::create_subscription(
             type_object)->build();
         TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
         dyn_type_support.register_type(participant_);
-    }
+    } 
     else
     {
         // Type information is available and registered in participant. Create dyn_type for ReaderHandler
-        DynamicTypeBuilder::_ref_type dyn_type_builder;
-        ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(
-            type_name, dyn_type_builder);
+        // Two different cases:
+        // 1. Type info has been discovered and registered by another participant. In this case, the type Id has been saved in dyn_types_info_
+        // 2. Type info has been loaded manually (through XML file) and registered in participant. Info not saved in dyn_types_info_
 
-        if (RETCODE_OK != ret)
+        if (dyn_types_info_->find(topic_name) != dyn_types_info_->end())
         {
-            EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting DynamicTypeBuilder from XML");
-            return;
+            DataTypeId type_id = dyn_types_info_->operator [](topic_name).second;
+            xtypes::TypeObject type_object;
+            if (RETCODE_OK != DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                        type_id, type_object))
+            {
+                EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting type object for type " << type_name);
+                return;
+            }
+            dyn_type = DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+                type_object)->build();
         }
-        dyn_type = dyn_type_builder->build();
+        else
+        {
+            DynamicTypeBuilder::_ref_type dyn_type_builder;
+            ReturnCode_t ret = DomainParticipantFactory::get_instance()->get_dynamic_type_builder_from_xml_by_name(
+                type_name, dyn_type_builder);
+
+            if (RETCODE_OK != ret)
+            {
+                EPROSIMA_LOG_ERROR(PARTICIPANT, "Error getting DynamicTypeBuilder from XML");
+                return;
+            }
+            dyn_type = dyn_type_builder->build();
+        }
     }
 
     // Create topic
