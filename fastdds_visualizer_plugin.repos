@@ -3,24 +3,24 @@ repositories:
     foonathan_memory_vendor:
         type: git
         url: https://github.com/eProsima/foonathan_memory_vendor.git
-        version: master
+        version: v1.3.1
 
     fastcdr:
         type: git
         url: https://github.com/eProsima/Fast-CDR.git
-        version: master
+        version: v2.2.4
 
     fastdds:
         type: git
         url: https://github.com/eProsima/Fast-DDS.git
-        version: master
+        version: v3.0.0
 
     plotjuggler:
         type: git
         url: https://github.com/facontidavide/PlotJuggler.git
-        version: main
+        version: 3.9.1
 
     fastdds_visualizer_plugin:
         type: git
         url: https://github.com/eProsima/fastdds-visualizer-plugin.git
-        version: main
+        version: v2.0.0
