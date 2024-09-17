@@ -21,6 +21,7 @@
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicDataFactory.hpp>
+#include <fastdds/dds/xtypes/utils.hpp>
 
 #include "ReaderHandler.hpp"
 #include "utils/utils.hpp"
@@ -51,14 +52,7 @@ ReaderHandler::ReaderHandler(
 {
     // Create data so it is not required to create it each time and avoid reallocation if possible
     data_ = DynamicDataFactory::get_instance()->create_data(type_);
-    // Determine whether the data tree will be recreated for every received sample
-    static_type_ = utils::is_type_static(type);
 
-    if (static_type_)
-    {
-        // Create the static structures to store the data introspection information AND the data itself
-        create_data_structures_();
-    }
     // Set this object as this reader's listener
     reader_->set_listener(this);
 }
@@ -94,11 +88,9 @@ void ReaderHandler::on_data_available(
     ReturnCode_t read_ret = RETCODE_OK;
 
     // Non-fixed size types require data to be recreated (e.g. to avoid having sequence members from previous samples)
-    if (!static_type_)
-    {
-        DynamicDataFactory::get_instance()->delete_data(data_);
-        data_ = DynamicDataFactory::get_instance()->create_data(type_);
-    }
+    DynamicDataFactory::get_instance()->delete_data(data_);
+    data_ = DynamicDataFactory::get_instance()->create_data(type_);
+
     // Read Data from reader while there is data available and not should stop
     while (!stop_ && read_ret == RETCODE_OK)
     {
@@ -109,49 +101,32 @@ void ReaderHandler::on_data_available(
         if (read_ret == RETCODE_OK &&
                 info.instance_state == InstanceStateKind::ALIVE_INSTANCE_STATE)
         {
-            if (!static_type_)
-            {
-                // Reset stored data info
-                numeric_data_info_.clear();
-                string_data_info_.clear();
-
-                // Reset stored data
-                numeric_data_.clear();
-                string_data_.clear();
-
-                // Recreate the structures to store the data introspection information AND the data itself
-                create_data_structures_(data_);
-
-                // Update previous data view according to new received data structure
-                listener_->on_data_available();
-            }
             // Get timestamp
             double timestamp = utils::get_timestamp_seconds_numeric_value(info.reception_timestamp);
 
-            // Get data in already created structures
-            utils::get_introspection_numeric_data(
-                numeric_data_info_,
-                data_,
-                numeric_data_);
+            // Reset stored data info
+            numeric_data_info_.clear();
+            string_data_info_.clear();
 
-            utils::get_introspection_string_data(
-                string_data_info_,
-                data_,
-                string_data_);
+            // Format the data received to show it in the GUI
+            create_data_structures_(data_);
+
+            // Update previous data view according to new received data structure
+            listener_->on_data_available();
 
             // Get value maps from data and send callback if there are data
-            if (!numeric_data_.empty())
+            if (!numeric_data_info_.empty())
             {
                 listener_->on_double_data_read(
-                    numeric_data_,
+                    numeric_data_info_,
                     timestamp);
             }
 
             // Same for strings
-            if (!string_data_.empty())
+            if (!string_data_info_.empty())
             {
                 listener_->on_string_data_read(
-                    string_data_,
+                    string_data_info_,
                     timestamp);
             }
         }
@@ -179,24 +154,20 @@ const std::string& ReaderHandler::type_name() const
 void ReaderHandler::create_data_structures_(
         DynamicData::_ref_type data /* = nullptr */)
 {
+    // Serialize data to JSON format
+    nlohmann::json serialized_data;
+    if (RETCODE_OK != utils::serialize_data(data, serialized_data))
+    {
+        EPROSIMA_LOG_ERROR(READER_HANDLER, "Error serializing data");
+        return;
+    }
     // Create the structures to store the data introspection information AND the data itself
-    utils::get_introspection_type_names(
+    utils::get_formatted_data(
         topic_name(),
-        type_,
         data_type_configuration_,
         numeric_data_info_,
         string_data_info_,
-        data);
-
-    // Create the data structures
-    for (const auto& info : numeric_data_info_)
-    {
-        numeric_data_.push_back({ std::get<0>(info), 0});
-    }
-    for (const auto& info : string_data_info_)
-    {
-        string_data_.push_back({ std::get<0>(info), "-"});
-    }
+        serialized_data);
 
     DEBUG("Completed type introspection created in topic: " << topic_name() << " with types: ");
     for (const auto& info : numeric_data_info_)

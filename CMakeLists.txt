@@ -70,6 +70,10 @@ message(STATUS "Version: ${PROJECT_VERSION}")
 ###############################################################################
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/modules)
 
+###############################################################################
+# Load external projects.
+###############################################################################
+include_directories(thirdparty/nlohmann-json)
 
 ###############################################################################
 # System configuration

@@ -153,9 +153,6 @@ void FastDdsDataStreamer::on_data_available()
     // Locking DataStream
     std::lock_guard<std::mutex> lock(mutex());
 
-    // Clear data created from previous sample
-    dataMap().clear();
-
     // Create series from new received sample
     create_series_();
 }
@@ -178,6 +175,7 @@ void FastDdsDataStreamer::on_double_data_read(
         }
         // Get data map
         auto& series = dataMap().numeric.find(data.first)->second;
+
         // Add data to series
         series.pushBack( { timestamp, data.second});
         DEBUG("...Data added to series");
