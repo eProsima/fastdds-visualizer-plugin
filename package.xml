@@ -8,7 +8,6 @@
     <description>Fast DDS Visualizer Plugin for PlotJuggler</description>
 
     <maintainer email="support@eProsima.comm">eProsima Support</maintainer>
-    <maintainer email="javierparis@eprosima.com">Javier Paris</maintainer>
 
     <license file="LICENSE">GPLv3</license>
 
