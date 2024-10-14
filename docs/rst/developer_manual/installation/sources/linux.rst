@@ -172,7 +172,7 @@ Colcon installation
 
         mkdir -p ~/DDS-Visualizer-Plugin/src
         cd ~/DDS-Visualizer-Plugin
-        wget https://raw.githubusercontent.com/eProsima/fastdds-visualizer-plugin/main/fastdds_visualizer_plugin.repos
+        wget https://raw.githubusercontent.com/eProsima/fastdds-visualizer-plugin/v2.1.0/fastdds_visualizer_plugin.repos
         vcs import src < fastdds_visualizer_plugin.repos
 
     .. note::

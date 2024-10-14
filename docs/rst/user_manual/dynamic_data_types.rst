@@ -103,7 +103,7 @@ This example file will allow the |ddsvisualizer| to discover the data type of th
     </types>
 
 Some XML files with data type description examples could be found in the
-`plugin directory <https://github.com/eProsima/fastdds-visualizer-plugin/tree/main/resources/datatypes_xml>`_.
+`plugin directory <https://github.com/eProsima/fastdds-visualizer-plugin/tree/v2.1.0/resources/datatypes_xml>`_.
 
 
 .. warning::
