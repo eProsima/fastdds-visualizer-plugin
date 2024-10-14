@@ -4,11 +4,10 @@
 <package format="3">
 
     <name>fastdds_visualizer_plugin</name>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <description>Fast DDS Visualizer Plugin for PlotJuggler</description>
 
     <maintainer email="support@eProsima.comm">eProsima Support</maintainer>
-    <maintainer email="javierparis@eprosima.com">Javier Paris</maintainer>
 
     <license file="LICENSE">GPLv3</license>
 
