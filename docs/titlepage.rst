@@ -26,6 +26,18 @@ and each value could be visualized and managed separately, allowing the user to 
 in different ways the detailed data content that is being
 exchanged in the network.
 
+##################
+Commercial support
+##################
+
+Looking for commercial support? Write us to info@eprosima.com
+
+Find more about us at `eProsima's webpage <https://eprosima.com/>`__.
+
+########
+Overview
+########
+
 *eProsima Fast DDS Visualizer Plugin* supports the following features:
 
 #.  **Data type introspection**: by using *Fast DDS Dynamic Types*,
@@ -42,18 +54,6 @@ exchanged in the network.
         <source src="_static/usage_example.mp4">
         Your browser does not support the video tag.
     </video>
-
-
-###############################
-Contacts and Commercial support
-###############################
-
-Find more about us at `eProsima's webpage <https://eprosima.com/>`_.
-
-Support available at:
-
-* Email: support@eprosima.com
-* Phone: +34 91 804 34 48
 
 #################################
 Contributing to the documentation
