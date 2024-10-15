@@ -25,6 +25,12 @@ exchanged in the network.
 1. **All PlotJuggler features**: This plugin composes nicely with all the PlotJuggler features,
    so that users can create rich graphs from sophisticated data manipulations.
 
+## Commercial support
+
+Looking for commercial support? Write us to info@eprosima.com
+
+Find more about us at [eProsima’s webpage](https://eprosima.com/).
+
 ## Documentation
 
 You can access the documentation online, which is hosted on [Read the Docs](https://plotjuggler-fastdds-plugins.readthedocs.io/en/latest/).
