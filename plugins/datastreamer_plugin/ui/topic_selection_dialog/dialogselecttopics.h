@@ -64,6 +64,10 @@ public:
     void connect_to_domain(
             const uint32_t domain_id);
 
+    void connect_to_server(
+                const uint32_t domain_id,
+                const std::string& server_ip,
+                unsigned int server_port);
 signals:
 
     void reset_view_signal();
@@ -76,6 +80,11 @@ signals:
     void connection_to_domain_signal(
             const uint32_t domain_id);
 
+   void connection_to_server_signal(
+        const uint32_t domain_id,
+        const QString& server_ip,
+        const uint32_t server_port);
+
 private slots:
 
     void on_lineEditFilter_textChanged(
@@ -85,6 +94,8 @@ private slots:
             int arg1);
 
     void on_change_domain_button_clicked();
+
+    void on_use_discovery_server_button_clicked();
 
     void on_include_files_button_clicked();
 
@@ -105,6 +116,11 @@ private slots:
 
     void on_connectionToDomain(
             const uint32_t domain_id);
+
+    void on_connectionToServer(
+            const uint32_t domain_id,
+            const QString& server_ip,
+            unsigned int server_port);
 
 protected:
 
@@ -149,6 +165,9 @@ protected:
     constexpr static const unsigned int TypeNameTableIndex_ = 1;
 
     unsigned int domain_id_connected_;
+    //! Variables storing discovery server information
+    std::string server_ip_;
+    unsigned int server_port_;
 
     QShortcut select_all_topics_;
     QShortcut deselect_all_topics_;
