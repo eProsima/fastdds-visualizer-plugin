@@ -242,6 +242,13 @@ void FastDdsDataStreamer::on_domain_connection(
     connect_to_domain_(domain_id);
 }
 
+void FastDdsDataStreamer::on_server_connection(
+        unsigned int domain_id, const std::string& server_ip, unsigned int server_port)
+{
+    DEBUG("FastDdsDataStreamer on_domain_connection " << domain_id);
+    connect_to_server_(domain_id, server_ip, server_port);
+}
+
 ////////////////////////////////////////////////////
 // AUXILIAR METHODS
 ////////////////////////////////////////////////////
@@ -258,6 +265,19 @@ void FastDdsDataStreamer::connect_to_domain_(
     // Connect to domain
     fastdds_handler_.connect_to_domain(domain_id);
     select_topics_dialog_.connect_to_domain(domain_id);
+}
+
+void FastDdsDataStreamer::connect_to_server_(
+        unsigned int domain_id, const std::string& server_ip, unsigned int server_port)
+{
+    DEBUG("FastDdsDataStreamer connect_to_server_ " << server_ip<<":"<<server_port<<" using domain "<<domain_id);
+    // Reset view and handler
+    select_topics_dialog_.reset();
+    fastdds_handler_.reset();
+
+    // Connect to domain
+    fastdds_handler_.connect_to_server(domain_id, server_ip, server_port);
+    select_topics_dialog_.connect_to_server(domain_id, server_ip, server_port);
 }
 
 void FastDdsDataStreamer::create_series_()

@@ -45,6 +45,8 @@ DialogSelectTopics::DialogSelectTopics(
     , configuration_(configuration)
     , listener_(listener)
     , domain_id_connected_(configuration.domain_id) // This is initialized here as it does not come from configuration
+    , server_ip_(configuration.server_ip)
+    , server_port_(configuration.server_port)
     , select_all_topics_(QKeySequence(Qt::CTRL + Qt::Key_A), this)
     , deselect_all_topics_(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this)
 {
@@ -70,6 +72,12 @@ DialogSelectTopics::DialogSelectTopics(
         &DialogSelectTopics::connection_to_domain_signal,
         this,
         &DialogSelectTopics::on_connectionToDomain);
+
+    connect(
+        this,
+        &DialogSelectTopics::connection_to_server_signal,
+        this,
+        &DialogSelectTopics::on_connectionToServer);
 
     /////
     // Set shortcuts
@@ -137,6 +145,14 @@ void DialogSelectTopics::connect_to_domain(
     emit connection_to_domain_signal(domain_id);
 }
 
+void DialogSelectTopics::connect_to_server(
+        const uint32_t domain_id,
+        const std::string& server_ip,
+        unsigned int server_port)
+{
+    emit connection_to_server_signal(domain_id, utils::string_to_QString(server_ip), server_port);
+}
+
 void DialogSelectTopics::on_lineEditFilter_textChanged(
         const QString& search_string)
 {
@@ -193,15 +209,43 @@ void DialogSelectTopics::on_change_domain_button_clicked()
         // Nevertheless lets check it
         if (domain_id != domain_id_connected_)
         {
+            // Get server ip and port before the reset called by on_domain_connection
+            QString server_ip = ui->server_ip->text();
+            unsigned int server_port = ui->server_port->text().toUInt();
+
             // Call listener to connect to domain
             listener_->on_domain_connection(
                 static_cast<unsigned int>(domain_id));
+            
+            // Set the server ip and port to the value before the reset called by on_domain_connection
+            on_connectionToServer(domain_id, server_ip, server_port);
         }
     }
     // In case the dialog is cancelled, do nothing
 
     // Delete the dialog
     delete change_domain_dialog;
+}
+
+void DialogSelectTopics::on_use_discovery_server_button_clicked() {
+    DEBUG("Calling on_use_discovery_server_button_clicked");
+    // Get server ip and port
+    QString server_ip = ui->server_ip->text();
+    unsigned int server_port = ui->server_port->text().toUInt();
+
+    if (ui->use_discovery_server_button->isChecked()) {
+        // Call listener to connect to server
+        listener_->on_server_connection(domain_id_connected_, server_ip.toStdString(), server_port);
+        ui->use_discovery_server_button->setText("ON");
+        ui->change_domain_button->setEnabled(false);
+    } else {
+        // Call listener to connect to domain
+        listener_->on_domain_connection(domain_id_connected_);
+        // Set the server ip and port to the value before the reset called by on_domain_connection
+        on_connectionToServer(domain_id_connected_, server_ip, server_port);
+        ui->use_discovery_server_button->setText("OFF");
+        ui->change_domain_button->setEnabled(true);
+    }
 }
 
 void DialogSelectTopics::on_include_files_button_clicked()
@@ -336,6 +380,21 @@ void DialogSelectTopics::on_connectionToDomain(
         QString::number(domain_id_connected_));
 }
 
+void DialogSelectTopics::on_connectionToServer(
+        const uint32_t domain_id,
+        const QString& server_ip,
+        unsigned int server_port)
+{
+    domain_id_connected_ = domain_id;
+    server_ip_ = server_ip.toStdString();
+    server_port_ = server_port;
+
+    ui->current_domain_label->setText(
+        QString::number(domain_id_connected_));
+    ui->server_ip->setText(server_ip_.c_str());
+    ui->server_port->setText(QString::number(server_port_));
+}
+
 void DialogSelectTopics::clean_topics_list_()
 {
     DEBUG("Calling clean_topics_list_");
@@ -352,6 +411,7 @@ void DialogSelectTopics::reset_to_configuration_()
     // FastDDS configuration
     // Set current domain
     on_connectionToDomain(configuration_.domain_id);
+    on_connectionToServer(configuration_.domain_id, utils::string_to_QString(configuration_.server_ip), configuration_.server_port);
 
     // Add XML files
     // First erase every data in the list
@@ -390,6 +450,8 @@ void DialogSelectTopics::update_configuration_()
     // Domain id
     configuration_.domain_id =
             static_cast<unsigned int>(domain_id_connected_);
+    configuration_.server_ip = server_ip_;
+    configuration_.server_port = server_port_;
 
     // Array
     configuration_.data_type_configuration.max_array_size =

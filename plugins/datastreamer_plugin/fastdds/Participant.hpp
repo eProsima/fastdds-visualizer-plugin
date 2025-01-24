@@ -86,7 +86,10 @@ public:
     Participant(
             eprosima::fastdds::dds::DomainId_t domain_id,
             std::shared_ptr<TopicDataBase> discovery_database,
-            FastDdsListener* listener);
+            FastDdsListener* listener,
+            bool use_discovery_server = false,
+            const std::string& server_ip = "127.0.0.1",
+            const unsigned int& server_port = 11811);
 
     virtual ~Participant();
 
