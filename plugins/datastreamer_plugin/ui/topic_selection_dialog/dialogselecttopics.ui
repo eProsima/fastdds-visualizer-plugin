@@ -340,7 +340,7 @@
            <item>
             <widget class="QLabel" name="label_10">
              <property name="text">
-              <string>Use Server Discovery </string>
+              <string>Use Discovery Server </string>
              </property>
             </widget>
            </item>
