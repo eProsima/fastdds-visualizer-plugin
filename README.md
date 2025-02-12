@@ -1,4 +1,33 @@
-# Fast DDS Visualizer Plugin
+[![Fast DDS Visualizer Plugin](resources/images/github_banner_visualizer.png)](https://www.eprosima.com/middleware/tools/fast-dds-visualizer)
+
+<br>
+
+<div class="menu" align="center">
+    <strong>
+        <a href="https://eprosima.com/index.php/downloads-all">Download</a>
+        <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+        <a href="https://plotjuggler-fastdds-plugins.readthedocs.io/en/latest/">Docs</a>
+        <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+        <a href="https://eprosima.com/index.php/company-all/news">News</a>
+        <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+        <a href="https://x.com/EProsima">X</a>
+        <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+        <a href="mailto:info@eprosima.com">Contact Us</a>
+    </strong>
+</div>
+
+<br><br>
+
+<div class="badges" align="center">
+    <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"><img alt="License" src="https://img.shields.io/github/license/eProsima/fastdds-visualizer-plugin.svg"/></a>
+    <a href="https://github.com/eProsima/fastdds-visualizer-plugin/releases"><img alt="Releases" src="https://img.shields.io/github/v/release/eProsima/fastdds-visualizer-plugin?sort=semver"/></a>
+    <a href="https://github.com/eProsima/fastdds-visualizer-plugin/issues"><img alt="Issues" src="https://img.shields.io/github/issues/eProsima/fastdds-visualizer-plugin.svg"/></a>
+    <a href="https://github.com/eProsima/fastdds-visualizer-plugin/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/eProsima/fastdds-visualizer-plugin.svg"/></a>
+    <a href="https://github.com/eProsima/fastdds-visualizer-plugin/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/eProsima/fastdds-visualizer-plugin.svg"/></a>
+    <a href="https://plotjuggler-fastdds-plugins.readthedocs.io"><img alt="Documentation badge" src="https://img.shields.io/readthedocs/plotjuggler-fastdds-plugins.svg"/></a>
+</div>
+
+<br><br>
 
 *eProsima Fast DDS Visualizer Plugin* is a plugin for the *PlotJuggler* application.
 PlotJuggler is a graphical desktop application providing visualization features
