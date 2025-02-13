@@ -62,6 +62,16 @@ void Handler::connect_to_domain(
     participant_ = std::make_unique<Participant>(domain, discovery_database_, listener_);
 }
 
+void Handler::connect_to_server(
+        const uint32_t domain, const std::string& server_ip, unsigned int server_port)
+{
+    // Reset in case a Handler exist
+    reset();
+
+    // Create participant using discovery server
+    participant_ = std::make_unique<Participant>(domain, discovery_database_, listener_, true, server_ip, server_port);
+}
+
 void Handler::register_type_from_xml(
         const std::string& xml_path)
 {

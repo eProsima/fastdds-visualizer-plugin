@@ -51,6 +51,13 @@ public:
         static_cast<void>(domain_id);
     }
 
+    virtual void on_server_connection(
+        unsigned int domain_id, const std::string& server_ip, unsigned int server_port){
+        DEBUG("Calling on_server_connection " << domain_id << " " << server_ip << " " << server_port);
+        static_cast<void>(domain_id);
+        static_cast<void>(server_ip);
+        static_cast<void>(server_port);
+    }
 };
 
 } /* namespace ui */
