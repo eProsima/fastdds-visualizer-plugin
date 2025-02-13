@@ -1,8 +1,6 @@
-.. raw:: html
-
-  <h1>
-    Fast DDS Visualizer Plugin Documentation
-  </h1>
+########################################
+Fast DDS Visualizer Plugin Documentation
+########################################
 
 .. image:: /rst/figures/logo.png
   :height: 100px
