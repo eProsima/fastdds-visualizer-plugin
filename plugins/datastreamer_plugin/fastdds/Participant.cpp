@@ -183,9 +183,7 @@ void Participant::create_subscription(
     // Check if type is registered or not in participant. If not, register it
     if (!participant_->find_type(type_name))
     {
-        // __FLAG__
         DEBUG("Type info not registered in participant for topic " << topic_name);
-        //////////////////////////
 
         // Type information is available but not registered in participant
         // Types manually loaded (through XML file) are registered in participant when loaded, so this case is not possible
@@ -204,6 +202,7 @@ void Participant::create_subscription(
         dyn_type = DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
             type_object)->build();
         TypeSupport dyn_type_support(new DynamicPubSubType(dyn_type));
+        dyn_type_support->set_name(type_name);
         dyn_type_support.register_type(participant_);
     }
     else
@@ -307,9 +306,7 @@ void Participant::on_data_writer_discovery(
 
         if (!info.type_information.assigned())
         {
-            // __FLAG__
             DEBUG("Type information not assigned for topic " << topic_name);
-            /////////////////////////////
             // If type info is not assigned, check if it can be generated through a xml
             on_topic_discovery_(topic_name, type_name);
         }
@@ -360,9 +357,7 @@ void Participant::on_topic_discovery_(
         const DataTypeId& type_id)
 {
     // TODO: check if mutex required
-    // __FLAG__
     DEBUG("Calling on_topic_discovery with type id for topic " << topic_name);
-    /////////////////
     bool is_already_discovered = false;
 
     // Check if this topic has already been discovered
@@ -380,15 +375,9 @@ void Participant::on_topic_discovery_(
     if (!is_already_discovered)
     {
         // Add topic as discovered and save its type name and its type identifier to build DynamicType when DataReader is created
-        // __FLAG__
         DEBUG("Topic " << topic_name << " discovered with type id");
-        DEBUG("Updating databases...");
-        DEBUG("...Updating discovery database...");
         discovery_database_->operator [](topic_name) = {type_name, true};
-        DEBUG("...Updating dynamic types info database...");
         dyn_types_info_->operator [](topic_name) = {type_name, type_id};
-        DEBUG("...Databases updated");
-        /////////////////////////////////////////////
     }
 
     // Call listener callback to notify new topic
