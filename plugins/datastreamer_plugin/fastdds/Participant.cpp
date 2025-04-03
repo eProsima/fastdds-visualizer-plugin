@@ -173,10 +173,10 @@ void Participant::create_subscription(
     DataTypeNameType type_name = discovery_database_->operator [](topic_name).first;
     DynamicType::_ref_type dyn_type;
 
-    // Check if type is already registered
+    // Check if type info is available
     if (discovery_database_->operator [](topic_name).second == false)
     {
-        WARNING("Type " << topic_name << " has not been registered yet");
+        WARNING("Type " << topic_name << ": info not available yet");
         throw InconsistencyException("Trying to create Data Reader in a non registered type: " + topic_name);
     }
 
