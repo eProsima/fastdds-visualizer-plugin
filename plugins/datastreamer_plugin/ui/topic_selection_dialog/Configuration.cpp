@@ -87,6 +87,8 @@ void Configuration::save_default_settings(
     settings.setValue(prefix + DISCARD_LARGE_ARRAYS_SETTINGS_TAG, data_type_configuration.discard_large_arrays);
     settings.setValue(prefix + XML_DATATYPE_FILES_SETTINGS_TAG, xml_datatypes_files);
     settings.setValue(prefix + DOMAIN_ID_SETTINGS_TAG, domain_id);
+    settings.setValue(prefix + SERVER_IP_SETTINGS_TAG, server_ip.c_str());
+    settings.setValue(prefix + SERVER_PORT_SETTINGS_TAG, server_port);
 }
 
 void Configuration::load_default_settings(
@@ -103,6 +105,8 @@ void Configuration::load_default_settings(
                     data_type_configuration.discard_large_arrays).toBool();
     xml_datatypes_files = settings.value(prefix + XML_DATATYPE_FILES_SETTINGS_TAG, xml_datatypes_files).toStringList();
     domain_id = settings.value(prefix + DOMAIN_ID_SETTINGS_TAG, domain_id).toInt();
+    server_ip = settings.value(prefix + SERVER_IP_SETTINGS_TAG, server_ip.c_str()).toString().toStdString();
+    server_port = settings.value(prefix + SERVER_PORT_SETTINGS_TAG, server_port).toUInt();
 }
 
 } /* namespace ui */

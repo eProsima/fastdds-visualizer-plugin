@@ -116,6 +116,8 @@ public:
     virtual void on_domain_connection(
             unsigned int domain_id) override;
 
+    virtual void on_server_connection(
+        unsigned int domain_id, const std::string& server_ip, unsigned int server_port);
 
     ////////////////////////////////////////////////////
     // STATIC METHODS AND PUBLIC MEMBERS
@@ -131,6 +133,9 @@ protected:
 
     void connect_to_domain_(
             unsigned int domain_id);
+
+   void connect_to_server_(
+        unsigned int domain_id, const std::string& server_ip, unsigned int server_port);
 
     void create_series_();
 

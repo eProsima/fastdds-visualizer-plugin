@@ -67,6 +67,9 @@ public:
     void connect_to_domain(
             const uint32_t domain);
 
+    void connect_to_server(
+        const uint32_t domain, const std::string& server_ip, unsigned int server_port);
+
     void register_type_from_xml(
             const std::string& xml_path);
 

@@ -336,6 +336,139 @@
           </layout>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Use Discovery Server </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Preferred</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>35</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="use_discovery_server_button">
+             <property name="text">
+                <string>OFF</string>
+             </property>
+             <property name="checkable">
+                <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>server IP: </string>
+             </property>
+            </widget>
+           </item>
+            <item>
+                <widget class="QLineEdit" name="server_ip">
+                <property name="maxLength">
+                <number>15</number>
+                </property>
+                <property name="text">
+                    <string>127.0.0.1</string>  <!-- Default server IP address -->
+                </property>
+                <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                    </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>100</width>
+                            <height>25</height>
+                        </size>
+                    </property>
+                    <property name="maximumSize">
+                        <size>
+                            <width>120</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                </widget>
+            </item>
+            <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>server port: </string>
+             </property>
+            </widget>
+           </item>
+            <item>
+                <widget class="QLineEdit" name="server_port">
+                <property name="maxLength">
+                <number>15</number>
+                </property>
+                <property name="text">
+                    <string>11811</string>  <!-- Default server port -->
+                </property>
+                <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                    </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>40</width>
+                            <height>25</height>
+                        </size>
+                    </property>
+                    <property name="maximumSize">
+                        <size>
+                            <width>80</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="horizontalSpacer_12">
+                    <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>120</width>
+                            <height>2</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+          </layout>
+         </item>
+         <item>
           <widget class="Line" name="line_3">
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
