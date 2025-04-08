@@ -1,0 +1,139 @@
+@startuml
+
+' ---------------------------------------------------------
+actor plotjuggler
+participant FastDdsDataStreamer
+participant Handler
+participant Participant
+participant ReaderHandler
+
+box "FastDDS"
+participant DomainParticipantFactory
+participant DynamicPubSubType
+participant DomainParticipant
+participant Subscriber
+end box
+
+' ---------------------------------------------------------
+
+plotjuggler -> FastDdsDataStreamer: start
+activate FastDdsDataStreamer
+
+FastDdsDataStreamer -> FastDdsDataStreamer: connect_to_domain_
+activate FastDdsDataStreamer
+
+    FastDdsDataStreamer -> Handler: connect_to_domain(domain_id)
+    activate Handler
+
+    Handler -> Participant**: create
+    Participant -> DomainParticipant**: create
+    Participant -> Subscriber**: create
+
+    Handler --> FastDdsDataStreamer
+    deactivate Handler
+
+FastDdsDataStreamer --> FastDdsDataStreamer
+deactivate FastDdsDataStreamer
+
+FastDdsDataStreamer -> FastDdsDataStreamer: read user configuration
+
+loop selected_topics
+    FastDdsDataStreamer -> Handler: create_subscription
+    activate Handler
+
+        Handler -> Participant: create_subscription(topic_name, data_type_configuration)
+        activate Participant
+
+        Participant -> Participant: check if topic is registered
+        Participant -> Participant: check if type is registered
+
+        alt type is registered
+            Participant -> DomainParticipantFactory: get_dynamic_type()
+            activate DomainParticipantFactory
+
+            DomainParticipantFactory --> Participant: dyn_type
+            deactivate DomainParticipantFactory
+        else type not registered
+            Participant -> DynamicPubSubType** : new
+            Participant -> DynamicPubSubType: register_type(participant_)
+            activate DynamicPubSubType
+            DynamicPubSubType --> Participant
+            deactivate DynamicPubSubType
+        end
+
+        Participant -> DomainParticipant: create_topic(topic_name, type_name, default_topic_qos)
+        activate DomainParticipant
+
+        DomainParticipant --> Participant: topic*
+        deactivate DomainParticipant
+
+        Participant -> Subscriber: create_datareader(topic, default_datareader_qos_, this)
+        activate Subscriber
+
+        Subscriber --> Participant: datareader*
+        deactivate Subscriber
+
+        Participant -> ReaderHandler**: create(topic, datareader, dyn_type, ...)
+        Participant -> Participant: insert created reader into readers_
+
+        Participant --> Handler
+        deactivate Participant
+
+    Handler --> FastDdsDataStreamer
+    deactivate Handler
+end
+note across: Series creation also happen during runtime with:\non_data_available() methods that is called uppon data reception
+
+FastDdsDataStreamer -> FastDdsDataStreamer: create_series_
+activate FastDdsDataStreamer
+
+    FastDdsDataStreamer -> Handler: numeric_data_series_names
+    activate Handler
+
+        Handler -> Participant: numeric_data_series_names
+        activate Participant
+
+        loop for reader in readers_
+            Participant -> ReaderHandler: numeric_data_series_names
+            activate ReaderHandler
+
+            ReaderHandler --> Participant: vector<std::string names>
+            deactivate ReaderHandler
+        end
+
+        Participant --> Handler: std::vector<types::DatumLabel (std::string)> numeric_series
+        deactivate Participant
+
+    Handler --> FastDdsDataStreamer: numeric_series
+    deactivate Handler
+
+    FastDdsDataStreamer -> FastDdsDataStreamer: addNumeric(numeric_series)
+
+    FastDdsDataStreamer -> Handler: string_data_series_names
+    activate Handler
+
+        Handler -> Participant: string_data_series_names
+        activate Participant
+
+        loop for reader in readers_
+            Participant -> ReaderHandler: string_data_series_names
+            activate ReaderHandler
+
+            ReaderHandler --> Participant: vector<std::string names>
+            deactivate ReaderHandler
+        end
+
+        Participant --> Handler: std::vector<types::DatumLabel (std::string)> string_series
+        deactivate Participant
+
+    Handler --> FastDdsDataStreamer: string_series
+    deactivate Handler
+
+    FastDdsDataStreamer -> FastDdsDataStreamer: addStringSeries(numeric_series)
+FastDdsDataStreamer --> FastDdsDataStreamer
+deactivate FastDdsDataStreamer
+
+FastDdsDataStreamer --> plotjuggler: true
+deactivate FastDdsDataStreamer
+
+@enduml
