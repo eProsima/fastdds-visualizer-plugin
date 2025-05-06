@@ -61,6 +61,9 @@ struct Configuration
     // DDS Configuration
     unsigned int domain_id = 0;
     QStringList xml_datatypes_files;  // Empty in initialization
+    // Discovery server configuration
+    std::string server_ip = "127.0.0.1";
+    unsigned int server_port = 11811;
 
     ////////////////////
     // Advance options
@@ -87,6 +90,8 @@ protected:
     constexpr static const char* DISCARD_LARGE_ARRAYS_SETTINGS_TAG = "discard_large_arrays";
     constexpr static const char* XML_DATATYPE_FILES_SETTINGS_TAG = "xml_datatype_files";
     constexpr static const char* DOMAIN_ID_SETTINGS_TAG = "domain_id_files";
+    constexpr static const char* SERVER_IP_SETTINGS_TAG = "server_ip_files";
+    constexpr static const char* SERVER_PORT_SETTINGS_TAG = "server_port_files";
 };
 
 
