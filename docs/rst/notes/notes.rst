@@ -26,8 +26,8 @@ This release includes the following **dependencies update**:
         - New Version
     *   - Fast CDR
         - `eProsima/Fast-CDR <https://github.com/eProsima/Fast-CDR>`_
-        - `v2.2.4 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.5>`__
-        - `v2.2.5 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.0>`__
+        - `v2.2.5 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.5>`__
+        - `v2.3.0 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.0>`__
     *   - Fast DDS
         - `eProsima/Fast-DDS <https://github.com/eProsima/Fast-DDS>`_
         - `v3.1.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v3.1.0>`__
