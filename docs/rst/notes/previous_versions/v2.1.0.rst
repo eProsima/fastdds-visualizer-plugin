@@ -1,0 +1,28 @@
+Version v2.1.0
+==============
+
+This release includes the following **updates**:
+
+    * Patch plotjuggler to compile in ROS 2 & Vulcanexus environments.
+
+This release includes the following **dependencies update**:
+
+.. list-table::
+    :header-rows: 1
+
+    *   -
+        - Repository
+        - Old Version
+        - New Version
+    *   - Fast CDR
+        - `eProsima/Fast-CDR <https://github.com/eProsima/Fast-CDR>`_
+        - `v2.2.4 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.4>`__
+        - `v2.2.5 <https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.5>`__
+    *   - Fast DDS
+        - `eProsima/Fast-DDS <https://github.com/eProsima/Fast-DDS>`_
+        - `v3.0.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v3.0.0>`__
+        - `v3.1.0 <https://github.com/eProsima/Fast-DDS/releases/tag/v3.1.0>`__
+    *   - Plotjuggler
+        - `facontidavide/PlotJuggler <https://github.com/facontidavide/PlotJuggler>`_
+        - `v3.9.1 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.9.1>`__
+        - `v3.9.1 <https://github.com/facontidavide/PlotJuggler/releases/tag/3.9.1>`__
