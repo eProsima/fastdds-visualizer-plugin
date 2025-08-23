@@ -1,0 +1,106 @@
+@startuml
+
+' ---------------------------------------------------------
+
+class FastDdsDataStreamer
+{
+    + on_double_data_read(<vector<NumericDatum>, double>)
+    + on_string_data_read(<vector<TextDatum>, double>)
+    + on_topic_discovery(<string, string, bool>)
+    # Backend::Handler fastdds_handler_
+}
+
+
+' ---------------------------------------------------------
+package Backend
+{
+
+class Handler
+{
+    + connect_to_domain(<int> domain_id)
+    + register_type_from_xml(<string> path)
+    + create_subscription(<string, DataTypeConfiguration>)
+    --
+    # clean_discovery_database()
+    __
+    # std::shared_ptr<TopicDataBase> discovery_database_
+    # std::unique_ptr<Participant> participant_
+    # FastDdsListener* listener_
+    # std::set<std::string> xml_data_types_paths_added_
+}
+
+class Participants
+{
+    + <bool> register_type_from_xml(<const std::string> path)
+    + create_subscription(<const std::string,const DataTypeConfiguration>)
+    + std::vector<types::DatumLabel> numeric_data_series_names()
+    + std::vector<types::DatumLabel> string_data_series_names ()
+    --
+    + on_publisher_discovery(<DomainParticipant, WriterDiscoveryInfo>)
+    + on_type_information_received(<DomainParticipant, string_255, string_255, TypeInformation>)
+    + on_type_discovery(<DomainParticipant, SampleIdentity, string_255, TypeIdentifier, Typoeobject, DynamicType_ptr>)
+    --
+    # on_topic_discovery(<string, string>)
+    __ Internal Variables  __
+    # std::shared_ptr<TopicDataBase> discovery_database_
+    # FastDdsListener* listener_;
+    __ Fast DDS pointers  __
+    # DomainParticipant* participant_
+    # Subscriber* subscriber_
+    # std::unordered_map<std::string, ReaderHandlerReference> readers_
+}
+
+class ReaderHandler
+{
+    + stop()
+    + on_data_available(<DataReader>)
+    --
+    __ Internal Variables __
+    __ Fast DDS pointers __
+    # Topic* topic_
+    # DataReader* reader_
+    # DynamicType_ptr type_
+    # DynamicData* data_
+    __
+    # std::atomic<bool> stop_
+    # TypeIntrospectionCollection numeric_data_info_
+    # TypeIntrospectionCollection string_data_info_
+    # TypeIntrospectionNumericStruct numeric_data_
+    # TypeIntrospectionStringStruct string_data_
+}
+
+interface FastDdsListener
+{
+    + {abstract} on_double_data_read(<vector<NumericDatum>, double>)
+    + {abstract} on_string_data_read(<vector<TextDatum>, double>)
+    + {abstract} on_topic_discovery(<string, string, bool>)
+}
+
+FastDdsDataStreamer <|-- FastDdsListener
+FastDdsDataStreamer *-- "1" Handler
+FastDdsDataStreamer *-- "1" Participants
+Handler "1" *-- Participants
+Participants "many" *-- ReaderHandler
+
+}
+
+' ---------------------------------------------------------
+
+package FastDDS
+{
+    class DomainParticipantListener
+    {
+        + {abstract} on_publisher_discovery(<DomainParticipant, WriterDiscoveryInfo>)
+        + {abstract} on_type_information_received(<DomainParticipant, string_255, string_255, TypeInformation>)
+        + {abstract} on_type_discovery(<DomainParticipant, SampleIdentity, string_255, TypeIdentifier, Typoeobject, DynamicType_ptr>)
+    }
+
+    class DataReaderListener
+    {
+        + {abstract} on_data_available(<DataReader>)
+    }
+
+    ReaderHandler <|-- DataReaderListener
+    Participants <|-- DomainParticipantListener
+}
+@enduml
