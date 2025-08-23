@@ -1,0 +1,148 @@
+@startuml
+' ---------------------------------------------------------
+
+
+box "FastDDS"
+
+participant DataReader
+participant DynamicDataFactory
+
+end box
+
+participant ReaderHandler
+participant FastDdsDataStreamer
+participant Handler
+participant Participant
+participant Plotjuggler
+entity utils
+
+' ---------------------------------------------------------
+
+DataReader -> ReaderHandler: on_data_available(DataReader* reader)
+activate ReaderHandler
+
+    ReaderHandler -> DynamicDataFactory: delete_data(data_)
+    ReaderHandler -> DynamicDataFactory: create_data()
+    activate DynamicDataFactory
+    DynamicDataFactory --> ReaderHandler: data_
+    deactivate DynamicDataFactory
+
+    loop data reading OK and continue
+        ReaderHandler -> DataReader: take_next_sample(&data_, &info)
+        activate DataReader
+        DataReader --> ReaderHandler: reading result
+        deactivate DataReader
+
+        ReaderHandler -> Plotjuggler: numeric_data_info_.clear()
+        ReaderHandler -> Plotjuggler: string_data_info_.clear()
+
+        ReaderHandler -> ReaderHandler: create_data_structures_(data_)
+        activate ReaderHandler
+
+            ReaderHandler -> ReaderHandler: serialize_data(_data)
+            ReaderHandler -> utils: get_formatted_data(topic_name, data_type_confguration_, numeric_data_info_, string_data_info_, serialized_data)
+            activate utils
+                note over utils 
+                This methods prepare numeric_data_info_ or string_data_info_ 
+                with data description and data itself (see type: TypeIntrospectionNumericStruct and TypeIntrospectionStringStruct) 
+                to be sent sent to plotjuggler through upper backend layers
+                end note
+            utils --> ReaderHandler
+            deactivate utils
+
+        ReaderHandler --> ReaderHandler
+        deactivate ReaderHandler
+
+        ReaderHandler -> FastDdsDataStreamer: on_data_available()
+        activate FastDdsDataStreamer
+
+            FastDdsDataStreamer -> FastDdsDataStreamer: create_series_()
+            activate FastDdsDataStreamer
+
+                FastDdsDataStreamer -> Handler: numeric_data_series_names
+                activate Handler
+
+                    Handler -> Participant: numeric_data_series_names
+                    activate Participant
+
+                    loop for reader in readers_
+                        Participant -> ReaderHandler: numeric_data_series_names
+                        activate ReaderHandler
+
+                        ReaderHandler --> Participant: vector<std::string names>
+                        deactivate ReaderHandler
+                    end
+
+                    Participant --> Handler: std::vector<types::DatumLabel (std::string)> numeric_series
+                    deactivate Participant
+
+                Handler --> FastDdsDataStreamer: numeric_series
+                deactivate Handler
+
+                FastDdsDataStreamer -> FastDdsDataStreamer: addNumeric(numeric_series)
+
+                FastDdsDataStreamer -> Handler: string_data_series_names
+                activate Handler
+
+                    Handler -> Participant: string_data_series_names
+                    activate Participant
+
+                    loop for reader in readers_
+                        Participant -> ReaderHandler: string_data_series_names
+                        activate ReaderHandler
+
+                        ReaderHandler --> Participant: vector<std::string names>
+                        deactivate ReaderHandler
+                    end
+
+                    Participant --> Handler: std::vector<types::DatumLabel (std::string)> string_series
+                    deactivate Participant
+
+                Handler --> FastDdsDataStreamer: string_series
+                deactivate Handler
+
+                FastDdsDataStreamer -> FastDdsDataStreamer: addStringSeries(numeric_series)
+
+            FastDdsDataStreamer --> FastDdsDataStreamer
+            deactivate FastDdsDataStreamer
+
+        FastDdsDataStreamer --> ReaderHandler
+        deactivate FastDdsDataStreamer
+
+        alt numeric_data not empty
+            ReaderHandler -> FastDdsDataStreamer: on_double_data_read(numeric_data_info_, timestamp)
+            activate FastDdsDataStreamer
+
+            note over FastDdsDataStreamer
+            Save data into fastDdsDataStreamer internal series and then emit a signal to PLotjuggler
+            for data to be plotted
+            end note
+            
+            FastDdsDataStreamer->PLotjuggler: emit dataReceived()
+
+            FastDdsDataStreamer --> ReaderHandler
+            deactivate FastDdsDataStreamer
+        end
+
+        alt string_data not empty
+            ReaderHandler -> FastDdsDataStreamer
+            ReaderHandler -> FastDdsDataStreamer: on_string_data_read(numeric_data_info_, timestamp)
+            activate FastDdsDataStreamer
+
+            note over FastDdsDataStreamer
+            Save data into fastDdsDataStreamer internal series and then emit a signal to PLotjuggler
+            for data to be plotted
+            end note
+
+            FastDdsDataStreamer->PLotjuggler: emit dataReceived()
+
+            FastDdsDataStreamer --> ReaderHandler
+            deactivate FastDdsDataStreamer
+        end
+
+
+    end 
+
+ReaderHandler --> DataReader
+deactivate ReaderHandler
+@enduml
