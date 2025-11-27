@@ -65,16 +65,33 @@ void ReaderHandlerDeleter::operator ()(
 Participant::Participant(
         DomainId_t domain_id,
         std::shared_ptr<TopicDataBase> discovery_database,
-        FastDdsListener* listener)
+        FastDdsListener* listener,
+        bool use_discovery_server,
+        const std::string& server_ip,
+        const unsigned int& server_port)
     : listener_(listener)
     , discovery_database_(discovery_database)
 {
     // TODO check entities are created correctly
 
+    DomainParticipantQos participant_qos = default_participant_qos_();
+    // Connect participat to server if discovery server is used
+    if(use_discovery_server){
+		// Define server locator
+		eprosima::fastdds::rtps::Locator_t server_locator;
+		eprosima::fastdds::rtps::IPLocator::setIPv4(server_locator, server_ip);
+		server_locator.port = server_port;
+		server_locator.kind = LOCATOR_KIND_UDPv4;
+        // Set participant as SUPER CLIENT
+        participant_qos.wire_protocol().builtin.discovery_config.discoveryProtocol = eprosima::fastdds::rtps::DiscoveryProtocol::SUPER_CLIENT;
+        // Connect to remote server
+        participant_qos.wire_protocol().builtin.discovery_config.m_DiscoveryServers.push_back(server_locator);
+    }
+
     // Create Domain Participant
     participant_ = DomainParticipantFactory::get_instance()->create_participant(
         domain_id,
-        default_participant_qos_(),
+        participant_qos,
         this,
         default_listener_mask_());
 
