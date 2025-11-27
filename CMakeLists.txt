@@ -40,7 +40,7 @@ set(CMAKE_MODULE_PATH
 # Version
 ###############################################################################
 set(PRODUCT_MAJOR_VERSION 2)
-set(PRODUCT_MINOR_VERSION 2)
+set(PRODUCT_MINOR_VERSION 3)
 set(PRODUCT_PATCH_VERSION 0)
 set(PRODUCT_VERSION_STR ${PRODUCT_MAJOR_VERSION}.${PRODUCT_MINOR_VERSION}.${PRODUCT_PATCH_VERSION})
 
