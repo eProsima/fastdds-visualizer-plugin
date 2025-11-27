@@ -89,7 +89,7 @@ XML Data Type example
 
 In the following snippet, there is an example of an XML file with a data type description.
 This example file will allow the |ddsvisualizer| to discover the data type of the topic used in the |fastdds|
-`HelloWorld Example <https://github.com/eProsima/Fast-DDS/tree/master/examples/cpp/dds/HelloWorldExample>`_.
+`HelloWorld Example <https://github.com/eProsima/Fast-DDS/tree/v3.4.1/examples/cpp/dds/HelloWorldExample>`_.
 
 .. code-block:: xml
 
@@ -103,7 +103,7 @@ This example file will allow the |ddsvisualizer| to discover the data type of th
     </types>
 
 Some XML files with data type description examples could be found in the
-`plugin directory <https://github.com/eProsima/fastdds-visualizer-plugin/tree/main/resources/datatypes_xml>`_.
+`plugin directory <https://github.com/eProsima/fastdds-visualizer-plugin/tree/v2.3.0/resources/datatypes_xml>`_.
 
 
 .. warning::
